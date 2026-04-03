@@ -13,6 +13,1792 @@
 .show { display:block!important }
 </style>
 <style id="aCSS">
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="color-scheme" content="light">
+<title>シェアコネクト</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ─ Admin styles ─ */
+#adminApp { display:none }
+#staffApp { display:none }
+.show { display:block!important }
+</style>
+<style id="aCSS">
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff5f7;--surface:#fff;--s2:#fde8ee;--border:#f9c8d5;
+  --acc:#d4537a;--acc2:#e07b3a;--accL:#fce8ef;
+  --text:#3a2030;--muted:#b08090;--ok:#4caf7d;--warn:#e0963a;
+  --sh:0 4px 20px rgba(212,83,122,.12);--shS:0 2px 8px rgba(212,83,122,.08);
+}
+html,body{min-height:100svh;background:#fff5f7;color:#3a2030;font-family:'Zen Maru Gothic',sans-serif;-webkit-font-smoothing:antialiased;color-scheme:light}
+
+.hdr{background:linear-gradient(135deg,#e8607e,#d4537a,#c4456b);padding:14px 18px 10px;position:sticky;top:0;z-index:60;box-shadow:0 2px 16px rgba(212,83,122,.3)}
+.hdr h1{font-size:16px;font-weight:700;color:#fff}
+.hdr p{font-size:10px;color:rgba(255,255,255,.7);margin-top:1px}
+
+/* Tab nav */
+.tab-nav{display:flex;background:#ffffff;border-bottom:1.5px solid #f9c8d5;overflow-x:auto}
+.tab-btn{flex-shrink:0;padding:11px 14px;font-family:'Zen Maru Gothic',sans-serif;font-size:12px;font-weight:700;border:none;background:none;cursor:pointer;color:#b08090;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all .2s}
+.tab-btn.on{color:#d4537a;border-bottom-color:#d4537a}
+
+/* Panels */
+.panel{display:none;padding:12px 14px 80px;flex-direction:column;gap:10px;background:#fff5f7}
+.panel.on{display:flex;background:#fff5f7}
+
+/* Cards */
+.card{background:#ffffff !important;border:1.5px solid #f9c8d5;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(212,83,122,.08)}
+.ch{padding:10px 14px;background:#fde8ee;border-bottom:1px solid #f9c8d5;font-weight:700;font-size:13px;color:#d4537a;display:flex;align-items:center;justify-content:space-between}
+.cb{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+
+/* Staff list */
+.staff-card{background:#ffffff;border:1.5px solid #f9c8d5;border-radius:12px;overflow:hidden;box-shadow:var(--shS);cursor:pointer;transition:box-shadow .15s}
+.staff-card:hover{box-shadow:var(--sh)}
+.sc-head{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.sc-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#fce8ef,#f9c8d5);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sc-name{font-size:15px;font-weight:700}
+.sc-sub{font-size:11px;color:#b08090;margin-top:1px}
+.sc-badges{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px}
+.badge.ok{background:#d4f0e0;color:#4caf7d}
+.badge.warn{background:#fdefd8;color:#e0963a}
+.badge.info{background:#fce8ef;color:#d4537a}
+.sc-details{padding:0 14px 12px;display:flex;flex-wrap:wrap;gap:6px 14px;border-top:1px solid #f9c8d5;margin-top:2px;padding-top:10px}
+.sd{display:flex;flex-direction:column;gap:1px}
+.sd-l{font-size:8px;color:#b08090;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.sd-v{font-size:12px;font-weight:600}
+.sd-v.pay{color:#d4537a;font-weight:700;font-size:13px}
+
+/* Staff detail modal */
+.overlay{position:fixed;inset:0;background:rgba(60,10,30,.5);z-index:100;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{width:100%;max-height:94svh;overflow-y:auto;background:#ffffff;border-radius:24px 24px 0 0;transform:translateY(40px);transition:transform .28s cubic-bezier(.32,1.2,.45,1)}
+.overlay.open .modal{transform:translateY(0)}
+.m-handle{width:40px;height:4px;background:var(--border);border-radius:4px;margin:12px auto 0}
+.m-head{display:flex;align-items:center;gap:8px;padding:12px 18px 10px;border-bottom:1.5px solid #f9c8d5;background:linear-gradient(135deg,#fff5f7,#fff)}
+.m-title{font-size:17px;font-weight:700;flex:1;color:#d4537a}
+.m-close{background:#fde8ee;border:none;border-radius:50%;width:28px;height:28px;font-size:16px;color:#b08090;cursor:pointer}
+.m-body{padding:14px 18px;display:flex;flex-direction:column;gap:14px}
+.m-sec{display:flex;flex-direction:column;gap:6px}
+.m-sec-ttl{font-size:10px;font-weight:700;color:#d4537a;letter-spacing:.1em;text-transform:uppercase;padding-bottom:4px;border-bottom:1.5px solid #f9c8d5}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ig{display:flex;flex-direction:column;gap:2px}
+.ig-l{font-size:9px;color:#b08090;font-weight:700;letter-spacing:.05em}
+.ig-v{font-size:13px;font-weight:600}
+.month-sel{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.month-sel select{background:#fff5f7;border:1.5px solid #f9c8d5;border-radius:20px;font-family:'Zen Maru Gothic',sans-serif;font-size:13px;color:#3a2030;padding:6px 10px;cursor:pointer}
+.work-table{width:100%;border-collapse:collapse;font-size:11px}
+.work-table th{background:#fde8ee;color:#d4537a;padding:5px 6px;text-align:left;font-weight:700;border:1px solid #f9c8d5}
+.work-table td{padding:5px 6px;border:1px solid #f9c8d5}
+.work-table tr:nth-child(even) td{background:#fff9fb}
+.tot-box{background:linear-gradient(135deg,var(--accL),#fff5f7);border:1.5px solid #f9c8d5;border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.tot-item{text-align:center}
+.tot-v{font-size:15px;font-weight:700;color:#d4537a}
+.tot-l{font-size:9px;color:#b08090;margin-top:1px}
+.m-foot{display:flex;gap:8px;padding:12px 18px 16px;border-top:1.5px solid #f9c8d5;position:sticky;bottom:0;background:linear-gradient(180deg,transparent,var(--surface) 30%)}
+.pink-btn{background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;border:none;border-radius:12px;padding:11px;font-family:'Zen Maru Gothic',sans-serif;font-size:13px;font-weight:700;cursor:pointer;flex:1;box-shadow:0 2px 10px rgba(212,83,122,.3)}
+.ghost-btn{background:#fde8ee;border:1.5px solid #f9c8d5;border-radius:12px;padding:11px;font-family:'Zen Maru Gothic',sans-serif;font-size:13px;cursor:pointer;color:#b08090;flex:1}
+
+/* Contracts */
+.contract-item{background:#ffffff;border:1.5px solid #f9c8d5;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.ct-name{flex:1;font-size:14px;font-weight:600}
+.ct-btns{display:flex;gap:6px;flex-shrink:0}
+.ct-btn{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border:1.5px solid #f9c8d5;background:#fff5f7;color:#b08090;transition:all .15s}
+.ct-btn:hover,.ct-btn.on{background:var(--acc);color:#fff;border-color:#d4537a}
+.ct-btn.danger{border-color:#f5bebe;color:#e07b3a}
+.ct-btn.danger:hover{background:var(--acc2);color:#fff;border-color:#e07b3a}
+
+/* Invite */
+.invite-url{background:#fff5f7;border:1.5px solid #f9c8d5;border-radius:10px;padding:10px 12px;font-size:12px;word-break:break-all;color:#d4537a;font-family:monospace;margin-top:4px;cursor:pointer}
+
+/* Template editor */
+.tmpl-textarea{width:100%;padding:10px 12px;border:1.5px solid #f9c8d5;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-size:12px;line-height:1.7;color:#3a2030;background:#ffffff;resize:vertical;min-height:200px}
+.tmpl-textarea:focus{outline:none;border-color:#d4537a}
+.inp{padding:10px 12px;border:1.5px solid #f9c8d5;border-radius:10px;font-family:'Zen Maru Gothic',sans-serif;font-size:14px;color:#3a2030 !important;background:#ffffff !important;width:100%;-webkit-appearance:none;appearance:none}
+.inp:focus{outline:none;border-color:#d4537a}
+.lbl{font-size:11px;font-weight:700;color:#b08090;margin-bottom:4px}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.sbtn{background:var(--acc);color:#fff;border:none;border-radius:10px;padding:10px;font-family:'Zen Maru Gothic',sans-serif;font-size:13px;font-weight:700;cursor:pointer;width:100%}
+
+/* Notice */
+.n-overlay{position:fixed;inset:0;background:rgba(60,10,30,.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
+.n-overlay.open{opacity:1;pointer-events:all}
+.n-modal{background:#fff;border-radius:20px;width:100%;max-width:480px;max-height:90svh;overflow-y:auto;box-shadow:0 8px 40px rgba(212,83,122,.25)}
+.n-head{padding:14px 18px 10px;border-bottom:1px solid #f9c8d5;display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#fff5f7,#fff);border-radius:20px 20px 0 0}
+.n-head h2{font-size:16px;font-weight:700;color:#d4537a;flex:1}
+.n-body{padding:14px 18px}
+.n-actions{display:flex;gap:8px;padding:12px 18px 16px;border-top:1px solid #f9c8d5}
+.n-tbl{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px}
+.n-tbl th{background:#fde8ee;color:#d4537a;padding:5px 6px;text-align:left;font-weight:700;border:1px solid #f9c8d5}
+.n-tbl td{padding:5px 6px;border:1px solid #f9c8d5}
+.n-tbl tr:nth-child(even) td{background:#fff9fb}
+.n-tot{background:linear-gradient(135deg,#fce8ef,#fff5f7);border:1.5px solid #f9c8d5;border-radius:10px;padding:10px 14px;margin-top:8px}
+.n-tr{display:flex;justify-content:space-between;font-size:12px;padding:3px 0}
+.n-tr.big{font-size:16px;font-weight:700;color:#d4537a;border-top:1px solid #f9c8d5;padding-top:7px;margin-top:3px}
+
+/* App footer */
+.app-foot{position:fixed;bottom:0;left:0;right:0;background:#ffffff;border-top:1.5px solid #f9c8d5;padding:10px 14px;display:flex;justify-content:flex-end;gap:8px;z-index:40;box-shadow:0 -4px 20px rgba(212,83,122,.1)}
+.af{background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;border:none;border-radius:12px;padding:10px 20px;font-family:'Zen Maru Gothic',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(212,83,122,.3)}
+
+/* Toast */
+.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(10px);background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;padding:10px 22px;border-radius:40px;font-size:13px;font-weight:700;opacity:0;transition:all .25s;pointer-events:none;z-index:300;white-space:nowrap}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Empty */
+.empty{text-align:center;padding:32px 20px;color:#b08090;font-size:13px}
+
+/* Contract preview */
+.contract-prev{font-size:12px;line-height:1.9;color:#444;background:#fff5f7;border-radius:10px;padding:12px;max-height:200px;overflow-y:auto}
+.contract-prev h3{font-size:13px;font-weight:700;color:#d4537a;margin-bottom:6px;text-align:center}
+.contract-prev h4{font-size:11px;font-weight:700;margin:10px 0 3px;border-bottom:1px solid #f9c8d5;padding-bottom:2px}
+
+/* ─ Force light mode overrides ─ */
+*, *::before, *::after { box-sizing: border-box }
+body, .panel, .card, .modal, .m-body, .cb, .sc-body, .sc-head,
+.staff-card, .contract-item, .invite-url, .n-modal, .n-body,
+.settings-wrap, .tab-nav, .hdr ~ div {
+  color-scheme: light;
+}
+input, select, textarea {
+  background: #ffffff !important;
+  color: #3a2030 !important;
+  border-color: #f9c8d5 !important;
+  color-scheme: light;
+  -webkit-appearance: none;
+}
+.lbl, .s-lbl, .sd-l, .ig-l { color: #b08090 !important }
+.sc-head, .ch { color: #d4537a !important; background: #fde8ee !important }
+.tab-nav { background: #ffffff !important; border-bottom: 1.5px solid #f9c8d5 !important }
+.tab-btn { color: #b08090 !important; background: #ffffff !important }
+.tab-btn.on { color: #d4537a !important }
+.panel { background: #fff5f7 !important }
+.card { background: #ffffff !important }
+.staff-card { background: #ffffff !important }
+.sc-details { background: #ffffff !important }
+.info-grid, .m-body, .m-sec { background: transparent !important }
+.work-table th { background: #fde8ee !important; color: #d4537a !important }
+.work-table td { background: #ffffff !important; color: #3a2030!important }
+.work-table tr:nth-child(even) td { background: #fff9fb !important }
+.tot-box { background: linear-gradient(135deg,#fce8ef,#fff5f7) !important }
+.tot-v { color: #d4537a !important }
+.tot-l { color: #b08090 !important }
+.n-modal, .n-body { background: #ffffff !important; color: #3a2030 !important }
+.badge.ok { background: #d4f0e0 !important; color: #4caf7d !important }
+.badge.warn { background: #fdefd8 !important; color: #e0963a !important }
+.badge.info { background: #fce8ef !important; color: #d4537a !important }
+.sc-name { color: #3a2030 !important }
+.sc-sub { color: #b08090 !important }
+.sd-v { color: #3a2030 !important }
+.sd-v.pay { color: #d4537a !important }
+
+</style>
+<style id="sCSS" disabled>
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff5f7;--surface:#fff;--s2:#fde8ee;--border:#f9c8d5;
+  --acc:#d4537a;--acc2:#e07b3a;--accL:#fce8ef;
+  --text:#3a2030;--muted:#b08090;--ok:#4caf7d;--warn:#e0963a;
+  --sat:#7b5ea7;--satB:#f3eeff;--sun:#d4537a;--sunB:#fff0f3;
+  --sh:0 4px 20px rgba(212,83,122,.12);--shS:0 2px 8px rgba(212,83,122,.08);
+}
+html,body{min-height:100svh;background:#fff5f7;color:#3a2030;font-family:'Zen Maru Gothic',sans-serif;-webkit-font-smoothing:antialiased;color-scheme:light}
+
+/* ─ Util ─ */
+.hidden{display:none!important}
+.pink-btn{background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;border:none;border-radius:12px;padding:12px;font-family:'Zen Maru Gothic',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%;box-shadow:0 3px 12px rgba(212,83,122,.3);transition:opacity .2s}
+.pink-btn:active{opacity:.85}
+.ghost-btn{background:none;border:1.5px solid #f9c8d5;border-radius:12px;padding:11px;font-family:'Zen Maru Gothic',sans-serif;font-size:13px;cursor:pointer;color:#b08090;width:100%;transition:all .15s}
+.ghost-btn:hover{border-color:var(--acc);color:var(--acc)}
+.danger-btn{background:none;border:1.5px solid #f5bebe;border-radius:12px;padding:9px;font-family:'Zen Maru Gothic',sans-serif;font-size:12px;cursor:pointer;color:var(--acc2);width:100%;margin-top:4px}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.lbl{font-size:11px;font-weight:700;color:#b08090;letter-spacing:.05em}
+.inp{padding:12px 14px;border:1.5px solid #f9c8d5;border-radius:12px;font-family:'Zen Maru Gothic',sans-serif;font-size:15px;color:#3a2030;background:#fff;width:100%;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none}
+.inp:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(212,83,122,.1)}
+.inp.err{border-color:#e05050}
+.err-msg{font-size:11px;color:#e05050;display:none}.err-msg.on{display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:#ffffff;border:1.5px solid #f9c8d5;border-radius:14px;overflow:hidden;box-shadow:var(--shS)}
+
+/* ─ Screens ─ */
+.screen{display:none;min-height:100svh;flex-direction:column}
+.screen.active{display:flex}
+
+/* ─ Onboarding hero ─ */
+.ob-hero{background:linear-gradient(135deg,#e8607e,#d4537a,#c4456b);padding:32px 24px 16px;text-align:center}
+.ob-hero .ico{font-size:44px;margin-bottom:8px}
+.ob-hero h1{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.4}
+.ob-hero p{font-size:12px;color:rgba(255,255,255,.8);line-height:1.6}
+.ob-steps{display:flex;justify-content:center;gap:6px;padding:12px 0 0}
+.ob-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);transition:all .3s}
+.ob-dot.on{background:#fff;width:24px;border-radius:4px}
+.ob-body{flex:1;padding:16px 18px 90px;overflow-y:auto;background:#fff5f7}
+.ob-foot{position:fixed;bottom:0;left:0;right:0;padding:10px 18px;background:#ffffff;border-top:1.5px solid var(--border);display:flex;gap:8px;box-shadow:0 -4px 16px rgba(212,83,122,.1);z-index:50}
+.ob-back{flex:1;background:#fde8ee;border:1.5px solid #f9c8d5;border-radius:12px;padding:12px;font-family:'Zen Maru Gothic',sans-serif;font-size:14px;cursor:pointer;color:#b08090}
+.ob-next{flex:2}
+
+/* ─ Contract ─ */
+.contract-scroll{background:#ffffff;border:1.5px solid #f9c8d5;border-radius:14px;padding:16px;max-height:260px;overflow-y:auto;font-size:12px;line-height:1.9;color:#444;margin-bottom:12px}
+.contract-scroll h3{font-size:14px;font-weight:700;color:var(--acc);margin-bottom:8px;text-align:center}
+.contract-scroll h4{font-size:12px;font-weight:700;color:#3a2030;margin:12px 0 4px;border-bottom:1px solid var(--border);padding-bottom:2px}
+.sign-hint{background:#fde8ee;border-radius:12px;padding:12px 14px;margin-bottom:10px;font-size:12px;color:#b08090}
+#signCanvas{width:100%;height:130px;border:1.5px solid #f9c8d5;border-radius:12px;background:#fff;touch-action:none;cursor:crosshair;display:block}
+.clear-btn{background:none;border:1px solid #f9c8d5;border-radius:8px;padding:5px 14px;font-size:11px;color:#b08090;cursor:pointer;margin-top:6px}
+
+/* ─ Complete ─ */
+.complete-ico{font-size:64px;text-align:center;margin:20px 0 10px}
+.complete-msg{text-align:center;font-size:18px;font-weight:700;color:var(--acc);margin-bottom:6px}
+.complete-sub{text-align:center;font-size:13px;color:#b08090;line-height:1.7}
+.summary-box{background:#ffffff;border:1.5px solid #f9c8d5;border-radius:14px;padding:16px;margin-top:18px;font-size:13px;line-height:2.1}
+
+/* ─ Main app ─ */
+.app-hdr{background:linear-gradient(135deg,#e8607e,#d4537a,#c4456b);padding:13px 18px 10px;position:sticky;top:0;z-index:60;box-shadow:0 2px 16px rgba(212,83,122,.3)}
+.app-hdr h1{font-size:16px;font-weight:700;color:#fff}
+.app-hdr p{font-size:10px;color:rgba(255,255,255,.7);margin-top:1px}
+.top-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:8px 14px;background:#ffffff;border-bottom:1.5px solid var(--border);position:sticky;top:50px;z-index:50;box-shadow:var(--shS)}
+.top-sel{background:#fff5f7;border:1.5px solid #f9c8d5;border-radius:20px;font-family:'Zen Maru Gothic',sans-serif;font-size:13px;color:#3a2030;padding:6px 12px;cursor:pointer}
+.top-sel:focus{outline:none;border-color:var(--acc)}
+.sy{width:88px}.sm{width:70px}.ss{flex:1;min-width:100px}
+.tab-nav{display:flex;background:#ffffff;border-bottom:1.5px solid var(--border)}
+.tab-btn{flex:1;padding:10px 4px;font-family:'Zen Maru Gothic',sans-serif;font-size:12px;font-weight:700;border:none;background:none;cursor:pointer;color:#b08090;border-bottom:2.5px solid transparent;transition:all .2s}
+.tab-btn.on{color:var(--acc);border-bottom-color:var(--acc)}
+.summary-bar{display:flex;background:#ffffff;border-bottom:1.5px solid var(--border)}
+.si{flex:1;padding:8px 2px;text-align:center;border-right:1px solid var(--border)}
+.si:last-child{border-right:none}
+.sv{font-size:15px;font-weight:700;color:var(--acc)}
+.sl{font-size:8px;color:#b08090;margin-top:1px;white-space:nowrap}
+
+/* ─ Calendar ─ */
+.cal-bar{padding:10px 12px 8px;background:#fde8ee;border-bottom:1.5px solid var(--border);position:sticky;top:128px;z-index:45}
+.cal-lbl{font-size:10px;font-weight:700;color:var(--acc);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.day-chip{padding:8px 2px 6px;border:1.5px solid #f9c8d5;border-radius:12px;background:#ffffff;text-align:center;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:2px}
+.day-chip:hover{border-color:var(--acc);background:var(--accL);transform:scale(1.04)}
+.day-chip:active{transform:scale(.96)}
+.day-chip .dn{font-size:16px;font-weight:700}
+.day-chip .dw{font-size:9px;color:#b08090}
+.day-chip.sat{border-color:#d0b8f5;background:var(--satB)}.day-chip.sat .dw{color:var(--sat)}
+.day-chip.sun{border-color:#f9c8d5;background:var(--sunB)}.day-chip.sun .dw{color:var(--sun)}
+.day-chip.draft{border-color:var(--warn);background:#fff3e6}.day-chip.draft .dn,.day-chip.draft .dw{color:var(--warn)}
+.day-chip.confirmed{border-color:var(--ok);background:#edfaf3}.day-chip.confirmed .dn,.day-chip.confirmed .dw{color:var(--ok)}
+
+/* ─ Cards ─ */
+.cards-wrap{padding:8px 12px 90px;display:flex;flex-direction:column;gap:5px}
+.empty-state{text-align:center;padding:40px 20px;color:#b08090}.empty-state .ico{font-size:32px;margin-bottom:8px}.empty-state p{font-size:13px;line-height:1.7}
+.work-card{background:#ffffff;border:1.5px solid #f9c8d5;border-radius:12px;overflow:hidden;box-shadow:var(--shS)}
+.work-card.draft{border-color:#f0b870}.work-card.confirmed{border-color:#88d4a8}
+.work-card.sat{border-left:4px solid var(--sat)}.work-card.sun{border-left:4px solid var(--sun)}
+.wc-row{display:flex;align-items:center;gap:6px;padding:10px 12px}
+.work-card.draft .wc-row{background:linear-gradient(90deg,#fffaf0,#fff)}
+.work-card.confirmed .wc-row{background:linear-gradient(90deg,#f0fbf5,#fff)}
+.wc-date{font-size:14px;font-weight:700;min-width:36px}
+.wc-wd{font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;background:#fff5f7;color:#b08090;flex-shrink:0}
+.wc-wd.sat{background:var(--satB);color:var(--sat)}.wc-wd.sun{background:var(--sunB);color:var(--sun)}
+.wc-st{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0}
+.wc-st.draft{background:#fdefd8;color:var(--warn)}.wc-st.confirmed{background:#d4f0e0;color:var(--ok)}
+.wc-store{font-size:12px;font-weight:700;flex-shrink:0;min-width:28px}
+.wc-time{font-size:11px;color:#b08090;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wc-pay{font-size:13px;font-weight:700;color:var(--acc);flex-shrink:0}
+.wc-edit{background:var(--accL);border:1.5px solid #f9c8d5;border-radius:20px;padding:3px 10px;font-size:11px;cursor:pointer;color:var(--acc);font-weight:700;font-family:'Zen Maru Gothic',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.wc-edit:hover{background:var(--acc);color:#fff;border-color:var(--acc)}
+
+/* ─ Settings tab ─ */
+.settings-wrap{padding:12px 14px 90px;display:flex;flex-direction:column;gap:12px}
+.sc-head{padding:10px 14px;background:#fde8ee;border-bottom:1px solid var(--border);font-weight:700;font-size:13px;color:var(--acc)}
+.sc-body{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.s-info{font-size:12px;color:#b08090;line-height:1.6;background:#fff5f7;border-radius:10px;padding:10px 12px;border:1px solid #f9c8d5}
+.s-inp{padding:8px 10px;border:1.5px solid #f9c8d5;border-radius:10px;font-family:'Zen Maru Gothic',sans-serif;font-size:13px;color:#3a2030;background:#fff5f7;width:100%}
+.s-inp:focus{outline:none;border-color:var(--acc)}
+.s-lbl{font-size:10px;font-weight:700;color:#b08090;margin-bottom:3px}
+.sf{display:flex;flex-direction:column;gap:3px}
+.preset-row{display:flex;gap:6px;align-items:center;padding:6px 8px;background:#fff5f7;border-radius:10px;border:1px solid #f9c8d5;margin-bottom:5px}
+.pr-lbl{font-size:10px;font-weight:700;color:#b08090;width:16px;flex-shrink:0}
+.pr-route{flex:1;padding:6px 8px;border:1.5px solid #f9c8d5;border-radius:8px;font-family:'Zen Maru Gothic',sans-serif;font-size:12px;color:#3a2030;background:#ffffff}
+.pr-route:focus{outline:none;border-color:var(--acc)}
+.pr-fare{width:60px;padding:6px 5px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:12px;text-align:right;color:#3a2030;background:#ffffff}
+.pr-fare:focus{outline:none;border-color:var(--acc)}
+.pr-yen{font-size:10px;color:#b08090;flex-shrink:0}
+.sbtn{background:var(--acc);color:#fff;border:none;border-radius:10px;padding:10px;font-family:'Zen Maru Gothic',sans-serif;font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-top:4px}
+
+/* ─ Entry modal ─ */
+.overlay{position:fixed;inset:0;background:rgba(60,10,30,.5);z-index:100;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{width:100%;max-height:92svh;overflow-y:auto;background:#ffffff;border-radius:24px 24px 0 0;transform:translateY(40px);transition:transform .28s cubic-bezier(.32,1.2,.45,1);padding:0 0 env(safe-area-inset-bottom)}
+.overlay.open .modal{transform:translateY(0)}
+.m-handle{width:40px;height:4px;background:var(--border);border-radius:4px;margin:12px auto 0}
+.m-head{display:flex;align-items:center;gap:8px;padding:12px 18px 10px;border-bottom:1.5px solid var(--border);background:linear-gradient(135deg,#fff5f7,#fff)}
+.m-title{font-size:17px;font-weight:700;flex:1;color:var(--acc)}
+.m-close{background:#fde8ee;border:none;border-radius:50%;width:28px;height:28px;font-size:16px;color:#b08090;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.m-body{padding:14px 18px;display:flex;flex-direction:column;gap:14px}
+.m-sec{display:flex;flex-direction:column;gap:8px}
+.m-sec-ttl{font-size:10px;font-weight:700;color:var(--acc);letter-spacing:.1em;text-transform:uppercase;padding-bottom:4px;border-bottom:1.5px solid var(--border)}
+.m-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mf{display:flex;flex-direction:column;gap:4px}
+.ml{font-size:10px;font-weight:700;color:#b08090}
+.mi{padding:10px 12px;border:1.5px solid #f9c8d5;border-radius:12px;font-family:'Zen Maru Gothic',sans-serif;font-size:15px;color:#3a2030;background:#fff5f7;width:100%;transition:border-color .2s,box-shadow .2s}
+.mi:focus{outline:none;border-color:var(--acc);background:#fff;box-shadow:0 0 0 3px rgba(212,83,122,.1)}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper input{flex:1;padding:10px 8px;border:1.5px solid #f9c8d5;border-radius:12px;font-family:'Zen Maru Gothic',sans-serif;font-size:15px;color:#3a2030;background:#fff5f7;text-align:center;transition:border-color .2s}
+.stepper input:focus{outline:none;border-color:var(--acc);background:#fff}
+.step-btn{width:34px;height:34px;border-radius:50%;border:1.5px solid #f9c8d5;background:#fde8ee;color:var(--acc);font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.step-btn:hover{background:var(--acc);color:#fff;border-color:var(--acc)}
+.rest-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rest-row input{width:76px;padding:9px 10px;border:1.5px solid #f9c8d5;border-radius:12px;font-family:'Zen Maru Gothic',sans-serif;font-size:15px;color:#3a2030;background:#fff5f7;text-align:center}
+.rest-row input:focus{outline:none;border-color:var(--acc);background:#fff}
+.rc{padding:6px 11px;border:1.5px solid #f9c8d5;border-radius:20px;background:#fff5f7;font-family:'Zen Maru Gothic',sans-serif;font-size:12px;font-weight:700;cursor:pointer;color:#b08090;transition:all .15s;white-space:nowrap}
+.rc.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.work-prev{background:linear-gradient(135deg,var(--accL),#fff5f7);border:1.5px solid #f9c8d5;border-radius:12px;padding:10px 14px;text-align:center;font-size:13px;font-weight:700;color:var(--acc);line-height:1.6}
+.store-tags{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+.store-tag{flex-shrink:0;padding:8px 20px;border:1.5px solid #f9c8d5;border-radius:20px;background:#fff5f7;font-family:'Zen Maru Gothic',sans-serif;font-size:14px;cursor:pointer;transition:all .18s;white-space:nowrap}
+.store-tag.on{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700;box-shadow:0 2px 8px rgba(212,83,122,.3)}
+.t-block{background:#fff5f7;border:1.5px solid #f9c8d5;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:7px}
+.t-blbl{font-size:9px;font-weight:700;color:var(--acc);letter-spacing:.06em;text-transform:uppercase}
+.t-row{display:flex;gap:6px;align-items:center}
+.t-badge{font-size:10px;font-weight:700;color:#b08090;width:14px;flex-shrink:0}
+.t-rt{flex:1;padding:8px 10px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:13px;color:#3a2030;background:#ffffff;min-width:0;font-family:'Zen Maru Gothic',sans-serif}
+.t-rt:focus{outline:none;border-color:var(--acc)}
+.t-fr{width:64px;padding:8px 6px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:13px;text-align:right;color:#3a2030;background:#ffffff}
+.t-fr:focus{outline:none;border-color:var(--acc)}
+.t-yen{font-size:11px;color:#b08090;flex-shrink:0}
+.m-foot{display:flex;gap:8px;padding:12px 18px 16px;border-top:1.5px solid var(--border);position:sticky;bottom:0;background:linear-gradient(180deg,transparent,var(--surface) 30%)}
+.m-cancel{flex:1;background:#fde8ee;border:1.5px solid #f9c8d5;border-radius:14px;padding:12px;font-family:'Zen Maru Gothic',sans-serif;font-size:14px;cursor:pointer;color:#b08090}
+.m-del{background:none;border:1.5px solid #f9c8d5;border-radius:14px;padding:12px 14px;font-size:13px;cursor:pointer;color:var(--acc);font-family:'Zen Maru Gothic',sans-serif}
+.m-ok{flex:2;background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;border:none;border-radius:14px;padding:12px;font-family:'Zen Maru Gothic',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(212,83,122,.35)}
+.m-ok:active{transform:scale(.98)}
+
+/* ─ Notice modal ─ */
+.n-overlay{position:fixed;inset:0;background:rgba(60,10,30,.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
+.n-overlay.open{opacity:1;pointer-events:all}
+.n-modal{background:#fff;border-radius:20px;width:100%;max-width:480px;max-height:90svh;overflow-y:auto;box-shadow:0 8px 40px rgba(212,83,122,.25)}
+.n-head{padding:14px 18px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#fff5f7,#fff);border-radius:20px 20px 0 0}
+.n-head h2{font-size:16px;font-weight:700;color:var(--acc);flex:1}
+.n-body{padding:14px 18px}
+.n-actions{display:flex;gap:8px;padding:12px 18px 16px;border-top:1px solid var(--border)}
+.n-print{flex:1;background:#fde8ee;border:1.5px solid #f9c8d5;border-radius:12px;padding:11px;font-family:'Zen Maru Gothic',sans-serif;font-size:13px;cursor:pointer;color:#3a2030}
+.n-close{flex:1;background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;border:none;border-radius:12px;padding:11px;font-family:'Zen Maru Gothic',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+#nContent{font-family:'Noto Sans JP',sans-serif;color:#333}
+.nt{text-align:center;margin-bottom:12px}.nt h3{font-size:17px;font-weight:700;color:var(--acc)}.nt p{font-size:11px;color:#888;margin-top:3px}
+.n-to{font-size:14px;font-weight:700;margin-bottom:3px}.n-from{font-size:12px;color:#888;margin-bottom:10px}
+.n-tbl{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px}
+.n-tbl th{background:#fde8ee;color:var(--acc);padding:5px 6px;text-align:left;font-weight:700;border:1px solid #f9c8d5}
+.n-tbl td{padding:5px 6px;border:1px solid #f9c8d5}
+.n-tbl tr:nth-child(even) td{background:#fff9fb}
+.n-tot{background:linear-gradient(135deg,#fce8ef,#fff5f7);border:1.5px solid #f9c8d5;border-radius:10px;padding:12px 16px;margin-top:8px}
+.n-tr{display:flex;justify-content:space-between;font-size:13px;padding:3px 0}
+.n-tr.big{font-size:17px;font-weight:700;color:var(--acc);border-top:1px solid var(--border);padding-top:8px;margin-top:4px}
+.n-foot{font-size:11px;color:#aaa;text-align:center;margin-top:12px;line-height:1.6}
+
+/* ─ App footer ─ */
+.app-foot{position:fixed;bottom:0;left:0;right:0;background:#ffffff;border-top:1.5px solid var(--border);padding:8px 12px;display:flex;gap:6px;box-shadow:0 -4px 20px rgba(212,83,122,.1);z-index:40}
+.af-btn{flex:1;border-radius:12px;padding:9px;font-family:'Zen Maru Gothic',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:none}
+.af-ghost{background:#fde8ee;border:1.5px solid #f9c8d5!important;border-radius:12px;color:#b08090}
+.af-pink{background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;box-shadow:0 2px 10px rgba(212,83,122,.3)}
+.af-dark{background:linear-gradient(135deg,#c4456b,#d4537a);color:#fff;box-shadow:0 2px 10px rgba(212,83,122,.3)}
+
+/* ─ Toast ─ */
+.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(10px);background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;padding:10px 22px;border-radius:40px;font-size:13px;font-weight:700;opacity:0;transition:all .25s;pointer-events:none;z-index:300;white-space:nowrap;box-shadow:0 4px 16px rgba(212,83,122,.4)}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+</style>
+</head>
+<body>
+
+<!-- ADMIN -->
+<div id="adminApp">
+
+
+<header class="hdr">
+  <h1>🌸 シェアコネクト 管理画面</h1>
+  <p>スタッフ管理・契約書・支払い通知書</p>
+</header>
+
+<div class="tab-nav">
+  <button class="tab-btn on" onclick="switchTab('staff',this)">👥 スタッフ</button>
+  <button class="tab-btn" onclick="switchTab('contracts',this)">📋 契約書</button>
+  <button class="tab-btn" onclick="switchTab('invite',this)">🔗 招待URL</button>
+</div>
+
+<!-- ── STAFF PANEL ── -->
+<div class="panel on" id="pStaff">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+    <div style="font-size:13px;font-weight:700;color:#d4537a">登録スタッフ一覧</div>
+    <div style="font-size:11px;color:#b08090" id="staffCount">0名</div>
+  </div>
+  <div id="staffList"><div class="empty">登録スタッフがいません</div></div>
+</div>
+
+<!-- ── CONTRACTS PANEL ── -->
+<div class="panel" id="pContracts">
+  <div class="card">
+    <div class="ch">📋 契約書テンプレート一覧</div>
+    <div class="cb" id="contractList"></div>
+  </div>
+  <div class="card">
+    <div class="ch">＋ 新規テンプレート作成</div>
+    <div class="cb">
+      <div class="field"><div class="lbl">テンプレート名</div><input class="inp" id="newTmplName" placeholder="例：動画撮影専用契約書"></div>
+      <div class="field"><div class="lbl">契約書本文（HTML可）</div><textarea class="tmpl-textarea" id="newTmplBody" placeholder="契約書の内容を入力..."></textarea></div>
+      <button class="sbtn" onclick="addTemplate()">💾 テンプレートを保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── INVITE PANEL ── -->
+<div class="panel" id="pInvite">
+  <div class="card">
+    <div class="ch">🔗 スタッフ招待URL発行</div>
+    <div class="cb">
+      <div style="font-size:12px;color:#b08090;line-height:1.7;background:#fff5f7;border-radius:10px;padding:10px 12px;border:1px solid #f9c8d5">
+        ① 契約書を選ぶ　② 発行する　③ LINEで送る — それだけ！
+      </div>
+      <div class="field" style="margin-top:10px">
+        <div class="lbl">契約書テンプレートを選択</div>
+        <select class="inp" id="inviteContract" style="font-family:'Zen Maru Gothic',sans-serif"></select>
+      </div>
+
+      <button class="sbtn" onclick="generateInvite()">🔗 招待URLを発行する</button>
+      <div id="inviteResult" style="display:none;margin-top:14px">
+        <div style="background:#edfaf3;border:1.5px solid #88d4a8;border-radius:12px;padding:12px 14px;margin-bottom:10px">
+          <div style="font-size:13px;font-weight:700;color:#3d9a6a;margin-bottom:4px">✅ URLが発行されました！</div>
+          <div style="font-size:12px;color:#3d9a6a;line-height:1.6">このURLをLINEやメールでスタッフに送ってください。<br>スタッフがURLを開くと登録・署名画面が表示されます。</div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:#b08090;margin-bottom:4px">招待URL（タップでコピー）</div>
+        <div class="invite-url" id="inviteUrl" onclick="copyInvite()">—</div>
+        <button class="sbtn" style="margin-top:10px;background:linear-gradient(135deg,#c4456b,#d4537a)" onclick="copyInvite()">📋 URLをコピーしてLINEで送る</button>
+      </div>
+    </div>
+  </div>
+  <div class="card" id="pendingCard" style="border-color:#f9c8d5">
+    <div class="ch" style="background:#fde8ee">⏳ 承認待ちスタッフ <span id="pendingCount" style="background:#d4537a;color:#fff;border-radius:20px;padding:1px 8px;font-size:11px;margin-left:6px">0</span></div>
+    <div class="cb" id="pendingList">
+      <div style="font-size:12px;color:#b08090;text-align:center;padding:8px">承認待ちのスタッフはいません</div>
+    </div>
+  </div>
+</div>
+
+<!-- Staff Detail Modal -->
+<div class="overlay" id="overlay" onclick="bgClose(event)">
+<div class="modal">
+  <div class="m-handle"></div>
+  <div class="m-head">
+    <div class="m-title" id="mTitle">スタッフ詳細</div>
+    <button class="m-close" onclick="closeModal()">×</button>
+  </div>
+  <div class="m-body">
+    <!-- Basic info -->
+    <div class="m-sec">
+      <div class="m-sec-ttl">👤 基本情報</div>
+      <div class="info-grid" id="mBasicInfo"></div>
+    </div>
+    <!-- Bank -->
+    <div class="m-sec">
+      <div class="m-sec-ttl">🏦 振込先口座</div>
+      <div class="info-grid" id="mBankInfo"></div>
+    </div>
+    <!-- Contract -->
+    <div class="m-sec">
+      <div class="m-sec-ttl">📋 契約情報</div>
+      <div id="mContractInfo"></div>
+    </div>
+    <!-- Work data -->
+    <div class="m-sec">
+      <div class="m-sec-ttl">📅 稼働データ</div>
+      <div class="month-sel">
+        <select id="mYear"></select>
+        <select id="mMonth"></select>
+        <button style="padding:6px 12px;background:var(--acc);color:#fff;border:none;border-radius:8px;font-family:'Zen Maru Gothic',sans-serif;font-size:12px;cursor:pointer" onclick="loadWorkData()">表示</button>
+      </div>
+      <div id="mWorkTable"></div>
+    </div>
+  </div>
+  <div class="m-foot">
+    <button class="ghost-btn" onclick="closeModal()">閉じる</button>
+    <button class="pink-btn" id="mNoticeBtn" onclick="openStaffNotice()">📄 支払通知書</button>
+  </div>
+</div>
+</div>
+
+<!-- Payment Notice Modal -->
+<div class="n-overlay" id="nOverlay" onclick="nBgClose(event)">
+<div class="n-modal">
+  <div class="n-head"><h2>📄 支払通知書</h2><button class="m-close" onclick="closeNotice()">×</button></div>
+  <div class="n-body"><div id="nContent"></div></div>
+  <div class="n-actions">
+    <button class="ghost-btn" style="flex:1" onclick="printNotice()">🖨️ 印刷 / PDF</button>
+    <button class="pink-btn" style="flex:1" onclick="closeNotice()">閉じる</button>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+</div>
+
+<!-- STAFF -->
+<div id="staffApp">
+
+
+<!-- ══ SCREEN: ONBOARDING ══ -->
+<div class="screen active" id="screenOB">
+<div class="ob-hero">
+  <div class="ico">🌸</div>
+  <h1>シェアコネクト<br>業務委託 初期登録</h1>
+  <p>稼働記録を始める前に基本情報と<br>契約書への電子署名をお願いします</p>
+  <div class="ob-steps">
+    <div class="ob-dot on" id="d0"></div><div class="ob-dot" id="d1"></div>
+    <div class="ob-dot" id="d2"></div><div class="ob-dot" id="d3"></div>
+  </div>
+</div>
+<div class="ob-body">
+
+  <!-- Step 0 -->
+  <div id="s0">
+    <div style="font-size:16px;font-weight:700;color:var(--acc);margin-bottom:4px">👤 基本情報</div>
+    <div style="font-size:12px;color:#b08090;margin-bottom:16px">契約書に反映されます。正確にご入力ください。</div>
+    <div class="field"><div class="lbl">氏名（フルネーム）</div><input class="inp" id="obName" type="text" placeholder="例：佐々木 花子"><div class="err-msg" id="eN">氏名を入力してください</div></div>
+    <div class="field"><div class="lbl">生年月日</div><input class="inp" id="obBirth" type="date"></div>
+    <div class="field"><div class="lbl">電話番号</div><input class="inp" id="obPhone" type="tel" placeholder="090-0000-0000"></div>
+    <div class="field"><div class="lbl">メールアドレス</div><input class="inp" id="obEmail" type="email" placeholder="hanako@example.com"></div>
+    <div class="field"><div class="lbl">住所</div><input class="inp" id="obAddr" type="text" placeholder="愛知県名古屋市〇〇区〇〇1-2-3"><div class="err-msg" id="eA">住所を入力してください</div></div>
+    <div class="field"><div class="lbl">最寄駅</div><input class="inp" id="obStation" type="text" placeholder="例：金山駅"></div>
+  </div>
+
+  <!-- Step 1 -->
+  <div id="s1" class="hidden">
+    <div style="font-size:16px;font-weight:700;color:var(--acc);margin-bottom:4px">🏦 振込先口座</div>
+    <div style="font-size:12px;color:#b08090;margin-bottom:16px">報酬の振込先口座をご入力ください。</div>
+    <div class="field"><div class="lbl">銀行名</div><input class="inp" id="obBank" type="text" placeholder="〇〇銀行"><div class="err-msg" id="eB">銀行名を入力してください</div></div>
+    <div class="grid2">
+      <div class="field" style="margin:0"><div class="lbl">支店名</div><input class="inp" id="obBranch" type="text" placeholder="〇〇支店"></div>
+      <div class="field" style="margin:0"><div class="lbl">種別</div><select class="inp" id="obAccType"><option value="普通">普通</option><option value="当座">当座</option></select></div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="field" style="margin:0"><div class="lbl">口座番号</div><input class="inp" id="obAccNum" type="text" placeholder="1234567"><div class="err-msg" id="eAN">口座番号を入力してください</div></div>
+      <div class="field" style="margin:0"><div class="lbl">口座名義（カナ）</div><input class="inp" id="obAccName" type="text" placeholder="ササキ ハナコ"></div>
+    </div>
+  </div>
+
+  <!-- Step 2: Contract -->
+  <div id="s2" class="hidden">
+    <div style="font-size:16px;font-weight:700;color:var(--acc);margin-bottom:4px">📋 業務委託契約書</div>
+    <div style="font-size:12px;color:#b08090;margin-bottom:12px">内容をご確認のうえ、手書きでサインしてください。</div>
+    <div class="contract-scroll" id="contractBox"></div>
+    <div class="sign-hint">✍️ 上記に同意のうえ、手書きでサインしてください（指でなぞる）</div>
+    <canvas id="signCanvas"></canvas>
+    <button class="clear-btn" onclick="clearCanvas()">クリア</button>
+    <div class="err-msg" id="eS" style="margin-top:6px">サインを入力してください</div>
+  </div>
+
+  <!-- Step 3: Complete -->
+  <div id="s3" class="hidden">
+    <div class="complete-ico">🎉</div>
+    <div class="complete-msg">登録・締結が完了しました！</div>
+    <div class="complete-sub">業務委託契約が締結されました。<br>これより稼働記録をご利用いただけます。</div>
+    <div class="summary-box" id="obSummary"></div>
+  </div>
+
+</div>
+<div class="ob-foot">
+  <button class="ob-back" id="obBackBtn" style="display:none" onclick="obBack()">← 戻る</button>
+  <button class="pink-btn ob-next" id="obNextBtn" onclick="obNext()">次へ →</button>
+</div>
+</div>
+
+<!-- ══ SCREEN: PENDING ══ -->
+<div class="screen" id="screenPending">
+  <div style="background:linear-gradient(135deg,#e8607e,#d4537a,#c4456b);padding:32px 24px 24px;text-align:center">
+    <div style="font-size:48px;margin-bottom:10px">⏳</div>
+    <h1 style="font-size:20px;font-weight:700;color:#fff;margin-bottom:6px">承認待ちです</h1>
+    <p style="font-size:13px;color:rgba(255,255,255,.85);line-height:1.6">登録が完了しました！<br>管理者の承認後、打刻が利用できるようになります。</p>
+  </div>
+  <div style="padding:24px 20px;display:flex;flex-direction:column;gap:14px">
+    <div style="background:#fff;border:1.5px solid #f9c8d5;border-radius:14px;padding:16px;text-align:center">
+      <div style="font-size:13px;color:#b08090;line-height:1.8">管理者が承認すると<br>このページが自動で更新されます。<br>しばらくお待ちください。</div>
+    </div>
+    <div id="pendingUserInfo" style="background:#fff5f7;border:1.5px solid #f9c8d5;border-radius:14px;padding:16px;font-size:13px;line-height:2;color:#3a2030"></div>
+    <button onclick="checkApproval()" style="background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;border:none;border-radius:12px;padding:14px;font-family:'Zen Maru Gothic',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(212,83,122,.3)">🔄 承認状況を確認する</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: MAIN APP ══ -->
+<div class="screen" id="screenApp">
+
+<header class="app-hdr">
+  <h1>🌸 業務委託 稼働記録</h1>
+  <p id="appSubtitle">稼働日をタップして詳細を入力 → 仮確定</p>
+</header>
+
+<div class="top-bar">
+  <select class="top-sel sy" id="selYear"></select>
+  <select class="top-sel sm" id="selMonth"></select>
+  <select class="top-sel ss" id="selStaff"></select>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn on" onclick="switchTab('record',this)">📋 稼働記録</button>
+  <button class="tab-btn" onclick="switchTab('settings',this)">⚙️ 設定</button>
+</div>
+
+<!-- Record tab -->
+<div id="tabRecord">
+  <div class="summary-bar">
+    <div class="si"><div class="sv" id="sumD">0</div><div class="sl">稼働日数</div></div>
+    <div class="si"><div class="sv" id="sumH">0:00</div><div class="sl">総稼働</div></div>
+    <div class="si"><div class="sv" id="sumP">¥0</div><div class="sl">報酬額</div></div>
+    <div class="si"><div class="sv" id="sumF">¥0</div><div class="sl">交通費</div></div>
+  </div>
+  <div class="cal-bar">
+    <div class="cal-lbl">🗓 稼働日を選択</div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+  <div class="cards-wrap" id="cardsWrap">
+    <div class="empty-state"><div class="ico">🌸</div><p>上の日付をタップして<br>稼働日を追加してください</p></div>
+  </div>
+</div>
+
+<!-- Settings tab -->
+<div id="tabSettings" class="hidden">
+  <div class="settings-wrap">
+    <div class="card">
+      <div class="sc-head">🚃 店舗別 交通費プリセット</div>
+      <div class="sc-body">
+        <div class="s-info">店舗を選択すると、登録した区間・金額が自動入力されます。</div>
+        <div id="presetList"></div>
+        <button class="sbtn" onclick="savePresets()">💾 プリセットを保存</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sc-head">💴 報酬設定</div>
+      <div class="sc-body">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:13px;color:#b08090">時給</span>
+          <input type="number" id="hourlyRate" value="2014" style="width:90px;padding:8px 10px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:15px;text-align:right;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7">
+          <span style="font-size:13px;color:#b08090">円／時</span>
+        </div>
+        <button class="sbtn" onclick="saveSettings()">💾 保存</button>
+      </div>
+    </div>
+    <div class="card" style="border-color:#f5bebe">
+      <div class="sc-head" style="color:var(--acc2)">⚠️ 登録情報</div>
+      <div class="sc-body">
+        <div class="s-info" id="userInfoDisp">読み込み中...</div>
+        <button class="ghost-btn" style="margin-top:4px" onclick="viewContract()">📋 締結済み契約書を確認</button>
+        <button class="danger-btn" onclick="resetApp()">🔄 登録をリセット（再登録）</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app-foot">
+  <button class="af-btn af-ghost" onclick="exportCSV()">📥 CSV</button>
+  <button class="af-btn af-dark" onclick="openNotice()">📄 通知書</button>
+  <button class="af-btn af-pink" onclick="saveData()">💾 保存</button>
+</div>
+</div>
+
+<!-- Entry Modal -->
+<div class="overlay" id="overlay" onclick="bgClose(event)">
+<div class="modal">
+  <div class="m-handle"></div>
+  <div class="m-head">
+    <div class="m-title" id="mTitle">稼働入力</div>
+    <button class="m-close" onclick="closeModal()">×</button>
+  </div>
+  <div class="m-body">
+    <div class="m-sec">
+      <div class="m-sec-ttl">🏪 店舗</div>
+      <div class="store-tags" id="storeTags">
+        <button class="store-tag" data-s="茶屋" onclick="pickStore('茶屋')">茶屋</button>
+        <button class="store-tag" data-s="京都" onclick="pickStore('京都')">京都</button>
+        <button class="store-tag" data-s="銀座" onclick="pickStore('銀座')">銀座</button>
+      </div>
+      <input type="hidden" id="mStore">
+    </div>
+    <div class="m-sec">
+      <div class="m-sec-ttl">⏰ 稼働時間</div>
+      <div class="m-row">
+        <div class="mf">
+          <div class="ml">開始</div>
+          <div class="stepper"><button class="step-btn" onclick="adjTime('mIn',-30)">−</button><input type="time" id="mIn" oninput="prevWork()"><button class="step-btn" onclick="adjTime('mIn',30)">＋</button></div>
+        </div>
+        <div class="mf">
+          <div class="ml">終了</div>
+          <div class="stepper"><button class="step-btn" onclick="adjTime('mOut',-30)">−</button><input type="time" id="mOut" oninput="prevWork()"><button class="step-btn" onclick="adjTime('mOut',30)">＋</button></div>
+        </div>
+      </div>
+      <div class="mf">
+        <div class="ml">休憩時間</div>
+        <div class="rest-row">
+          <input type="number" id="mRest" min="0" max="480" step="1" value="60" oninput="prevWork();syncRC()">
+          <span style="font-size:12px;color:#b08090">分</span>
+          <button class="rc" data-v="0" onclick="setRest(0)">なし</button>
+          <button class="rc" data-v="30" onclick="setRest(30)">30分</button>
+          <button class="rc on" data-v="60" onclick="setRest(60)">60分</button>
+          <button class="rc" data-v="90" onclick="setRest(90)">90分</button>
+        </div>
+      </div>
+      <div class="work-prev" id="workPrev">稼働時間: --</div>
+    </div>
+    <div class="m-sec">
+      <div class="m-sec-ttl">🚃 交通費</div>
+      <div class="t-block">
+        <div class="t-blbl">1本目</div>
+        <div class="t-row"><span class="t-badge">往</span><input class="t-rt" type="text" placeholder="○○駅→○○駅" id="r1a"><input class="t-fr" type="number" placeholder="0" id="f1a"><span class="t-yen">円</span></div>
+        <div class="t-row"><span class="t-badge">復</span><input class="t-rt" type="text" placeholder="○○駅→○○駅" id="r1b"><input class="t-fr" type="number" placeholder="0" id="f1b"><span class="t-yen">円</span></div>
+      </div>
+      <div class="t-block">
+        <div class="t-blbl">2本目</div>
+        <div class="t-row"><span class="t-badge">往</span><input class="t-rt" type="text" placeholder="○○駅→○○駅" id="r2a"><input class="t-fr" type="number" placeholder="0" id="f2a"><span class="t-yen">円</span></div>
+        <div class="t-row"><span class="t-badge">復</span><input class="t-rt" type="text" placeholder="○○駅→○○駅" id="r2b"><input class="t-fr" type="number" placeholder="0" id="f2b"><span class="t-yen">円</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="m-foot">
+    <button class="m-cancel" onclick="closeModal()">キャンセル</button>
+    <button class="m-del" id="mDel" style="display:none" onclick="delDay()">削除</button>
+    <button class="m-ok" onclick="confirmDay()">✓ 仮確定</button>
+  </div>
+</div>
+</div>
+
+<!-- Notice modal -->
+<div class="n-overlay" id="nOverlay" onclick="nBgClose(event)">
+<div class="n-modal">
+  <div class="n-head"><h2>📄 支払通知書</h2><button class="m-close" onclick="closeNotice()">×</button></div>
+  <div class="n-body"><div id="nContent"></div></div>
+  <div class="n-actions">
+    <button class="n-print" onclick="printNotice()">🖨️ 印刷 / PDF保存</button>
+    <button class="n-close" onclick="closeNotice()">閉じる</button>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+</div>
+
+<script>
+(function(){
+  var isStaff = location.search.indexOf('staff') > -1 || location.hash.indexOf('staff') > -1;
+  if(isStaff){
+    document.getElementById('staffApp').classList.add('show');
+    document.getElementById('aCSS').disabled = true;
+    document.getElementById('sCSS').disabled = false;
+    document.title = 'シェアコネクト 稼働記録';
+    window._mode = 'staff';
+  } else {
+    document.getElementById('adminApp').classList.add('show');
+    document.getElementById('sCSS').disabled = true;
+    document.title = 'シェアコネクト 管理画面';
+    window._mode = 'admin';
+  }
+})();
+</script>
+
+<script>
+if(window._mode === "admin"){
+
+// ── Constants ──────────────────────────────────────
+const WD=['日','月','火','水','木','金','土'];
+const CO={name:'株式会社シェアコネクト',rep:'代表取締役　小池拓未',addr:'〒454-0812　愛知県名古屋市中川区五月通2丁目37番地 黄金ステーションビル3階',phone:'TEL 052-414-5515　FAX 050-3737-1575'};
+const DEF_RATE=2014;
+const TMPL_KEY='sc_admin_templates';
+
+let allStaff=[];
+let templates=[];
+let currentStaff=null;
+let _tt;
+
+function ls(k){return localStorage.getItem(k)}
+function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function pad(n){return String(n).padStart(2,'0')}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('on'),2500)}
+function toMin(t){if(!t)return null;const[h,m]=t.split(':').map(Number);return h*60+m}
+function toStr(m){if(m==null||m<0)return'';return`${Math.floor(m/60)}:${pad(m%60)}`}
+function calcWork(r){if(!r)return null;const i=toMin(r.in),o=toMin(r.out);if(i==null||o==null||o<=i)return null;return Math.max(0,o-i-(parseInt(r.rest)||0))}
+function calcFare(r){return(+r.f1a||0)+(+r.f1b||0)+(+r.f2a||0)+(+r.f2b||0)}
+function calcPay(wm,rate){return wm!=null?Math.floor(wm/60*(rate||DEF_RATE)):0}
+
+// ── Boot ───────────────────────────────────────────
+function boot(){
+  loadTemplates();
+  refreshAll();
+
+  // init month selectors
+  const now=new Date();
+  const my=document.getElementById('mYear'),mm=document.getElementById('mMonth');
+  for(let y=now.getFullYear()-1;y<=now.getFullYear()+1;y++){const o=new Option(y+'年',y);if(y===now.getFullYear())o.selected=true;my.add(o)}
+  for(let m=1;m<=12;m++){const o=new Option(m+'月',m);if(m===now.getMonth()+1)o.selected=true;mm.add(o)}
+}
+
+function refreshAll(){
+  allStaff=JSON.parse(ls('sc_admin_staff')||'[]');
+  renderStaffList();
+  renderContractList();
+  updateInviteDropdown();
+  renderPendingList();
+}
+
+// ── Tab ────────────────────────────────────────────
+function switchTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('p'+id.charAt(0).toUpperCase()+id.slice(1)).classList.add('on');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+// ── Staff ──────────────────────────────────────────
+function renderStaffList(){
+  document.getElementById('staffCount').textContent='計 '+allStaff.length+' 名登録';
+  const el=document.getElementById('staffList');
+  if(!allStaff.length){el.innerHTML='<div class="empty">登録スタッフがいません<br>招待URLを発行してスタッフに送ってください</div>';return}
+  el.innerHTML=allStaff.map((s,i)=>{
+    // get work summary
+    const workData=JSON.parse(ls('sc_admin_work_'+s.id)||'{}');
+    const now=new Date();
+    const curKey=`${now.getFullYear()}-${pad(now.getMonth()+1)}_${s.name}`;
+    const curMonth=workData[curKey]||{};
+    let tw=0,td=0,tf=0;
+    Object.values(curMonth).forEach(r=>{const wm=calcWork(r);if(wm&&wm>0){td++;tw+=wm}tf+=calcFare(r)});
+    const pay=calcPay(tw);
+    const signed=s.signedAt?new Date(s.signedAt).toLocaleDateString('ja-JP'):'未締結';
+    const confirmed=Object.values(curMonth).filter(r=>r.ok).length;
+    const total=Object.keys(curMonth).length;
+    return`<div class="staff-card" onclick="openStaff(${i})">
+      <div class="sc-head">
+        <div class="sc-avatar">👤</div>
+        <div>
+          <div class="sc-name">${s.name}</div>
+          <div class="sc-sub">${s.phone||''} ${s.email||''}</div>
+        </div>
+        <div class="sc-badges">
+          <span class="badge ok">登録済</span>
+          ${s.signedAt?'<span class="badge info">締結済</span>':'<span class="badge warn">未締結</span>'}
+          ${s.approved?'<span class="badge ok">承認済</span>':'<span class="badge warn">承認待ち</span>'}
+          ${total>0?`<span class="badge info">${now.getMonth()+1}月${td}日</span>`:''}
+        </div>
+      </div>
+      <div class="sc-details">
+        <div class="sd"><div class="sd-l">今月稼働</div><div class="sd-v">${td}日 / ${toStr(tw)||'0:00'}</div></div>
+        <div class="sd"><div class="sd-l">今月報酬</div><div class="sd-v pay">¥${pay.toLocaleString()}</div></div>
+        <div class="sd"><div class="sd-l">支払い合計</div><div class="sd-v pay" style="font-size:12px">¥${(pay+tf).toLocaleString()}</div></div>
+        <div class="sd"><div class="sd-l">交通費</div><div class="sd-v">¥${tf.toLocaleString()}</div></div>
+        <div class="sd"><div class="sd-l">確定 / 合計</div><div class="sd-v">${confirmed} / ${total}</div></div>
+        <div class="sd"><div class="sd-l">締結日</div><div class="sd-v">${signed}</div></div>
+        <div class="sd"><div class="sd-l">振込先</div><div class="sd-v">${s.bank||'—'} ${s.accType||''} ${s.accNum||''}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openStaff(i){
+  currentStaff=allStaff[i];
+  document.getElementById('mTitle').textContent=currentStaff.name;
+  // Basic info
+  const bi=['name:氏名','phone:電話','email:メール','addr:住所','station:最寄駅','signedAt:締結日'];
+  document.getElementById('mBasicInfo').innerHTML=bi.map(b=>{
+    const[key,lbl]=b.split(':');
+    let v=currentStaff[key]||'—';
+    if(key==='signedAt'&&v!=='—')v=new Date(v).toLocaleDateString('ja-JP');
+    return`<div class="ig"><div class="ig-l">${lbl}</div><div class="ig-v">${v}</div></div>`;
+  }).join('');
+  // Bank
+  document.getElementById('mBankInfo').innerHTML=`
+    <div class="ig"><div class="ig-l">銀行</div><div class="ig-v">${currentStaff.bank||'—'} ${currentStaff.branch||''}</div></div>
+    <div class="ig"><div class="ig-l">種別・番号</div><div class="ig-v">${currentStaff.accType||''} ${currentStaff.accNum||'—'}</div></div>
+    <div class="ig"><div class="ig-l">口座名義</div><div class="ig-v">${currentStaff.accName||'—'}</div></div>`;
+  // Contract
+  const signImg=currentStaff.signData&&currentStaff.signData.startsWith('data:')?
+    `<img src="${currentStaff.signData}" style="max-height:60px;border:1px solid #f9c8d5;border-radius:8px;margin-top:6px;display:block">`:
+    '<div style="color:#b08090;font-size:12px">署名データなし</div>';
+  document.getElementById('mContractInfo').innerHTML=`
+    <div style="font-size:12px;color:#b08090;margin-bottom:4px">締結日：${currentStaff.signedAt?new Date(currentStaff.signedAt).toLocaleDateString('ja-JP'):'未締結'}</div>
+    <div style="font-size:12px">契約：${(currentStaff.contracts||[]).join('・')}</div>
+    <div style="font-size:11px;color:#b08090;margin-top:4px">電子署名：</div>
+    ${signImg}
+    <button style="margin-top:8px;font-size:11px;padding:5px 12px;background:none;border:1px solid #f9c8d5;border-radius:8px;cursor:pointer;color:#d4537a;font-family:'Zen Maru Gothic',sans-serif" onclick="viewStaffContract()">📋 契約書を印刷</button>`;
+  // Work table
+  loadWorkData();
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function loadWorkData(){
+  const yr=+document.getElementById('mYear').value;
+  const mo=+document.getElementById('mMonth').value;
+  const workData=JSON.parse(ls('sc_admin_work_'+currentStaff.id)||'{}');
+  const key=`${yr}-${pad(mo)}_${currentStaff.name}`;
+  const md=workData[key]||{};
+  const keys=Object.keys(md).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
+  const el=document.getElementById('mWorkTable');
+  if(!keys.length){el.innerHTML='<div style="font-size:12px;color:#b08090;padding:8px 0">この月の稼働記録がありません</div>';return}
+  let tw=0,tf=0;
+  const rows=keys.map(d=>{
+    const r=md[`d${d}`];const dt=new Date(yr,mo-1,d);
+    const wm=calcWork(r),pay=calcPay(wm),fare=calcFare(r);
+    tw+=wm||0;tf+=fare;
+    const st=r.ok?'<span style="font-size:9px;background:#d4f0e0;color:#4caf7d;padding:1px 6px;border-radius:20px;font-weight:700">✓</span>':'<span style="font-size:9px;background:#fdefd8;color:#e0963a;padding:1px 6px;border-radius:20px;font-weight:700">仮</span>';
+    return`<tr><td>${mo}/${d}${WD[dt.getDay()]}</td><td>${r.store||'—'}</td><td>${wm!=null?toStr(wm):'—'}</td><td style="text-align:right">${pay?'¥'+pay.toLocaleString():'—'}</td><td style="text-align:right">${fare?'¥'+fare.toLocaleString():'—'}</td><td>${st}</td></tr>`;
+  });
+  const tPay=calcPay(tw);
+  el.innerHTML=`
+    <table class="work-table">
+      <thead><tr><th>日付</th><th>店舗</th><th>稼働</th><th>報酬</th><th>交通費</th><th>状態</th></tr></thead>
+      <tbody>${rows.join('')}</tbody>
+    </table>
+    <div class="tot-box">
+      <div class="tot-item"><div class="tot-v">${toStr(tw)||'0:00'}</div><div class="tot-l">総稼働</div></div>
+      <div class="tot-item"><div class="tot-v">¥${tPay.toLocaleString()}</div><div class="tot-l">報酬</div></div>
+      <div class="tot-item"><div class="tot-v">¥${tf.toLocaleString()}</div><div class="tot-l">交通費</div></div>
+      <div class="tot-item"><div class="tot-v">¥${(tPay+tf).toLocaleString()}</div><div class="tot-l">合計</div></div>
+    </div>`;
+}
+
+function viewStaffContract(){
+  if(!currentStaff)return;
+  const si=currentStaff.signData&&currentStaff.signData.startsWith('data:')?`<img src="${currentStaff.signData}" style="max-height:70px;border:1px solid #f9c8d5;border-radius:8px;display:block;margin:6px 0">`:'' ;
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>業務委託契約書</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+  <style>body{font-family:'Noto Sans JP',sans-serif;color:#333;padding:24px;max-width:640px;margin:0 auto;font-size:13px;line-height:1.9}
+  h3{font-size:18px;color:#d4537a;text-align:center}h4{font-size:12px;font-weight:700;margin:12px 0 3px;border-bottom:1px solid #f9c8d5;padding-bottom:2px}
+  .sa{display:flex;gap:16px;margin-top:20px;border-top:1px solid #ddd;padding-top:14px}
+  .sb{flex:1;border:1px solid #f9c8d5;border-radius:8px;padding:10px;min-height:90px}
+  .sl{font-size:10px;color:#888;margin-bottom:4px}
+  @media print{body{padding:12px}}</style></head>
+  <body>${buildContractHTML(currentStaff.name)}
+  <div class="sa">
+    <div class="sb"><div class="sl">甲（委託者）</div><b style="color:#d4537a">${CO.name}</b><div style="font-size:11px;color:#888;margin-top:3px">${CO.rep}</div></div>
+    <div class="sb"><div class="sl">乙（受託者）／ ${currentStaff.name}</div>${si}<div style="font-size:11px;color:#888">署名日：${currentStaff.signedAt?new Date(currentStaff.signedAt).toLocaleDateString('ja-JP'):'-'}</div></div>
+  </div>
+  <script>window.onload=()=>window.print()<\/script></body></html>`);
+  w.document.close();
+}
+
+function buildContractHTML(name){
+  const today=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
+  return`<h3>業務委託基本契約書</h3>
+    <p style="font-size:11px;color:#888;text-align:center;margin-bottom:6px">締結日：${today}</p>
+    <p><b>甲（委託者）</b>：${CO.name}<br>代表：${CO.rep}<br>住所：${CO.addr}<br>${CO.phone}</p>
+    <p><b>乙（受託者）</b>：${name||'（氏名未入力）'}</p>
+    <p>甲と乙は、以下のとおり業務委託基本契約を締結する。</p>
+    <h4>第1条（契約の目的）</h4><p>甲は乙に対し、以下の業務を委託し、乙はこれを受託する。</p>
+    <h4>第2条（委託業務の内容）</h4>
+    <p><b>① 歯科衛生士業務</b><br>甲が運営する各店舗における歯科衛生士業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金2,014円（税込）とする。</p>
+    <p><b>② 動画撮影業務</b><br>甲の指定する媒体・内容に基づく動画撮影業務。委託料は1本あたりの単価を都度協議のうえ決定し、書面またはメッセージにて確認する。</p>
+    <h4>第3条（業務の遂行）</h4><p>乙は善良な管理者の注意をもって委託業務を遂行する。</p>
+    <h4>第4条（報酬の支払い）</h4><p>甲は、乙から月末締めで請求を受けた翌月末日までに振込にて支払う。</p>
+    <h4>第5条（交通費）</h4><p>業務遂行に要した交通費は実費を支給する。</p>
+    <h4>第6条（秘密保持）</h4><p>乙は、甲の業務上の秘密情報を第三者に開示・漏洩してはならない。</p>
+    <h4>第7条（知的財産権）</h4><p>乙が作成した成果物の著作権は報酬支払い完了をもって甲に帰属する。</p>
+    <h4>第8条（契約期間）</h4><p>本契約の有効期間は締結日より1年間。自動更新される。</p>
+    <h4>第9条（契約解除）</h4><p>相手方が本契約に違反した場合、30日前の書面通知をもって解除できる。</p>
+    <h4>第10条（準拠法・管轄）</h4><p>本契約は日本法に準拠し、名古屋地方裁判所を第一審の専属的合意管轄裁判所とする。</p>`;
+}
+
+// ── Payment Notice ─────────────────────────────────
+function openStaffNotice(){
+  if(!currentStaff)return;
+  const yr=+document.getElementById('mYear').value;
+  const mo=+document.getElementById('mMonth').value;
+  const workData=JSON.parse(ls('sc_admin_work_'+currentStaff.id)||'{}');
+  const key=`${yr}-${pad(mo)}_${currentStaff.name}`;
+  const md=workData[key]||{};
+  const keys=Object.keys(md).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
+  if(!keys.length){toast('稼働記録がありません');return}
+  let tw=0,tf=0;
+  const rows=keys.map(d=>{
+    const r=md[`d${d}`]||{};const dt=new Date(yr,mo-1,d);
+    const wm=calcWork(r),pay=calcPay(wm),fare=calcFare(r);
+    tw+=wm||0;tf+=fare;
+    return`<tr><td>${mo}/${d}</td><td>${WD[dt.getDay()]}</td><td>${r.store||'—'}</td><td>${wm!=null?toStr(wm):'—'}</td><td style="text-align:right">${pay?'¥'+pay.toLocaleString():'—'}</td><td style="text-align:right">${fare?'¥'+fare.toLocaleString():'—'}</td></tr>`;
+  });
+  const tPay=calcPay(tw);
+  const now=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('nContent').innerHTML=`
+    <div id="pTarget">
+      <div style="text-align:center;margin-bottom:12px"><h3 style="font-size:17px;font-weight:700;color:#d4537a">業務委託費 支払通知書</h3><p style="font-size:11px;color:#888;margin-top:3px">発行日：${now}</p></div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:3px">宛先：${currentStaff.name} 様</div>
+      <div style="font-size:12px;color:#888;margin-bottom:8px">支払者：${CO.name}</div>
+      <div style="font-size:11px;color:#555;margin-bottom:8px">対象期間：${yr}年${mo}月</div>
+      <table class="n-tbl">
+        <thead><tr><th>日付</th><th>曜</th><th>店舗</th><th>稼働</th><th>報酬</th><th>交通費</th></tr></thead>
+        <tbody>${rows.join('')}</tbody>
+      </table>
+      <div class="n-tot">
+        <div class="n-tr"><span>稼働合計時間</span><span><b>${toStr(tw)}</b></span></div>
+        <div class="n-tr"><span>時給単価</span><span>¥${DEF_RATE.toLocaleString()}</span></div>
+        <div class="n-tr"><span>業務委託報酬</span><span>¥${tPay.toLocaleString()}</span></div>
+        <div class="n-tr"><span>交通費</span><span>¥${tf.toLocaleString()}</span></div>
+        <div class="n-tr big"><span>お支払い合計</span><span>¥${(tPay+tf).toLocaleString()}</span></div>
+      </div>
+      <div style="font-size:11px;color:#aaa;text-align:center;margin-top:10px">振込先：${currentStaff.bank||'—'} ${currentStaff.branch||''} ${currentStaff.accType||''} ${currentStaff.accNum||''} ${currentStaff.accName||''}</div>
+    </div>`;
+  document.getElementById('nOverlay').classList.add('open');
+}
+function closeNotice(){document.getElementById('nOverlay').classList.remove('open')}
+function nBgClose(e){if(e.target===document.getElementById('nOverlay'))closeNotice()}
+function printNotice(){
+  const c=document.getElementById('pTarget').innerHTML;
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>支払通知書</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+  <style>body{font-family:'Noto Sans JP',sans-serif;color:#333;padding:24px;max-width:600px;margin:0 auto}
+  h3{font-size:18px;color:#d4537a;font-weight:700;text-align:center}
+  table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px}
+  th{background:#fde8ee;color:#d4537a;padding:5px 6px;text-align:left;font-weight:700;border:1px solid #f9c8d5}
+  td{padding:5px 6px;border:1px solid #f9c8d5}tr:nth-child(even) td{background:#fff9fb}
+  .n-tot{background:#fce8ef;border:1px solid #f9c8d5;border-radius:8px;padding:10px 14px;margin-top:8px}
+  .n-tr{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}
+  .n-tr.big{font-size:16px;font-weight:700;color:#d4537a;border-top:1px solid #f9c8d5;padding-top:6px;margin-top:3px}
+  @media print{body{padding:12px}}</style></head>
+  <body>${c}<script>window.onload=()=>window.print()<\/script></body></html>`);
+  w.document.close();
+}
+
+// ── Contracts ──────────────────────────────────────
+function loadTemplates(){
+  templates=JSON.parse(ls(TMPL_KEY)||'null');
+  if(!templates){
+    templates=[{id:'tmpl_default',name:'業務委託基本契約書（標準）',body:buildContractHTML(''),createdAt:new Date().toISOString()}];
+    save(TMPL_KEY,templates);
+  }
+}
+function renderContractList(){
+  const el=document.getElementById('contractList');
+  if(!templates.length){el.innerHTML='<div class="empty">テンプレートがありません</div>';return}
+  el.innerHTML=templates.map((t,i)=>`
+    <div class="contract-item">
+      <div>
+        <div class="ct-name">${t.name}</div>
+        <div style="font-size:10px;color:#b08090">${t.createdAt?new Date(t.createdAt).toLocaleDateString('ja-JP'):'—'}</div>
+      </div>
+      <div class="ct-btns">
+        <button class="ct-btn" onclick="previewTemplate(${i})">確認</button>
+        <button class="ct-btn" onclick="editTemplate(${i})">編集</button>
+        ${i>0?`<button class="ct-btn danger" onclick="deleteTemplate(${i})">削除</button>`:''}
+      </div>
+    </div>`).join('');
+  updateInviteDropdown();
+}
+function addTemplate(){
+  const name=document.getElementById('newTmplName').value.trim();
+  const body=document.getElementById('newTmplBody').value.trim();
+  if(!name){toast('テンプレート名を入力してください');return}
+  templates.push({id:'tmpl_'+Date.now(),name,body:body||buildContractHTML(''),createdAt:new Date().toISOString()});
+  save(TMPL_KEY,templates);
+  document.getElementById('newTmplName').value='';
+  document.getElementById('newTmplBody').value='';
+  renderContractList();toast('✅ テンプレートを保存しました');
+}
+function deleteTemplate(i){
+  if(!confirm('このテンプレートを削除しますか？'))return;
+  templates.splice(i,1);save(TMPL_KEY,templates);renderContractList();toast('🗑 削除しました');
+}
+function previewTemplate(i){
+  const t=templates[i];
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${t.name}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+  <style>body{font-family:'Noto Sans JP',sans-serif;color:#333;padding:24px;max-width:640px;margin:0 auto;font-size:13px;line-height:1.9}h3{font-size:18px;color:#d4537a;text-align:center}h4{font-size:12px;font-weight:700;margin:12px 0 3px;border-bottom:1px solid #f9c8d5;padding-bottom:2px}</style></head>
+  <body>${t.body}</body></html>`);
+  w.document.close();
+}
+function editTemplate(i){
+  const t=templates[i];
+  document.getElementById('newTmplName').value=t.name+' (コピー)';
+  document.getElementById('newTmplBody').value=t.body;
+  document.getElementById('newTmplName').scrollIntoView({behavior:'smooth'});
+  toast('本文をコピーしました。編集して保存してください');
+}
+
+// ── Invite URL ─────────────────────────────────────
+function updateInviteDropdown(){
+  const sel=document.getElementById('inviteContract');
+  sel.innerHTML=templates.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+}
+function generateInvite(){
+  const tmplId=document.getElementById('inviteContract').value;
+  const tmpl=templates.find(t=>t.id===tmplId);
+  if(!tmpl){toast('テンプレートを選んでください');return}
+
+  // Store contract for staff page to load
+  localStorage.setItem('sc_invite_'+tmplId, JSON.stringify({tmplId,tmplName:tmpl.name,body:tmpl.body}));
+  localStorage.setItem('sc_active_tmpl', tmplId);
+
+  // Auto-detect: same URL but with ?staff param
+  const base = location.href.split('?')[0].split('#')[0];
+  const payload = btoa(unescape(encodeURIComponent(
+    JSON.stringify({v:1, tmplId, tmplName:tmpl.name})
+  )));
+  const url = base + '?staff&i=' + payload;
+
+  document.getElementById('inviteUrl').textContent = url;
+  document.getElementById('inviteResult').style.display='block';
+  toast('✅ URLを発行しました！');
+}
+function copyInvite(){
+  const url=document.getElementById('inviteUrl').textContent;
+  navigator.clipboard.writeText(url).then(()=>toast('📋 URLをコピーしました')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('📋 URLをコピーしました');
+  });
+}
+
+// ── Modal ──────────────────────────────────────────
+// ── Pending approval ──────────────────────────────────
+function renderPendingList(){
+  const all=JSON.parse(ls('sc_admin_staff')||'[]');
+  const pending=all.filter(s=>!s.approved);
+  const el=document.getElementById('pendingList');
+  const cnt=document.getElementById('pendingCount');
+  if(cnt)cnt.textContent=pending.length;
+  if(!el)return;
+  if(!pending.length){
+    el.innerHTML='<div style="font-size:12px;color:#b08090;text-align:center;padding:8px">承認待ちのスタッフはいません</div>';
+    return;
+  }
+  el.innerHTML=pending.map(s=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f9c8d5">
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700;color:#3a2030">${s.name}</div>
+        <div style="font-size:11px;color:#b08090">${s.email||''} ${s.phone||''}</div>
+        <div style="font-size:11px;color:#b08090">登録日：${s.signedAt?new Date(s.signedAt).toLocaleDateString('ja-JP'):'-'}</div>
+      </div>
+      <button onclick="approveStaff('${s.id}')" style="background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-family:'Zen Maru Gothic',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">✓ 承認</button>
+    </div>`).join('');
+}
+
+function approveStaff(id){
+  const all=JSON.parse(ls('sc_admin_staff')||'[]');
+  const idx=all.findIndex(s=>s.id===id);
+  if(idx<0)return;
+  all[idx].approved=true;
+  all[idx].approvedAt=new Date().toISOString();
+  localStorage.setItem('sc_admin_staff',JSON.stringify(all));
+  // Also update approval in staff's own storage key
+  localStorage.setItem('sc_approved_'+id,'1');
+  toast('✅ '+all[idx].name+' を承認しました');
+  refreshAll();
+  renderPendingList();
+}
+
+function closeModal(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';currentStaff=null}
+function bgClose(e){if(e.target===document.getElementById('overlay'))closeModal()}
+
+// ── Seed demo data ─────────────────────────────────
+function seedDemoData(){
+  const names=['田中 花子','鈴木 一郎','佐藤 美咲','山田 太郎','中村 涼子','加藤 美穂','松本 健太','井上 さくら','木村 大介','渡辺 奈々'];
+  const banks=['三菱UFJ銀行','みずほ銀行','三井住友銀行','ゆうちょ銀行','名古屋銀行'];
+  const branches=['名古屋支店','金山支店','栄支店'];
+  const stores=['茶屋','京都','銀座'];
+  const existing=JSON.parse(ls('sc_admin_staff')||'[]');
+  const existingNames=existing.map(s=>s.name);
+  const toAdd=names.filter(n=>!existingNames.includes(n));
+  const now=new Date();
+  toAdd.forEach((name,idx)=>{
+    const id='u_demo_'+idx;
+    const s={
+      id,name,
+      phone:`090-${String(Math.floor(1000+Math.random()*9000))}-${String(Math.floor(1000+Math.random()*9000))}`,
+      email:name.replace(' ','').toLowerCase()+'@example.com',
+      addr:`愛知県名古屋市${['中川区','中区','熱田区','港区','南区'][idx%5]}〇〇${idx+1}-${idx+2}-${idx+3}`,
+      station:['金山駅','名古屋駅','栄駅','鶴舞駅','上前津駅'][idx%5],
+      bank:banks[idx%banks.length],branch:branches[idx%branches.length],
+      accType:'普通',accNum:String(1000000+idx*111111),accName:name.split(' ').join(' '),
+      signedAt:new Date(now.getFullYear(),now.getMonth()-1,10+idx).toISOString(),
+      signData:'',contracts:['歯科衛生士業務','動画撮影業務']
+    };
+    existing.push(s);
+    // Generate work data for current month
+    const yr=now.getFullYear(),mo=now.getMonth()+1;
+    const key=`${yr}-${pad(mo)}_${name}`;
+    const workDays=[];
+    for(let d=1;d<=28&&workDays.length<5+idx%5;d++){
+      const dt=new Date(yr,mo-1,d);
+      if(dt.getDay()!==0&&dt.getDay()!==6)workDays.push(d);
+    }
+    const md={};
+    workDays.forEach(d=>{
+      md[`d${d}`]={
+        store:stores[d%stores.length],
+        in:'09:30',out:'18:30',rest:60,
+        r1a:'金山駅→'+['茶屋駅','京都駅','銀座駅'][d%3],
+        f1a:String(400+d*10),
+        r1b:['茶屋駅','京都駅','銀座駅'][d%3]+'→金山駅',
+        f1b:String(400+d*10),
+        r2a:'',f2a:'',r2b:'',f2b:'',
+        ok:d<=15
+      };
+    });
+    const workAll=JSON.parse(ls('sc_admin_work_'+id)||'{}');
+    workAll[key]=md;
+    localStorage.setItem('sc_admin_work_'+id,JSON.stringify(workAll));
+  });
+  localStorage.setItem('sc_admin_staff',JSON.stringify(existing));
+  refreshAll();
+  toast(`✅ ${toAdd.length}名のデモデータを追加しました`);
+}
+
+boot();
+
+}
+</script>
+
+<script>
+if(window._mode === "staff"){
+
+// ── Constants ──────────────────────────────────────
+const WD=['日','月','火','水','木','金','土'];
+const SK='sc_staff_v1',PK='sc_presets',SETK='sc_settings',UK='sc_user',CK='sc_company';
+const DEF_IN='09:30',DEF_OUT='18:30';
+const STORES=['茶屋','京都','銀座'];
+const CO={
+  name:'株式会社シェアコネクト',
+  rep:'代表取締役　小池拓未',
+  addr:'〒454-0812　愛知県名古屋市中川区五月通2丁目37番地 黄金ステーションビル3階',
+  phone:'TEL 052-414-5515　FAX 050-3737-1575'
+};
+
+// ── State ──────────────────────────────────────────
+let db       = JSON.parse(ls(SK)  || '{}');
+let presets  = JSON.parse(ls(PK)  || '{}');
+let settings = JSON.parse(ls(SETK)|| '{"rate":2014}');
+let yr, mo, staff, editing = null;
+let obStep = 0, signing = false, sX=0, sY=0;
+
+function ls(k){return localStorage.getItem(k)}
+function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function pad(n){return String(n).padStart(2,'0')}
+function dKey(){return`${yr}-${pad(mo)}_${staff}`}
+function getMD(){const k=dKey();if(!db[k])db[k]={};return db[k]}
+function getRate(){return parseInt(document.getElementById('hourlyRate')?.value)||settings.rate||2014}
+function toMin(t){if(!t)return null;const[h,m]=t.split(':').map(Number);return h*60+m}
+function toStr(m){if(m==null||m<0)return'';return`${Math.floor(m/60)}:${pad(m%60)}`}
+function calcWork(r){if(!r)return null;const i=toMin(r.in),o=toMin(r.out);if(i==null||o==null||o<=i)return null;return Math.max(0,o-i-(parseInt(r.rest)||0))}
+function calcFare(r){return(+r.f1a||0)+(+r.f1b||0)+(+r.f2a||0)+(+r.f2b||0)}
+function calcPay(wm){return wm!=null?Math.floor(wm/60*getRate()):0}
+let _tt;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('on'),2500)}
+
+// ── Boot ───────────────────────────────────────────
+function boot(){
+  const u=JSON.parse(ls(UK)||'null');
+
+  if(!u){
+    // Try to load contract from URL param ?i=
+    let contractHTML = null;
+    let tmplIdFromUrl = null;
+    try{
+      const params = new URLSearchParams(location.search);
+      const raw = params.get('i');
+      if(raw){
+        const decoded = JSON.parse(decodeURIComponent(escape(atob(raw))));
+        tmplIdFromUrl = decoded.tmplId;
+        // Try to get full body from localStorage (same origin) or use default
+        const stored = JSON.parse(ls('sc_invite_'+tmplIdFromUrl)||'null');
+        if(stored && stored.body) contractHTML = stored.body;
+      }
+    }catch(e){}
+    document.getElementById('contractBox').innerHTML = contractHTML || buildContract('');
+    setTimeout(initCanvas, 100);
+    show('screenOB');
+  } else if(!isApproved(u)) {
+    showPending(u);
+  } else {
+    startApp(u);
+  }
+}
+
+function isApproved(u){
+  // Check admin approval flag
+  if(ls('sc_approved_'+u.id)==='1')return true;
+  // Also check admin staff list
+  const all=JSON.parse(ls('sc_admin_staff')||'[]');
+  const found=all.find(s=>s.id===u.id);
+  return found&&found.approved;
+}
+
+function showPending(u){
+  show('screenPending');
+  const el=document.getElementById('pendingUserInfo');
+  if(el) el.innerHTML=
+    '<div>👤 '+u.name+'</div>'+
+    '<div>📄 締結済み：歯科衛生士業務 ／ 動画撮影業務</div>'+
+    '<div>✍️ 署名日：'+new Date(u.signedAt).toLocaleDateString('ja-JP')+'</div>';
+  // Auto-check every 10 seconds
+  setTimeout(checkApproval, 10000);
+}
+
+function checkApproval(){
+  const u=JSON.parse(ls(UK)||'null');
+  if(!u)return;
+  if(isApproved(u)){
+    // Mark approved in user record
+    u.approved=true;
+    save(UK,u);
+    toast('🌸 承認されました！打刻を開始できます');
+    setTimeout(()=>startApp(u), 1000);
+  } else {
+    toast('⏳ まだ承認待ちです。しばらくお待ちください。');
+    setTimeout(checkApproval, 15000);
+  }
+}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── Onboarding ─────────────────────────────────────
+function obNext(){
+  if(obStep===0){
+    const name=vv('obName'),addr=vv('obAddr');
+    tog('eN',!name);tog('eA',!addr);
+    if(!name||!addr)return;
+    document.getElementById('contractBox').innerHTML=buildContract(name);
+  }
+  if(obStep===1){
+    const bank=vv('obBank'),acc=vv('obAccNum');
+    tog('eB',!bank);tog('eAN',!acc);
+    if(!bank||!acc)return;
+  }
+  if(obStep===2){
+    const ok=canvasHasContent();
+    tog('eS',!ok);
+    if(!ok)return;
+    buildSummary();
+    document.getElementById('obNextBtn').textContent='✓ 稼働記録を始める';
+  }
+  if(obStep===3){finishOB();return}
+  obStep++;
+  // update button label correctly
+  const nb=document.getElementById('obNextBtn');
+  if(obStep===2)nb.textContent='同意して署名する →';
+  else if(obStep===3)nb.textContent='✓ 稼働記録を始める';
+  else nb.textContent='次へ →';
+  updateOBUI();
+}
+function obBack(){if(obStep===0)return;obStep--;updateOBUI()}
+function vv(id){return document.getElementById(id).value.trim()}
+function tog(id,on){document.getElementById(id).classList.toggle('on',on)}
+function updateOBUI(){
+  [0,1,2,3].forEach(i=>{
+    document.getElementById('s'+i).classList.toggle('hidden',i!==obStep);
+    document.getElementById('d'+i).classList.toggle('on',i===obStep);
+  });
+  document.getElementById('obBackBtn').style.display=obStep===0?'none':'';
+  const nb=document.getElementById('obNextBtn');
+  if(obStep===2)nb.textContent='同意して署名する →';
+  else if(obStep===3)nb.textContent='✓ 稼働記録を始める';
+  else nb.textContent='次へ →';
+}
+// alias so both callers work
+function updateObUI(){updateOBUI()}
+function buildSummary(){
+  const n=vv('obName'),a=vv('obAddr'),st=vv('obStation'),bk=vv('obBank'),br=vv('obBranch'),at=vv('obAccType'),an=vv('obAccNum');
+  document.getElementById('obSummary').innerHTML=
+    `<div>👤 <b>${n}</b></div>`+
+    `<div>🏠 ${a}</div>`+
+    (st?`<div>🚉 ${st}</div>`:'')+
+    `<div>🏦 ${bk} ${br} ${at} ${an}</div>`+
+    `<div>📄 歯科衛生士業務 ／ 動画撮影業務</div>`+
+    `<div style="font-size:11px;color:#b08090;margin-top:4px">署名日：${new Date().toLocaleDateString('ja-JP')}</div>`;
+}
+function finishOB(){
+  const signData=document.getElementById('signCanvas').toDataURL();
+  const u={
+    name:vv('obName'),birth:vv('obBirth'),phone:vv('obPhone'),email:vv('obEmail'),
+    addr:vv('obAddr'),station:vv('obStation'),bank:vv('obBank'),branch:vv('obBranch'),
+    accType:document.getElementById('obAccType').value,accNum:vv('obAccNum'),accName:vv('obAccName'),
+    signData,signedAt:new Date().toISOString(),contracts:['歯科衛生士業務','動画撮影業務'],
+    id:'u_'+Date.now()
+  };
+  u.approved=false;
+  save(UK,u);
+  // Save to admin data store (shared)
+  const allStaff=JSON.parse(ls('sc_admin_staff')||'[]');
+  allStaff.push({id:u.id,name:u.name,phone:u.phone,email:u.email,addr:u.addr,station:u.station,bank:u.bank,branch:u.branch,accType:u.accType,accNum:u.accNum,accName:u.accName,signedAt:u.signedAt,signData:u.signData,contracts:u.contracts});
+  localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
+  showPending(u);
+  toast('🌸 登録完了！管理者の承認をお待ちください');
+}
+
+// ── App start ──────────────────────────────────────
+function startApp(u){
+  show('screenApp');
+  document.getElementById('appSubtitle').textContent=u.name+' さんの稼働記録';
+  const now=new Date();
+  const sy=document.getElementById('selYear'),sm=document.getElementById('selMonth');
+  if(sy.options.length===0){
+    for(let y=now.getFullYear()-1;y<=now.getFullYear()+1;y++){const o=new Option(y+'年',y);if(y===now.getFullYear())o.selected=true;sy.add(o)}
+    for(let m=1;m<=12;m++){const o=new Option(m+'月',m);if(m===now.getMonth()+1)o.selected=true;sm.add(o)}
+    sy.onchange=()=>{yr=+sy.value;render()};
+    sm.onchange=()=>{mo=+sm.value;render()};
+  }
+  yr=now.getFullYear();mo=now.getMonth()+1;
+  staff=u.name;
+  const ss=document.getElementById('selStaff');
+  ss.innerHTML=`<option value="${u.name}" selected>${u.name}</option>`;
+  ss.onchange=e=>{staff=e.target.value;render()};
+  if(document.getElementById('hourlyRate'))document.getElementById('hourlyRate').value=settings.rate||2014;
+  renderPresetList();
+  loadUserInfo();
+  render();
+}
+
+// ── Render ─────────────────────────────────────────
+function render(){buildCal();buildCards();updateSum()}
+
+function buildCal(){
+  const md=getMD(),days=new Date(yr,mo,0).getDate();
+  const g=document.getElementById('calGrid');g.innerHTML='';
+  for(let d=1;d<=days;d++){
+    const dt=new Date(yr,mo-1,d),wd=dt.getDay();
+    const r=md[`d${d}`];
+    let cls='day-chip';
+    if(wd===6)cls+=' sat';if(wd===0)cls+=' sun';
+    if(r)cls+=r.ok?' confirmed':' draft';
+    const c=document.createElement('div');c.className=cls;
+    c.innerHTML=`<span class="dn">${d}</span><span class="dw">${WD[wd]}</span>`;
+    c.onclick=()=>openModal(d);g.appendChild(c);
+  }
+}
+
+function buildCards(){
+  const md=getMD();
+  const keys=Object.keys(md).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
+  const w=document.getElementById('cardsWrap');
+  if(!keys.length){w.innerHTML='<div class="empty-state"><div class="ico">🗓</div><p>上のカレンダーから<br>出勤した日をタップしてください</p><p style="margin-top:8px;font-size:11px;color:#b08090">タップ → 時間・交通費入力 → 仮確定</p></div>';return}
+  w.innerHTML=keys.map(d=>{
+    const r=md[`d${d}`];
+    const dt=new Date(yr,mo-1,d),wd=dt.getDay();
+    const sat=wd===6,sun=wd===0;
+    const wm=calcWork(r),pay=calcPay(wm);
+    const st=r.ok?`<span class="wc-st confirmed">✓</span>`:`<span class="wc-st draft">仮</span>`;
+    let cls='work-card '+(r.ok?'confirmed':'draft');
+    if(sat)cls+=' sat';if(sun)cls+=' sun';
+    const tStr=r.in&&r.out?`${r.in}〜${r.out}`:'--';
+    return`<div class="${cls}"><div class="wc-row">
+      <span class="wc-date">${mo}/${d}</span>
+      <span class="wc-wd${sat?' sat':sun?' sun':''}">${WD[wd]}</span>
+      ${st}<span class="wc-store">${r.store||'—'}</span>
+      <span class="wc-time">${tStr}${r.rest!=null?' 休'+r.rest+'分':''}</span>
+      <span class="wc-pay">${pay?'¥'+pay.toLocaleString():''}</span>
+      <button class="wc-edit" onclick="openModal(${d})">編集</button>
+    </div></div>`;
+  }).join('');
+}
+
+function updateSum(){
+  const md=getMD();let d=0,tw=0,tf=0;
+  Object.values(md).forEach(r=>{const wm=calcWork(r);if(wm&&wm>0){d++;tw+=wm}tf+=calcFare(r)});
+  document.getElementById('sumD').textContent=d+'日';
+  document.getElementById('sumH').textContent=toStr(tw)||'0:00';
+  document.getElementById('sumP').textContent='¥'+calcPay(tw).toLocaleString();
+  document.getElementById('sumF').textContent='¥'+tf.toLocaleString();
+  // update subtitle with total
+  const totalAll=calcPay(tw)+tf;
+  const sub=document.getElementById('appSubtitle');
+  if(sub&&staff)sub.textContent=staff+' さん  今月合計: ¥'+totalAll.toLocaleString();
+}
+
+// ── Tab ────────────────────────────────────────────
+function switchTab(id,btn){
+  document.getElementById('tabRecord').classList.toggle('hidden',id!=='record');
+  document.getElementById('tabSettings').classList.toggle('hidden',id!=='settings');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if(id==='settings')loadUserInfo();
+}
+
+// ── Entry Modal ────────────────────────────────────
+function openModal(day){
+  editing=day;
+  const md=getMD(),r=md[`d${day}`]||{};
+  const dt=new Date(yr,mo-1,day);
+  document.getElementById('mTitle').textContent=`${mo}月${day}日（${WD[dt.getDay()]}）`;
+  pickStore(r.store||'');
+  document.getElementById('mIn').value=r.in||DEF_IN;
+  document.getElementById('mOut').value=r.out||DEF_OUT;
+  document.getElementById('mRest').value=r.rest!=null?r.rest:60;
+  ['r1a','f1a','r1b','f1b','r2a','f2a','r2b','f2b'].forEach(id=>document.getElementById(id).value=r[id]||'');
+  document.getElementById('mDel').style.display=(md[`d${day}`]&&Object.keys(md[`d${day}`]).length>0)?'':'none';
+  syncRC();prevWork();
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';editing=null}
+function bgClose(e){if(e.target===document.getElementById('overlay'))closeModal()}
+
+function confirmDay(){
+  if(!editing)return;
+  const md=getMD();if(!md[`d${editing}`])md[`d${editing}`]={};
+  const r=md[`d${editing}`];
+  r.store=document.getElementById('mStore').value;
+  r.in=document.getElementById('mIn').value;r.out=document.getElementById('mOut').value;
+  r.rest=parseInt(document.getElementById('mRest').value)||0;
+  ['r1a','f1a','r1b','f1b','r2a','f2a','r2b','f2b'].forEach(id=>r[id]=document.getElementById(id).value);
+  r.ok=true;
+  closeModal();render();toast('🌸 仮確定しました');
+  syncAdminData();
+}
+function delDay(){if(!editing)return;delete getMD()[`d${editing}`];closeModal();render();toast('🗑 削除しました');syncAdminData()}
+
+function syncAdminData(){
+  save(SK,db);
+  // sync to admin shared store
+  const u=JSON.parse(ls(UK)||'null');if(!u)return;
+  const ak='sc_admin_work_'+u.id;
+  save(ak,db);
+  // also update summary in staff list
+  const allStaff=JSON.parse(ls('sc_admin_staff')||'[]');
+  const idx=allStaff.findIndex(s=>s.id===u.id);
+  if(idx>=0){allStaff[idx].lastWork=dKey();localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff))}
+}
+
+// ── Store / Time / Rest ────────────────────────────
+function pickStore(name){
+  document.getElementById('mStore').value=name;
+  document.querySelectorAll('.store-tag').forEach(b=>b.classList.toggle('on',b.dataset.s===name));
+  if(name)applyPreset(name);
+}
+function adjTime(id,delta){
+  const el=document.getElementById(id);
+  const v=el.value||DEF_IN;const[h,m]=v.split(':').map(Number);
+  let t=h*60+m+delta;t=Math.max(0,Math.min(1439,t));
+  el.value=`${pad(Math.floor(t/60))}:${pad(t%60)}`;prevWork();
+}
+function setRest(v){document.getElementById('mRest').value=v;syncRC();prevWork()}
+function syncRC(){
+  const v=parseInt(document.getElementById('mRest').value)||0;
+  document.querySelectorAll('.rc').forEach(c=>c.classList.toggle('on',+c.dataset.v===v));
+}
+function prevWork(){
+  const r={in:document.getElementById('mIn').value,out:document.getElementById('mOut').value,rest:document.getElementById('mRest').value};
+  const wm=calcWork(r);const el=document.getElementById('workPrev');
+  if(wm!=null){
+    const pay=calcPay(wm);
+    el.innerHTML=`⏱ 稼働: <b>${toStr(wm)}</b>（休憩 ${parseInt(r.rest)||0}分）<br>💴 報酬: <b>¥${pay.toLocaleString()}</b>`;
+  } else el.textContent='稼働時間: --';
+}
+
+// ── Presets ────────────────────────────────────────
+function renderPresetList(){
+  const el=document.getElementById('presetList');if(!el)return;
+  STORES.forEach(s=>{if(!presets[s])presets[s]=[{route:'',fare:'',dir:'往'},{route:'',fare:'',dir:'復'}]});
+  el.innerHTML=STORES.map(s=>{
+    const rows=presets[s];
+    return`<div style="margin-bottom:12px">
+      <span style="background:var(--acc);color:#fff;border-radius:20px;padding:2px 12px;font-size:11px;font-weight:700">${s}</span>
+      <div style="margin-top:6px">
+      ${rows.map((r,i)=>`<div class="preset-row">
+        <span class="pr-lbl">${r.dir||i+1}</span>
+        <input class="pr-route" type="text" placeholder="○○駅→○○駅" value="${r.route||''}" oninput="presets['${s}'][${i}].route=this.value">
+        <input class="pr-fare" type="number" placeholder="0" value="${r.fare||''}" oninput="presets['${s}'][${i}].fare=+this.value">
+        <span class="pr-yen">円</span>
+      </div>`).join('')}
+      <button style="font-size:11px;color:var(--acc);background:none;border:1px dashed var(--border);border-radius:8px;padding:3px 10px;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;margin-top:2px" onclick="addPresetRow('${s}')">＋ 追加</button>
+      </div>
+    </div><hr style="border:none;border-top:1px solid var(--border);margin:4px 0">`;
+  }).join('');
+}
+function addPresetRow(s){
+  presets[s]=presets[s]||[];
+  const dirs=['往','復','往','復'];
+  presets[s].push({route:'',fare:'',dir:dirs[presets[s].length]||'往'});
+  renderPresetList();
+}
+function applyPreset(name){
+  const rows=presets[name];if(!rows||!rows.length)return;
+  ['r1a','f1a','r1b','f1b','r2a','f2a','r2b','f2b'].forEach(id=>document.getElementById(id).value='');
+  rows.forEach((r,i)=>{
+    if(i*2+1>=8)return;
+    const ids=['r1a','f1a','r1b','f1b','r2a','f2a','r2b','f2b'];
+    document.getElementById(ids[i*2]).value=r.route||'';
+    document.getElementById(ids[i*2+1]).value=r.fare||'';
+  });
+}
+function savePresets(){save(PK,presets);toast('✅ プリセット保存しました')}
+function saveSettings(){settings.rate=parseInt(document.getElementById('hourlyRate').value)||2014;save(SETK,settings);toast('✅ 保存しました')}
+
+// ── User info ──────────────────────────────────────
+function loadUserInfo(){
+  const el=document.getElementById('userInfoDisp');if(!el)return;
+  const u=JSON.parse(ls(UK)||'null');
+  if(!u){el.innerHTML='<span style="color:var(--acc2)">未登録</span>';return}
+  el.innerHTML=`<div>👤 ${u.name}</div><div>🏠 ${u.addr||'—'}</div>`+
+    (u.station?`<div>🚉 ${u.station}</div>`:'')+
+    (u.phone?`<div>📞 ${u.phone}</div>`:'')+
+    (u.email?`<div>📧 ${u.email}</div>`:'')+
+    `<div>🏦 ${u.bank||'—'} ${u.branch||''} ${u.accType||''} ${u.accNum||''}</div>`+
+    `<div style="font-size:11px;color:#b08090;margin-top:4px">締結日：${u.signedAt?new Date(u.signedAt).toLocaleDateString('ja-JP'):'-'}</div>`;
+}
+function resetApp(){
+  if(!confirm('登録情報をリセットします。よろしいですか？'))return;
+  localStorage.removeItem(UK);location.reload();
+}
+
+// ── Contract HTML ──────────────────────────────────
+function buildContract(name){
+  const today=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
+  return`<h3>業務委託基本契約書</h3>
+    <p style="font-size:11px;color:#888;text-align:center;margin-bottom:6px">締結日：${today}</p>
+    <p><b>甲（委託者）</b>：${CO.name}<br>代表：${CO.rep}<br>住所：${CO.addr}<br>${CO.phone}</p>
+    <p><b>乙（受託者）</b>：${name||'（氏名未入力）'}</p>
+    <p>甲と乙は、以下のとおり業務委託基本契約を締結する。</p>
+    <h4>第1条（契約の目的）</h4><p>甲は乙に対し、以下の業務を委託し、乙はこれを受託する。</p>
+    <h4>第2条（委託業務の内容）</h4>
+    <p><b>① 歯科衛生士業務</b><br>甲が運営する各店舗における歯科衛生士業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金2,014円（税込）とする。</p>
+    <p><b>② 動画撮影業務</b><br>甲の指定する媒体・内容に基づく動画撮影業務。委託料は1本あたりの単価を都度協議のうえ決定し、書面またはメッセージにて確認する。</p>
+    <h4>第3条（業務の遂行）</h4><p>乙は善良な管理者の注意をもって委託業務を遂行する。乙は甲の事前承認なく第三者に業務を再委託してはならない。</p>
+    <h4>第4条（報酬の支払い）</h4><p>甲は、乙から月末締めで請求を受けた翌月末日までに、乙の指定する銀行口座に振込にて支払う。振込手数料は甲の負担とする。</p>
+    <h4>第5条（交通費）</h4><p>業務遂行に要した交通費は、甲が別途定める規定に従い実費を支給する。</p>
+    <h4>第6条（秘密保持）</h4><p>乙は、本契約遂行中および終了後も、甲の業務上の秘密情報・顧客情報を第三者に開示・漏洩してはならない。</p>
+    <h4>第7条（知的財産権）</h4><p>乙が本契約に基づき作成した成果物の著作権その他知的財産権は、報酬支払いの完了をもって甲に帰属する。</p>
+    <h4>第8条（契約期間）</h4><p>本契約の有効期間は締結日より1年間とし、自動更新される。</p>
+    <h4>第9条（契約解除）</h4><p>甲または乙は、相手方が本契約に違反した場合、30日前の書面通知をもって本契約を解除することができる。</p>
+    <h4>第10条（準拠法・管轄）</h4><p>本契約は日本法に準拠し、紛争が生じた場合は名古屋地方裁判所を第一審の専属的合意管轄裁判所とする。</p>`;
+}
+
+function viewContract(){
+  const u=JSON.parse(ls(UK)||'null');if(!u){toast('登録情報がありません');return}
+  const si=u.signData&&u.signData.startsWith('data:')?`<img src="${u.signData}" style="max-height:70px;border:1px solid #f9c8d5;border-radius:8px;display:block;margin:6px 0">`:'' ;
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>業務委託契約書</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+  <style>body{font-family:'Noto Sans JP',sans-serif;color:#333;padding:24px;max-width:640px;margin:0 auto;font-size:13px;line-height:1.9}
+  h3{font-size:18px;color:#d4537a;text-align:center}h4{font-size:12px;font-weight:700;margin:12px 0 3px;border-bottom:1px solid #f9c8d5;padding-bottom:2px}
+  .sa{display:flex;gap:16px;margin-top:20px;border-top:1px solid #ddd;padding-top:14px}
+  .sb{flex:1;border:1px solid #f9c8d5;border-radius:8px;padding:10px;min-height:90px}
+  .sl{font-size:10px;color:#888;margin-bottom:4px}
+  @media print{body{padding:12px}}</style></head>
+  <body>${buildContract(u.name)}
+  <div class="sa">
+    <div class="sb"><div class="sl">甲（委託者）</div><b style="color:#d4537a">${CO.name}</b><div style="font-size:11px;color:#888;margin-top:4px">${CO.rep}</div></div>
+    <div class="sb"><div class="sl">乙（受託者）／ ${u.name}</div>${si}<div style="font-size:11px;color:#888">署名日：${new Date(u.signedAt).toLocaleDateString('ja-JP')}</div></div>
+  </div>
+  <script>window.onload=()=>window.print()<\/script></body></html>`);
+  w.document.close();
+}
+
+// ── Payment Notice ─────────────────────────────────
+function openNotice(){
+  const md=getMD();
+  const keys=Object.keys(md).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
+  if(!keys.length){toast('稼働記録がありません');return}
+  const unc=Object.values(md).filter(r=>!r.ok).length;
+  if(unc)toast(`⚠️ 未確定${unc}件あります`);
+  let tw=0,tf=0;
+  const rows=keys.map(d=>{
+    const r=md[`d${d}`]||{};const dt=new Date(yr,mo-1,d);
+    const wm=calcWork(r),pay=calcPay(wm),fare=calcFare(r);
+    tw+=wm||0;tf+=fare;return{d,dt,r,wm,pay,fare};
+  });
+  const tPay=calcPay(tw),rate=getRate();
+  const now=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('nContent').innerHTML=`
+    <div id="pTarget">
+      <div class="nt"><h3>業務委託費 支払通知書</h3><p>発行日：${now}</p></div>
+      <div class="n-to">宛先：<b>${staff} 様</b></div>
+      <div class="n-from">支払者：${CO.name}</div>
+      <div style="font-size:12px;color:#555;margin-bottom:8px">対象期間：${yr}年${mo}月</div>
+      <table class="n-tbl">
+        <thead><tr><th>日付</th><th>曜</th><th>店舗</th><th>稼働</th><th>報酬</th><th>交通費</th></tr></thead>
+        <tbody>${rows.map(({d,dt,r,wm,pay,fare})=>`<tr>
+          <td>${mo}/${d}</td><td>${WD[dt.getDay()]}</td><td>${r.store||'—'}</td>
+          <td>${wm!=null?toStr(wm):'—'}</td>
+          <td style="text-align:right">${pay?'¥'+pay.toLocaleString():'—'}</td>
+          <td style="text-align:right">${fare?'¥'+fare.toLocaleString():'—'}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+      <div class="n-tot">
+        <div class="n-tr"><span>稼働合計時間</span><span><b>${toStr(tw)}</b></span></div>
+        <div class="n-tr"><span>時給単価</span><span>¥${rate.toLocaleString()}</span></div>
+        <div class="n-tr"><span>業務委託報酬</span><span>¥${tPay.toLocaleString()}</span></div>
+        <div class="n-tr"><span>交通費</span><span>¥${tf.toLocaleString()}</span></div>
+        <div class="n-tr big"><span>お支払い合計</span><span>¥${(tPay+tf).toLocaleString()}</span></div>
+      </div>
+      <div class="n-foot">本書は${yr}年${mo}月分の業務委託費支払通知書です。</div>
+    </div>`;
+  document.getElementById('nOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeNotice(){document.getElementById('nOverlay').classList.remove('open');document.body.style.overflow=''}
+function nBgClose(e){if(e.target===document.getElementById('nOverlay'))closeNotice()}
+function printNotice(){
+  const c=document.getElementById('pTarget').innerHTML;
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>支払通知書</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+  <style>body{font-family:'Noto Sans JP',sans-serif;color:#333;padding:24px;max-width:600px;margin:0 auto}
+  h3{font-size:18px;color:#d4537a;font-weight:700;text-align:center}
+  table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px}
+  th{background:#fde8ee;color:#d4537a;padding:5px 6px;text-align:left;font-weight:700;border:1px solid #f9c8d5}
+  td{padding:5px 6px;border:1px solid #f9c8d5}tr:nth-child(even) td{background:#fff9fb}
+  .n-tot{background:#fce8ef;border:1px solid #f9c8d5;border-radius:8px;padding:10px 14px;margin-top:8px}
+  .n-tr{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}
+  .n-tr.big{font-size:16px;font-weight:700;color:#d4537a;border-top:1px solid #f9c8d5;padding-top:6px;margin-top:3px}
+  .n-foot{font-size:10px;color:#aaa;text-align:center;margin-top:10px}
+  @media print{body{padding:12px}}</style></head>
+  <body>${c}<script>window.onload=()=>window.print()<\/script></body></html>`);
+  w.document.close();
+}
+
+// ── Save / CSV ─────────────────────────────────────
+function saveData(){save(SK,db);syncAdminData();toast('💾 保存しました')}
+function exportCSV(){
+  if(!staff){toast('スタッフを選択してください');return}
+  const md=getMD();
+  const keys=Object.keys(md).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
+  const rows=[['日付','曜日','店舗','開始','終了','休憩(分)','稼働時間','報酬(円)','往路1','額','復路1','額','往路2','額','復路2','額','交通費計','確定']];
+  keys.forEach(d=>{
+    const r=md[`d${d}`]||{};const dt=new Date(yr,mo-1,d);
+    const wm=calcWork(r);
+    rows.push([`${mo}/${d}`,WD[dt.getDay()],r.store||'',r.in||'',r.out||'',r.rest!=null?r.rest:'',wm?toStr(wm):'',calcPay(wm)||'',r.r1a||'',r.f1a||'',r.r1b||'',r.f1b||'',r.r2a||'',r.f2a||'',r.r2b||'',r.f2b||'',calcFare(r)||'',r.ok?'確定':'仮']);
+  });
+  const bom='\uFEFF';
+  const csv=bom+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`稼働_${staff}_${yr}${pad(mo)}.csv`;a.click();toast('📥 CSV出力しました');
+}
+
+// ── Canvas ─────────────────────────────────────────
+function initCanvas(){
+  const c=document.getElementById('signCanvas');
+  c.width=c.offsetWidth||320;c.height=130;
+  const ctx=c.getContext('2d');
+  ctx.strokeStyle='#d4537a';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';
+  function gp(e){const r=c.getBoundingClientRect();const s=e.touches?e.touches[0]:e;return{x:s.clientX-r.left,y:s.clientY-r.top}}
+  c.addEventListener('mousedown',e=>{signing=true;const p=gp(e);sX=p.x;sY=p.y});
+  c.addEventListener('mousemove',e=>{if(!signing)return;const p=gp(e);ctx.beginPath();ctx.moveTo(sX,sY);ctx.lineTo(p.x,p.y);ctx.stroke();sX=p.x;sY=p.y});
+  c.addEventListener('mouseup',()=>signing=false);
+  c.addEventListener('mouseleave',()=>signing=false);
+  c.addEventListener('touchstart',e=>{e.preventDefault();signing=true;const p=gp(e);sX=p.x;sY=p.y},{passive:false});
+  c.addEventListener('touchmove',e=>{e.preventDefault();if(!signing)return;const p=gp(e);ctx.beginPath();ctx.moveTo(sX,sY);ctx.lineTo(p.x,p.y);ctx.stroke();sX=p.x;sY=p.y},{passive:false});
+  c.addEventListener('touchend',()=>signing=false);
+}
+function clearCanvas(){const c=document.getElementById('signCanvas');c.getContext('2d').clearRect(0,0,c.width,c.height)}
+function canvasHasContent(){
+  const c=document.getElementById('signCanvas');
+  const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+  for(let i=3;i<d.length;i+=4)if(d[i]>10)return true;
+  return false;
+}
+
+boot();
+
+}
+</script>
+
+</body>
+</html>
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
