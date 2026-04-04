@@ -265,11 +265,13 @@ html,body{min-height:100svh;background:#fff5f7;color:#3a2030;font-family:'Zen Ma
 .cal-bar{padding:10px 12px 8px;background:#fde8ee;border-bottom:1.5px solid var(--border);position:sticky;top:128px;z-index:45}
 .cal-lbl{font-size:10px;font-weight:700;color:var(--acc);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-.day-chip{padding:8px 2px 6px;border:1.5px solid #f9c8d5;border-radius:12px;background:#ffffff;text-align:center;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:2px}
+.day-chip{padding:10px 2px 8px;border:1.5px solid #f9c8d5;border-radius:12px;background:#ffffff;text-align:center;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:48px;justify-content:center}
 .day-chip:hover{border-color:var(--acc);background:var(--accL);transform:scale(1.04)}
 .day-chip:active{transform:scale(.96)}
-.day-chip .dn{font-size:16px;font-weight:700}
-.day-chip .dw{font-size:9px;color:#b08090}
+.day-chip .dn{font-size:17px;font-weight:700}
+.day-chip .dw{font-size:10px;color:#b08090}
+.day-chip.today{border-color:#4a90d9;border-width:2.5px;background:#e8f0fe;box-shadow:0 0 0 2px rgba(74,144,217,.2)}
+.day-chip.today .dn{color:#4a90d9}
 .day-chip.sat{border-color:#d0b8f5;background:var(--satB)}.day-chip.sat .dw{color:var(--sat)}
 .day-chip.sun{border-color:#f9c8d5;background:var(--sunB)}.day-chip.sun .dw{color:var(--sun)}
 .day-chip.draft{border-color:var(--warn);background:#fff3e6}.day-chip.draft .dn,.day-chip.draft .dw{color:var(--warn)}
@@ -678,6 +680,12 @@ window.__auth = _auth;
     <div class="si"><div class="sv" id="sumP">¥0</div><div class="sl">報酬額</div></div>
     <div class="si"><div class="sv" id="sumF">¥0</div><div class="sl">交通費</div></div>
   </div>
+  <div style="display:flex;align-items:center;gap:8px;padding:6px 14px;background:#fff;border:1.5px solid #f9c8d5;border-radius:12px;margin:0 14px 8px">
+    <span style="font-size:13px;color:#e07b3a;font-weight:700">📸 SNS投稿</span>
+    <input type="number" id="snsCountInput" value="0" min="0" style="width:50px;padding:6px 8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:15px;font-weight:700;color:#e07b3a;text-align:center;background:#fff5f7;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsCount()">
+    <span style="font-size:12px;color:#b08090">件</span>
+    <span style="font-size:11px;color:#b08090;margin-left:auto" id="snsPayDisp"></span>
+  </div>
   <div class="cal-bar">
     <div class="cal-lbl">🗓 稼働日を選択</div>
     <div class="cal-grid" id="calGrid"></div>
@@ -722,8 +730,7 @@ window.__auth = _auth;
 
 <div class="app-foot">
   <button class="af-btn af-ghost" onclick="exportCSV()">📥 CSV</button>
-  <button class="af-btn af-dark" onclick="openNotice()">📄 通知書</button>
-  <button class="af-btn af-pink" onclick="saveData()">💾 保存</button>
+  <button class="af-btn af-pink" onclick="openNotice()">📄 通知書</button>
 </div>
 </div>
 
@@ -732,7 +739,7 @@ window.__auth = _auth;
 <div class="modal">
   <div class="m-handle"></div>
   <div class="m-head">
-    <div class="m-title" id="mTitle">稼働入力</div>
+    <div class="m-title" id="smTitle">稼働入力</div>
     <button class="m-close" onclick="closeModal()">×</button>
   </div>
   <div class="m-body">
@@ -771,7 +778,8 @@ window.__auth = _auth;
       <div class="work-prev" id="workPrev">稼働時間: --</div>
     </div>
     <div class="m-sec">
-      <div class="m-sec-ttl">🚃 交通費</div>
+      <div class="m-sec-ttl" style="cursor:pointer" onclick="this.parentElement.querySelector('.fare-body').classList.toggle('hidden');this.querySelector('.fare-arrow').textContent=this.parentElement.querySelector('.fare-body.hidden')?'▶':'▼'">🚃 交通費 <span class="fare-arrow" style="font-size:10px;color:#b08090">▼</span></div>
+      <div class="fare-body">
       <div class="t-block">
         <div class="t-blbl">1本目</div>
         <div class="t-row"><span class="t-badge">往</span><input class="t-rt" type="text" placeholder="○○駅→○○駅" id="r1a"><input class="t-fr" type="number" placeholder="0" id="f1a"><span class="t-yen">円</span></div>
@@ -781,6 +789,7 @@ window.__auth = _auth;
         <div class="t-blbl">2本目</div>
         <div class="t-row"><span class="t-badge">往</span><input class="t-rt" type="text" placeholder="○○駅→○○駅" id="r2a"><input class="t-fr" type="number" placeholder="0" id="f2a"><span class="t-yen">円</span></div>
         <div class="t-row"><span class="t-badge">復</span><input class="t-rt" type="text" placeholder="○○駅→○○駅" id="r2b"><input class="t-fr" type="number" placeholder="0" id="f2b"><span class="t-yen">円</span></div>
+      </div>
       </div>
     </div>
     <!-- 土日手当 -->
@@ -900,7 +909,7 @@ async function fbBoot(){
     });
     // localStorageも更新
     localStorage.setItem('sc_admin_staff', JSON.stringify(staffList));
-    refreshAll();
+    if(typeof refreshAll==='function') refreshAll();
   }, err => console.error('Staff listener error:', err));
 }
 
@@ -1717,11 +1726,13 @@ function render(){buildCal();buildCards();updateSum()}
 
 function buildCal(){
   const md=getMD(),days=new Date(yr,mo,0).getDate();
+  const now=new Date();const isThisMonth=(yr===now.getFullYear()&&mo===now.getMonth()+1);
   const g=document.getElementById('calGrid');g.innerHTML='';
   for(let d=1;d<=days;d++){
     const dt=new Date(yr,mo-1,d),wd=dt.getDay();
     const r=md[`d${d}`];
     let cls='day-chip';
+    if(isThisMonth&&d===now.getDate())cls+=' today';
     if(wd===6)cls+=' sat';if(wd===0)cls+=' sun';
     if(r)cls+=r.ok?' confirmed':' draft';
     const c=document.createElement('div');c.className=cls;
@@ -1756,14 +1767,22 @@ function buildCards(){
 }
 
 function updateSum(){
-  const md=getMD();let d=0,tw=0,tf=0;
-  Object.values(md).forEach(r=>{const wm=calcWork(r);if(wm&&wm>0){d++;tw+=wm}tf+=calcFare(r)});
+  const md=getMD();let d=0,tw=0,tf=0,twa=0;
+  Object.entries(md).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0){d++;tw+=wm}tf+=calcFare(r);twa+=(r.weekendAllow||0)});
   document.getElementById('sumD').textContent=d+'日';
   document.getElementById('sumH').textContent=toStr(tw)||'0:00';
   document.getElementById('sumP').textContent='¥'+calcPay(tw).toLocaleString();
   document.getElementById('sumF').textContent='¥'+tf.toLocaleString();
+  // SNS
+  const snsCount=md.snsCount||0;
+  const snsRate=md.snsRate||2000;
+  const snsPay=snsCount*snsRate;
+  const snsInput=document.getElementById('snsCountInput');
+  if(snsInput)snsInput.value=snsCount;
+  const snsDisp=document.getElementById('snsPayDisp');
+  if(snsDisp)snsDisp.textContent=snsPay>0?'¥'+snsPay.toLocaleString()+' (¥'+snsRate.toLocaleString()+'×'+snsCount+')':'';
   // update subtitle with total
-  const totalAll=calcPay(tw)+tf;
+  const totalAll=calcPay(tw)+tf+twa+snsPay;
   const sub=document.getElementById('appSubtitle');
   if(sub&&staff)sub.textContent=staff+' さん  今月合計: ¥'+totalAll.toLocaleString();
 }
@@ -1782,7 +1801,7 @@ function openModal(day){
   editing=day;
   const md=getMD(),r=md[`d${day}`]||{};
   const dt=new Date(yr,mo-1,day);
-  document.getElementById('mTitle').textContent=`${mo}月${day}日（${WD[dt.getDay()]}）`;
+  document.getElementById('smTitle').textContent=`${mo}月${day}日（${WD[dt.getDay()]}）`;
   pickStore(r.store||'');
   document.getElementById('mIn').value=r.in||DEF_IN;
   document.getElementById('mOut').value=r.out||DEF_OUT;
@@ -1835,6 +1854,17 @@ function syncAdminData(){
   const allStaff=JSON.parse(ls('sc_admin_staff')||'[]');
   const idx=allStaff.findIndex(s=>s.id===u.id);
   if(idx>=0){allStaff[idx].lastWork=dKey();localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff))}
+}
+function saveSnsCount(){
+  const md=getMD();
+  md.snsCount=parseInt(document.getElementById('snsCountInput').value)||0;
+  save(SK,db);syncAdminData();
+  if(window.__db){
+    const u=JSON.parse(localStorage.getItem(UK)||'null');
+    if(u&&u.id) window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true}).catch(e=>console.error(e));
+  }
+  updateSum();
+  toast('📸 SNS投稿数を保存しました');
 }
 
 // ── Store / Time / Rest ────────────────────────────
@@ -1976,9 +2006,12 @@ function viewContract(){
 // ── Payment Notice ─────────────────────────────────
 function openNotice(){
   const md=getMD();
-  const keys=Object.keys(md).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
+  const mSnsCount=md.snsCount||0;
+  const mSnsRate=md.snsRate||2000;
+  const snsPay=mSnsCount*mSnsRate;
+  const keys=Object.keys(md).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
   if(!keys.length){toast('稼働記録がありません');return}
-  const unc=Object.values(md).filter(r=>!r.ok).length;
+  const unc=Object.entries(md).filter(([k,r])=>k.startsWith('d')&&!r.ok).length;
   if(unc)toast(`⚠️ 未確定${unc}件あります`);
   let tw=0,tf=0,twa=0;
   const rows=keys.map(d=>{
@@ -2007,8 +2040,10 @@ function openNotice(){
         <div class="n-tr"><span>稼働合計時間</span><span><b>${toStr(tw)}</b></span></div>
         <div class="n-tr"><span>時給単価</span><span>¥${rate.toLocaleString()}</span></div>
         <div class="n-tr"><span>業務委託報酬</span><span>¥${tPay.toLocaleString()}</span></div>
+        ${twa>0?`<div class="n-tr"><span>土日手当</span><span>¥${twa.toLocaleString()}</span></div>`:''}
         <div class="n-tr"><span>交通費</span><span>¥${tf.toLocaleString()}</span></div>
-        <div class="n-tr big"><span>お支払い合計</span><span>¥${(tPay+tf).toLocaleString()}</span></div>
+        ${snsPay>0?`<div class="n-tr"><span>SNS撮影協力費（${mSnsCount}件 × ¥${mSnsRate.toLocaleString()}）</span><span>¥${snsPay.toLocaleString()}</span></div>`:''}
+        <div class="n-tr big"><span>お支払い合計</span><span>¥${(tPay+twa+tf+snsPay).toLocaleString()}</span></div>
       </div>
       <div class="n-foot">本書は${yr}年${mo}月分の業務委託費支払通知書です。</div>
     </div>`;
