@@ -394,12 +394,52 @@ html,body{min-height:100svh;background:#fff5f7;color:#3a2030;font-family:'Zen Ma
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyApt0DIeMvelIlwTTXeTPz67yL1vdWoFnI",
+  authDomain: "shareconnect-71706.firebaseapp.com",
+  projectId: "shareconnect-71706",
+  storageBucket: "shareconnect-71706.firebasestorage.app",
+  messagingSenderId: "256513557544",
+  appId: "1:256513557544:web:425ad63ce5da657b42a11d"
+};
+firebase.initializeApp(firebaseConfig);
+const _db = firebase.firestore();
+const _auth = firebase.auth();
+window.__db = _db;
+window.__auth = _auth;
+</script>
 </head>
 <body>
+<!-- ログイン画面 -->
+<div id="loginScreen" style="display:none;position:fixed;inset:0;z-index:999;background:linear-gradient(135deg,#e8607e,#d4537a,#c4456b);display:flex;align-items:center;justify-content:center;padding:24px">
+  <div style="background:#fff;border-radius:24px;padding:32px 24px;width:100%;max-width:360px;box-shadow:0 8px 40px rgba(0,0,0,.2)">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:40px;margin-bottom:8px">🌸</div>
+      <h2 style="font-size:22px;font-weight:700;color:#d4537a;margin-bottom:4px">シェアコネクト</h2>
+      <p style="font-size:12px;color:#b08090">管理者ログイン</p>
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:#b08090;margin-bottom:4px">メールアドレス</div>
+      <input id="loginEmail" type="email" placeholder="admin@example.com" style="width:100%;padding:12px 14px;border:1.5px solid #f9c8d5;border-radius:12px;font-size:14px;color:#3a2030;background:#fff5f7;box-sizing:border-box;-webkit-appearance:none">
+    </div>
+    <div style="margin-bottom:20px">
+      <div style="font-size:11px;font-weight:700;color:#b08090;margin-bottom:4px">パスワード</div>
+      <input id="loginPassword" type="password" placeholder="••••••••" style="width:100%;padding:12px 14px;border:1.5px solid #f9c8d5;border-radius:12px;font-size:14px;color:#3a2030;background:#fff5f7;box-sizing:border-box;-webkit-appearance:none">
+    </div>
+    <button onclick="doLogin()" style="width:100%;padding:14px;background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;box-shadow:0 4px 16px rgba(212,83,122,.4)">ログイン</button>
+    <div id="loginError" style="margin-top:12px;color:#e05050;font-size:12px;text-align:center;display:none"></div>
+  </div>
+</div>
+
 
 <div id="adminApp">
 <header class="hdr">
-  <h1>🌸 シェアコネクト 管理画面</h1>
+  <h1>🌸 シェアコネクト 管理画面</h1><button onclick="doLogout()" style="position:absolute;right:14px;top:14px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:20px;padding:4px 12px;font-size:11px;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">ログアウト</button>
   <p>スタッフ管理・契約書・支払い通知書</p>
 </header>
 
@@ -773,6 +813,111 @@ html,body{min-height:100svh;background:#fff5f7;color:#3a2030;font-family:'Zen Ma
 <div class="toast" id="toast"></div>
 </div>
 
+
+// ── Firebase Auth & Firestore ──────────────────────────────
+function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  errEl.style.display = 'none';
+  
+  _auth.signInWithEmailAndPassword(email, pass)
+    .then(() => { /* onAuthStateChanged handles UI */ })
+    .catch(e => {
+      errEl.textContent = 'メールアドレスまたはパスワードが違います';
+      errEl.style.display = 'block';
+    });
+}
+
+function doLogout(){
+  _auth.signOut();
+}
+
+// Auth state
+_auth.onAuthStateChanged(user => {
+  if(user){
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminApp').className = 'show';
+    document.getElementById('adminCSS').media = 'all';
+    document.title = 'シェアコネクト 管理画面';
+    fbBoot();
+  } else {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('adminApp').className = '';
+  }
+});
+
+// Firestore helpers
+async function fbSave(col, id, data){
+  try { await _db.collection(col).doc(id).set(data, {merge:true}); } catch(e){ console.error('fbSave',e); }
+}
+async function fbGet(col, id){
+  try { const d = await _db.collection(col).doc(id).get(); return d.exists ? d.data() : null; } catch(e){ return null; }
+}
+function fbListen(col, id, cb){
+  return _db.collection(col).doc(id).onSnapshot(d => cb(d.exists ? d.data() : null));
+}
+
+// Firestore boot - load all data from cloud
+async function fbBoot(){
+  // Load templates from Firestore
+  const tmplDoc = await fbGet('admin', 'templates');
+  if(tmplDoc && tmplDoc.list){ templates = tmplDoc.list; }
+  
+  // Load staff list from Firestore
+  try {
+    const staffSnap = await _db.collection('staff').get();
+    staffList = [];
+    staffSnap.forEach(doc => {
+      staffList.push({...doc.data(), id: doc.id});
+    });
+    // localStorageにもバックアップ
+    localStorage.setItem('sc_admin_staff', JSON.stringify(staffList));
+  } catch(e) {
+    console.warn('Firestore staff load failed, using localStorage:', e);
+    staffList = JSON.parse(localStorage.getItem('sc_admin_staff')||'[]');
+  }
+  
+  boot();
+  
+  // リアルタイム監視 - スタッフ登録・更新・稼働データを即時反映
+  _db.collection('staff').onSnapshot(snap => {
+    snap.docChanges().forEach(change => {
+      const d = change.doc.data();
+      const id = change.doc.id;
+      if(change.type === 'removed'){
+        staffList = staffList.filter(s => s.id !== id);
+      } else {
+        const idx = staffList.findIndex(s => s.id === id);
+        if(idx >= 0) staffList[idx] = {...d, id};
+        else staffList.push({...d, id});
+      }
+    });
+    // localStorageも更新
+    localStorage.setItem('sc_admin_staff', JSON.stringify(staffList));
+    refreshAll();
+  }, err => console.error('Staff listener error:', err));
+}
+
+// Override saveTemplates to also save to Firestore
+const _origSaveTmpl = typeof saveTemplates === 'function' ? saveTemplates : null;
+function saveTemplatesToCloud(){
+  localStorage.setItem('sc_templates', JSON.stringify(templates));
+  fbSave('admin', 'templates', {list: templates});
+}
+
+// Override approveStaff to save to Firestore
+async function approveStaffCloud(staffId){
+  const s = staffList.find(x => x.id === staffId);
+  if(!s) return;
+  s.approved = true;
+  s.approvedAt = Date.now();
+  await fbSave('staff', staffId, {approved: true, approvedAt: s.approvedAt});
+  localStorage.setItem('sc_approved_' + staffId, '1');
+  refreshAll();
+  toast('✅ 承認しました');
+}
+
 <!-- Router -->
 <script>
 (function(){
@@ -782,10 +927,11 @@ html,body{min-height:100svh;background:#fff5f7;color:#3a2030;font-family:'Zen Ma
     document.getElementById('staffApp').className = 'show';
     document.getElementById('staffCSS').media = 'all';
     document.title = 'シェアコネクト 稼働記録';
+    document.getElementById('loginScreen').style.display = 'none';
   } else {
-    document.getElementById('adminApp').className = 'show';
+    // Admin: login screen shown by default, Firebase Auth handles display
     document.getElementById('adminCSS').media = 'all';
-    document.title = 'シェアコネクト 管理画面';
+    document.getElementById('loginScreen').style.display = 'flex';
   }
 })();
 </script>
@@ -799,7 +945,8 @@ const CO={name:'株式会社シェアコネクト',rep:'代表取締役　小池
 const DEF_RATE=2014;
 const TMPL_KEY='sc_admin_templates';
 
-let allStaff=[];
+let allStaff=[];      // ← Firestoreから読み込み（staffListと同じ参照）
+let staffList=[];     // Firestore共有スタッフリスト
 let templates=[];
 let currentStaff=null;
 let _tt;
@@ -828,12 +975,12 @@ function boot(){
 }
 
 function refreshAll(){
-  allStaff=JSON.parse(ls('sc_admin_staff')||'[]');
+  // Firestoreから読んだstaffListを優先、なければlocalStorage
+  allStaff = staffList.length > 0 ? staffList : JSON.parse(ls('sc_admin_staff')||'[]');
   renderStaffList();
   renderContractList();
   updateInviteDropdown();
   renderPendingList();
-
 }
 
 // ── Tab ────────────────────────────────────────────
@@ -849,10 +996,10 @@ function renderStaffList(){
   document.getElementById('staffCount').textContent='計 '+allStaff.length+' 名登録';
   const el=document.getElementById('staffList');
   if(!allStaff.length){el.innerHTML='<div class="empty">登録スタッフがいません<br>招待URLを発行してスタッフに送ってください</div>';return}
+  const now=new Date();
   el.innerHTML=allStaff.map((s,i)=>{
-    // get work summary
-    const workData=JSON.parse(ls('sc_admin_work_'+s.id)||'{}');
-    const now=new Date();
+    // Firestoreから取得したworkData優先、なければlocalStorage
+    const workData=s.workData||JSON.parse(ls('sc_admin_work_'+s.id)||'{}');
     const curKey=`${now.getFullYear()}-${pad(now.getMonth()+1)}_${s.name}`;
     const curMonth=workData[curKey]||{};
     let tw=0,td=0,tf=0;
@@ -923,7 +1070,8 @@ function openStaff(i){
 function loadWorkData(){
   const yr=+document.getElementById('mYear').value;
   const mo=+document.getElementById('mMonth').value;
-  const workData=JSON.parse(ls('sc_admin_work_'+currentStaff.id)||'{}');
+  // Firestoreから取得したworkDataを優先
+  const workData=currentStaff.workData||JSON.parse(ls('sc_admin_work_'+currentStaff.id)||'{}');
   const key=`${yr}-${pad(mo)}_${currentStaff.name}`;
   const md=workData[key]||{};
   const keys=Object.keys(md).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
@@ -998,7 +1146,8 @@ function openStaffNotice(){
   if(!currentStaff)return;
   const yr=+document.getElementById('mYear').value;
   const mo=+document.getElementById('mMonth').value;
-  const workData=JSON.parse(ls('sc_admin_work_'+currentStaff.id)||'{}');
+  // Firestoreから取得したworkDataを優先
+  const workData=currentStaff.workData||JSON.parse(ls('sc_admin_work_'+currentStaff.id)||'{}');
   const key=`${yr}-${pad(mo)}_${currentStaff.name}`;
   const md=workData[key]||{};
   const keys=Object.keys(md).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
@@ -1085,13 +1234,19 @@ function addTemplate(){
   if(!name){toast('テンプレート名を入力してください');return}
   templates.push({id:'tmpl_'+Date.now(),name,body:body||buildContractHTML(''),createdAt:new Date().toISOString()});
   save(TMPL_KEY,templates);
+  // Firestoreにも保存
+  if(window.__db) window.__db.collection('admin').doc('templates').set({list:templates}).catch(e=>console.error(e));
   document.getElementById('newTmplName').value='';
   document.getElementById('newTmplBody').value='';
   renderContractList();toast('✅ テンプレートを保存しました');
 }
 function deleteTemplate(i){
   if(!confirm('このテンプレートを削除しますか？'))return;
-  templates.splice(i,1);save(TMPL_KEY,templates);renderContractList();toast('🗑 削除しました');
+  templates.splice(i,1);
+  save(TMPL_KEY,templates);
+  // Firestoreにも保存
+  if(window.__db) window.__db.collection('admin').doc('templates').set({list:templates}).catch(e=>console.error(e));
+  renderContractList();toast('🗑 削除しました');
 }
 function previewTemplate(i){
   const t=templates[i];
@@ -1138,8 +1293,7 @@ function copyInvite(){
 // ── Modal ──────────────────────────────────────────
 // ── Pending approval ──────────────────────────────────
 function renderPendingList(){
-  const all=JSON.parse(ls('sc_admin_staff')||'[]');
-  const pending=all.filter(s=>!s.approved);
+  const pending=allStaff.filter(s=>!s.approved);
   const el=document.getElementById('pendingList');
   const cnt=document.getElementById('pendingCount');
   if(cnt)cnt.textContent=pending.length;
@@ -1160,15 +1314,23 @@ function renderPendingList(){
 }
 
 function approveStaff(id){
-  const all=JSON.parse(ls('sc_admin_staff')||'[]');
-  const idx=all.findIndex(s=>s.id===id);
+  const idx=allStaff.findIndex(s=>s.id===id);
   if(idx<0)return;
-  all[idx].approved=true;
-  all[idx].approvedAt=new Date().toISOString();
-  localStorage.setItem('sc_admin_staff',JSON.stringify(all));
-  // Also update approval in staff's own storage key
+  allStaff[idx].approved=true;
+  allStaff[idx].approvedAt=new Date().toISOString();
+  // staffListも更新
+  const si=staffList.findIndex(s=>s.id===id);
+  if(si>=0){staffList[si].approved=true;staffList[si].approvedAt=allStaff[idx].approvedAt;}
+  // localStorage更新（後方互換）
+  localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
   localStorage.setItem('sc_approved_'+id,'1');
-  toast('✅ '+all[idx].name+' を承認しました');
+  // Firestore保存（クロスデバイス同期）
+  if(window.__db){
+    window.__db.collection('staff').doc(id).set({approved:true,approvedAt:allStaff[idx].approvedAt},{merge:true})
+      .then(()=>console.log('✅ 承認をFirestoreに保存'))
+      .catch(e=>console.error('承認Firestore error:',e));
+  }
+  toast('✅ '+allStaff[idx].name+' を承認しました');
   refreshAll();
   renderPendingList();
 }
@@ -1316,22 +1478,57 @@ function showPending(u){
     '<div>👤 '+u.name+'</div>'+
     '<div>📄 締結済み：歯科衛生士業務 ／ 動画撮影業務</div>'+
     '<div>✍️ 署名日：'+new Date(u.signedAt).toLocaleDateString('ja-JP')+'</div>';
-  // Auto-check every 10 seconds
-  setTimeout(checkApproval, 10000);
+  
+  // Firestoreリアルタイム監視（承認されたら即座に遷移）
+  if(window.__db && u.id){
+    const unsub = window.__db.collection('staff').doc(u.id).onSnapshot(doc => {
+      if(doc.exists && doc.data().approved){
+        unsub(); // リスナー解除
+        u.approved = true;
+        save(UK, u);
+        toast('🌸 承認されました！打刻を開始できます');
+        setTimeout(() => startApp(u), 800);
+      }
+    }, err => {
+      // Firestore失敗時はポーリングにフォールバック
+      console.warn('Firestore listen failed, using polling:', err);
+      setTimeout(checkApproval, 10000);
+    });
+  } else {
+    // Firestore未接続時はポーリング
+    setTimeout(checkApproval, 10000);
+  }
 }
 
 function checkApproval(){
   const u=JSON.parse(ls(UK)||'null');
   if(!u)return;
-  if(isApproved(u)){
-    // Mark approved in user record
-    u.approved=true;
-    save(UK,u);
+  // まずFirestoreで確認（クロスデバイス同期）
+  if(window.__db){
+    window.__db.collection('staff').doc(u.id).get().then(doc=>{
+      const data=doc.exists?doc.data():null;
+      if(data&&data.approved){
+        u.approved=true;
+        save(UK,u);
+        localStorage.setItem('sc_approved_'+u.id,'1');
+        toast('🌸 承認されました！打刻を開始できます');
+        setTimeout(()=>startApp(u),1000);
+      } else {
+        toast('⏳ まだ承認待ちです。しばらくお待ちください。');
+        setTimeout(checkApproval,15000);
+      }
+    }).catch(()=>{
+      // Firestore失敗時はlocalStorageで確認
+      if(isApproved(u)){u.approved=true;save(UK,u);startApp(u);}
+      else setTimeout(checkApproval,15000);
+    });
+  } else if(isApproved(u)){
+    u.approved=true;save(UK,u);
     toast('🌸 承認されました！打刻を開始できます');
-    setTimeout(()=>startApp(u), 1000);
+    setTimeout(()=>startApp(u),1000);
   } else {
     toast('⏳ まだ承認待ちです。しばらくお待ちください。');
-    setTimeout(checkApproval, 15000);
+    setTimeout(checkApproval,15000);
   }
 }
 
@@ -1410,6 +1607,16 @@ function finishOB(){
   const allStaff=JSON.parse(ls('sc_admin_staff')||'[]');
   allStaff.push({id:u.id,name:u.name,phone:u.phone,email:u.email,addr:u.addr,station:u.station,bank:u.bank,branch:u.branch,accType:u.accType,accNum:u.accNum,accName:u.accName,signedAt:u.signedAt,signData:u.signData,contracts:u.contracts});
   localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
+  // Save to Firestore for real-time cross-device sharing
+  if(window.__db){
+    const fData={id:u.id,name:u.name,phone:u.phone,email:u.email,addr:u.addr,
+      station:u.station,bank:u.bank,branch:u.branch,accType:u.accType,
+      accNum:u.accNum,accName:u.accName,signedAt:u.signedAt,
+      contracts:u.contracts,approved:false,registeredAt:Date.now()};
+    window.__db.collection('staff').doc(u.id).set(fData)
+      .then(()=>console.log('✅ Registered to Firestore'))
+      .catch(e=>console.error('Firestore error:',e));
+  }
   showPending(u);
   toast('🌸 登録完了！管理者の承認をお待ちください');
 }
@@ -1538,7 +1745,14 @@ function confirmDay(){
   ['r1a','f1a','r1b','f1b','r2a','f2a','r2b','f2b'].forEach(id=>r[id]=document.getElementById(id).value);
   r.weekendAllow=parseInt(document.getElementById('mWeekendAllow').value)||0;
   r.ok=true;
-  closeModal();render();toast('🌸 仮確定しました');
+  closeModal();render();
+  // Auto-save and sync to Firestore
+  save(SK,db);
+  if(window.__db){
+    const u=JSON.parse(localStorage.getItem(UK)||'null');
+    if(u&&u.id) window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true}).catch(e=>console.error(e));
+  }
+  toast('🌸 仮確定しました');
   syncAdminData();
 }
 function delDay(){if(!editing)return;delete getMD()[`d${editing}`];closeModal();render();toast('🗑 削除しました');syncAdminData()}
@@ -1752,7 +1966,18 @@ function printNotice(){
 }
 
 // ── Save / CSV ─────────────────────────────────────
-function saveData(){save(SK,db);syncAdminData();toast('💾 保存しました')}
+function saveData(){
+  save(SK,db);syncAdminData();
+  // Sync work data to Firestore
+  if(window.__db){
+    const u=JSON.parse(localStorage.getItem(UK)||'null');
+    if(u&&u.id){
+      window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true})
+        .catch(e=>console.error('Work sync error:',e));
+    }
+  }
+  toast('💾 保存しました');
+}
 function exportCSV(){
   if(!staff){toast('スタッフを選択してください');return}
   const md=getMD();
