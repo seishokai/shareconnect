@@ -234,7 +234,7 @@ html,body{min-height:100svh;background:#fff5f7;color:#3a2030;font-family:'Zen Ma
 .contract-scroll h3{font-size:14px;font-weight:700;color:var(--acc);margin-bottom:8px;text-align:center}
 .contract-scroll h4{font-size:12px;font-weight:700;color:#3a2030;margin:12px 0 4px;border-bottom:1px solid var(--border);padding-bottom:2px}
 .sign-hint{background:#fde8ee;border-radius:12px;padding:12px 14px;margin-bottom:10px;font-size:12px;color:#b08090}
-#signCanvas{width:100%;height:130px;border:1.5px solid #f9c8d5;border-radius:12px;background:#fff;touch-action:none;cursor:crosshair;display:block}
+#signCanvas{width:100%;height:200px;border:2px solid #d4537a;border-radius:14px;background:#fffafb;touch-action:none;cursor:crosshair;display:block;box-shadow:inset 0 2px 8px rgba(212,83,122,.08)}
 .clear-btn{background:none;border:1px solid #f9c8d5;border-radius:8px;padding:5px 14px;font-size:11px;color:#b08090;cursor:pointer;margin-top:6px}
 
 /* ─ Complete ─ */
@@ -357,6 +357,8 @@ html,body{min-height:100svh;background:#fff5f7;color:#3a2030;font-family:'Zen Ma
 .m-del{background:none;border:1.5px solid #f9c8d5;border-radius:14px;padding:12px 14px;font-size:13px;cursor:pointer;color:var(--acc);font-family:'Zen Maru Gothic',sans-serif}
 .m-ok{flex:2;background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;border:none;border-radius:14px;padding:12px;font-family:'Zen Maru Gothic',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(212,83,122,.35)}
 .m-ok:active{transform:scale(.98)}
+.wa-btn{flex:1;padding:10px 4px;border:2px solid #f9c8d5;border-radius:12px;background:#fff5f7;font-family:'Zen Maru Gothic',sans-serif;font-size:13px;font-weight:700;cursor:pointer;color:#b08090;transition:all .15s;text-align:center}
+.wa-btn.on{background:#d4537a;color:#fff;border-color:#d4537a;box-shadow:0 2px 8px rgba(212,83,122,.3)}
 
 /* ─ Notice modal ─ */
 .n-overlay{position:fixed;inset:0;background:rgba(60,10,30,.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
@@ -736,6 +738,17 @@ html,body{min-height:100svh;background:#fff5f7;color:#3a2030;font-family:'Zen Ma
         <div class="t-row"><span class="t-badge">復</span><input class="t-rt" type="text" placeholder="○○駅→○○駅" id="r2b"><input class="t-fr" type="number" placeholder="0" id="f2b"><span class="t-yen">円</span></div>
       </div>
     </div>
+    <!-- 土日手当 -->
+    <div class="m-sec" id="weekendAllowSec" style="display:none">
+      <div class="m-sec-ttl">🎉 土日手当</div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button type="button" class="wa-btn" data-v="0" onclick="setWeekendAllow(0)">なし</button>
+        <button type="button" class="wa-btn" data-v="1000" onclick="setWeekendAllow(1000)">+¥1,000</button>
+        <button type="button" class="wa-btn" data-v="2000" onclick="setWeekendAllow(2000)">+¥2,000</button>
+        <input type="hidden" id="mWeekendAllow" value="0">
+      </div>
+      <div style="font-size:11px;color:#b08090">※ 選択しなくても確定できます</div>
+    </div>
   </div>
   <div class="m-foot">
     <button class="m-cancel" onclick="closeModal()">キャンセル</button>
@@ -799,6 +812,7 @@ function toMin(t){if(!t)return null;const[h,m]=t.split(':').map(Number);return h
 function toStr(m){if(m==null||m<0)return'';return`${Math.floor(m/60)}:${pad(m%60)}`}
 function calcWork(r){if(!r)return null;const i=toMin(r.in),o=toMin(r.out);if(i==null||o==null||o<=i)return null;return Math.max(0,o-i-(parseInt(r.rest)||0))}
 function calcFare(r){return(+r.f1a||0)+(+r.f1b||0)+(+r.f2a||0)+(+r.f2b||0)}
+function calcWeekendAllow(r){return parseInt(r.weekendAllow)||0}
 function calcPay(wm,rate){return wm!=null?Math.floor(wm/60*(rate||DEF_RATE)):0}
 
 // ── Boot ───────────────────────────────────────────
@@ -1012,8 +1026,9 @@ function openStaffNotice(){
         <div class="n-tr"><span>稼働合計時間</span><span><b>${toStr(tw)}</b></span></div>
         <div class="n-tr"><span>時給単価</span><span>¥${DEF_RATE.toLocaleString()}</span></div>
         <div class="n-tr"><span>業務委託報酬</span><span>¥${tPay.toLocaleString()}</span></div>
+        ${twa>0?`<div class="n-tr"><span>土日手当</span><span>¥${twa.toLocaleString()}</span></div>`:''}
         <div class="n-tr"><span>交通費</span><span>¥${tf.toLocaleString()}</span></div>
-        <div class="n-tr big"><span>お支払い合計</span><span>¥${(tPay+tf).toLocaleString()}</span></div>
+        <div class="n-tr big"><span>お支払い合計</span><span>¥${(tPay+twa+tf).toLocaleString()}</span></div>
       </div>
       <div style="font-size:11px;color:#aaa;text-align:center;margin-top:10px">振込先：${currentStaff.bank||'—'} ${currentStaff.branch||''} ${currentStaff.accType||''} ${currentStaff.accNum||''} ${currentStaff.accName||''}</div>
     </div>`;
@@ -1459,7 +1474,7 @@ function buildCards(){
       <span class="wc-wd${sat?' sat':sun?' sun':''}">${WD[wd]}</span>
       ${st}<span class="wc-store">${r.store||'—'}</span>
       <span class="wc-time">${tStr}${r.rest!=null?' 休'+r.rest+'分':''}</span>
-      <span class="wc-pay">${pay?'¥'+pay.toLocaleString():''}</span>
+      <span class="wc-pay">${(pay+(parseInt(r.weekendAllow)||0))?'¥'+(pay+(parseInt(r.weekendAllow)||0)).toLocaleString():''}</span>
       <button class="wc-edit" onclick="openModal(${d})">編集</button>
     </div></div>`;
   }).join('');
@@ -1499,6 +1514,13 @@ function openModal(day){
   document.getElementById('mRest').value=r.rest!=null?r.rest:60;
   ['r1a','f1a','r1b','f1b','r2a','f2a','r2b','f2b'].forEach(id=>document.getElementById(id).value=r[id]||'');
   document.getElementById('mDel').style.display=(md[`d${day}`]&&Object.keys(md[`d${day}`]).length>0)?'':'none';
+  // 土日手当 - 土日のみ表示
+  const _wd=new Date(yr,mo-1,day).getDay();
+  const isWE=_wd===0||_wd===6;
+  document.getElementById('weekendAllowSec').style.display=isWE?'':'none';
+  const savedAllow=r.weekendAllow||0;
+  document.getElementById('mWeekendAllow').value=savedAllow;
+  setWeekendAllow(savedAllow);
   syncRC();prevWork();
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
@@ -1514,6 +1536,7 @@ function confirmDay(){
   r.in=document.getElementById('mIn').value;r.out=document.getElementById('mOut').value;
   r.rest=parseInt(document.getElementById('mRest').value)||0;
   ['r1a','f1a','r1b','f1b','r2a','f2a','r2b','f2b'].forEach(id=>r[id]=document.getElementById(id).value);
+  r.weekendAllow=parseInt(document.getElementById('mWeekendAllow').value)||0;
   r.ok=true;
   closeModal();render();toast('🌸 仮確定しました');
   syncAdminData();
@@ -1545,6 +1568,11 @@ function adjTime(id,delta){
   el.value=`${pad(Math.floor(t/60))}:${pad(t%60)}`;prevWork();
 }
 function setRest(v){document.getElementById('mRest').value=v;syncRC();prevWork()}
+function setWeekendAllow(v){
+  document.getElementById('mWeekendAllow').value=v;
+  document.querySelectorAll('.wa-btn').forEach(b=>b.classList.toggle('on',+b.dataset.v===v));
+  prevWork();
+}
 function syncRC(){
   const v=parseInt(document.getElementById('mRest').value)||0;
   document.querySelectorAll('.rc').forEach(c=>c.classList.toggle('on',+c.dataset.v===v));
@@ -1554,7 +1582,10 @@ function prevWork(){
   const wm=calcWork(r);const el=document.getElementById('workPrev');
   if(wm!=null){
     const pay=calcPay(wm);
-    el.innerHTML=`⏱ 稼働: <b>${toStr(wm)}</b>（休憩 ${parseInt(r.rest)||0}分）<br>💴 報酬: <b>¥${pay.toLocaleString()}</b>`;
+    const wa=parseInt(document.getElementById('mWeekendAllow')?.value)||0;
+    const waStr=wa>0?` + 土日手当¥${wa.toLocaleString()}`:'';
+    const total=pay+wa;
+    el.innerHTML=`⏱ 稼働: <b>${toStr(wm)}</b>（休憩 ${parseInt(r.rest)||0}分）<br>💴 報酬: <b>¥${total.toLocaleString()}</b>${waStr}`;
   } else el.textContent='稼働時間: --';
 }
 
@@ -1664,11 +1695,11 @@ function openNotice(){
   if(!keys.length){toast('稼働記録がありません');return}
   const unc=Object.values(md).filter(r=>!r.ok).length;
   if(unc)toast(`⚠️ 未確定${unc}件あります`);
-  let tw=0,tf=0;
+  let tw=0,tf=0,twa=0;
   const rows=keys.map(d=>{
     const r=md[`d${d}`]||{};const dt=new Date(yr,mo-1,d);
-    const wm=calcWork(r),pay=calcPay(wm),fare=calcFare(r);
-    tw+=wm||0;tf+=fare;return{d,dt,r,wm,pay,fare};
+    const wm=calcWork(r),pay=calcPay(wm),fare=calcFare(r),wa=calcWeekendAllow(r);
+    tw+=wm||0;tf+=fare;twa+=wa;return{d,dt,r,wm,pay,fare,wa};
   });
   const tPay=calcPay(tw),rate=getRate();
   const now=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
@@ -1741,17 +1772,82 @@ function exportCSV(){
 // ── Canvas ─────────────────────────────────────────
 function initCanvas(){
   const c=document.getElementById('signCanvas');
-  c.width=c.offsetWidth||320;c.height=130;
+  // Retina対応 - 実解像度に合わせる
+  const dpr=window.devicePixelRatio||1;
+  const rect=c.getBoundingClientRect();
+  c.width=rect.width*dpr||320*dpr;
+  c.height=200*dpr;
   const ctx=c.getContext('2d');
-  ctx.strokeStyle='#d4537a';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';
-  function gp(e){const r=c.getBoundingClientRect();const s=e.touches?e.touches[0]:e;return{x:s.clientX-r.left,y:s.clientY-r.top}}
-  c.addEventListener('mousedown',e=>{signing=true;const p=gp(e);sX=p.x;sY=p.y});
-  c.addEventListener('mousemove',e=>{if(!signing)return;const p=gp(e);ctx.beginPath();ctx.moveTo(sX,sY);ctx.lineTo(p.x,p.y);ctx.stroke();sX=p.x;sY=p.y});
-  c.addEventListener('mouseup',()=>signing=false);
-  c.addEventListener('mouseleave',()=>signing=false);
-  c.addEventListener('touchstart',e=>{e.preventDefault();signing=true;const p=gp(e);sX=p.x;sY=p.y},{passive:false});
-  c.addEventListener('touchmove',e=>{e.preventDefault();if(!signing)return;const p=gp(e);ctx.beginPath();ctx.moveTo(sX,sY);ctx.lineTo(p.x,p.y);ctx.stroke();sX=p.x;sY=p.y},{passive:false});
-  c.addEventListener('touchend',()=>signing=false);
+  ctx.scale(dpr,dpr);
+  // 書きやすい設定
+  ctx.strokeStyle='#3a2030';
+  ctx.lineWidth=3;
+  ctx.lineCap='round';
+  ctx.lineJoin='round';
+  ctx.shadowColor='rgba(58,32,48,0.2)';
+  ctx.shadowBlur=2;
+  // ガイドライン
+  ctx.setLineDash([4,8]);
+  ctx.strokeStyle='#f9c8d5';
+  ctx.lineWidth=1;
+  ctx.beginPath();
+  ctx.moveTo(20,150);ctx.lineTo((rect.width||320)-20,150);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.strokeStyle='#3a2030';
+  ctx.lineWidth=3;
+  // 点線ガイドテキスト
+  ctx.fillStyle='#e8c0cc';
+  ctx.font='12px sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText('ここにサインしてください', (rect.width||320)/2, 175);
+
+  let pts=[];
+  function gp(e){
+    const r=c.getBoundingClientRect();
+    const s=e.touches?e.touches[0]:e;
+    return{x:s.clientX-r.left,y:s.clientY-r.top};
+  }
+  function drawSmooth(){
+    if(pts.length<2)return;
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x,pts[0].y);
+    if(pts.length===2){
+      ctx.lineTo(pts[1].x,pts[1].y);
+    } else {
+      for(let i=1;i<pts.length-1;i++){
+        const mx=(pts[i].x+pts[i+1].x)/2;
+        const my=(pts[i].y+pts[i+1].y)/2;
+        ctx.quadraticCurveTo(pts[i].x,pts[i].y,mx,my);
+      }
+      ctx.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);
+    }
+    ctx.stroke();
+  }
+  c.addEventListener('mousedown',e=>{signing=true;pts=[];const p=gp(e);pts.push(p);sX=p.x;sY=p.y});
+  c.addEventListener('mousemove',e=>{
+    if(!signing)return;
+    const p=gp(e);pts.push(p);
+    if(pts.length>3)pts=pts.slice(-4);
+    ctx.clearRect(0,0,rect.width||320,200);
+    ctx.shadowColor='rgba(58,32,48,0.15)';
+    ctx.shadowBlur=3;
+    sX=p.x;sY=p.y;
+    drawSmooth();
+  });
+  c.addEventListener('mouseup',()=>{signing=false;pts=[]});
+  c.addEventListener('mouseleave',()=>{signing=false;pts=[]});
+  c.addEventListener('touchstart',e=>{
+    e.preventDefault();signing=true;pts=[];
+    const p=gp(e);pts.push(p);sX=p.x;sY=p.y;
+  },{passive:false});
+  c.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    if(!signing)return;
+    const p=gp(e);pts.push(p);sX=p.x;sY=p.y;
+    drawSmooth();
+  },{passive:false});
+  c.addEventListener('touchend',()=>{signing=false;pts=[]});
 }
 function clearCanvas(){const c=document.getElementById('signCanvas');c.getContext('2d').clearRect(0,0,c.width,c.height)}
 function canvasHasContent(){
