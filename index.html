@@ -424,13 +424,10 @@ window.__auth = _auth;
       <h2 style="font-size:22px;font-weight:700;color:#d4537a;margin-bottom:4px">シェアコネクト</h2>
       <p style="font-size:12px;color:#b08090">管理者ログイン</p>
     </div>
-    <div style="margin-bottom:14px">
-      <div style="font-size:11px;font-weight:700;color:#b08090;margin-bottom:4px">メールアドレス</div>
-      <input id="loginEmail" type="email" placeholder="admin@example.com" style="width:100%;padding:12px 14px;border:1.5px solid #f9c8d5;border-radius:12px;font-size:14px;color:#3a2030;background:#fff5f7;box-sizing:border-box;-webkit-appearance:none">
-    </div>
+    <input id="loginEmail" type="hidden" value="admin@shareconnect.jp">
     <div style="margin-bottom:20px">
       <div style="font-size:11px;font-weight:700;color:#b08090;margin-bottom:4px">パスワード</div>
-      <input id="loginPassword" type="password" placeholder="••••••••" style="width:100%;padding:12px 14px;border:1.5px solid #f9c8d5;border-radius:12px;font-size:14px;color:#3a2030;background:#fff5f7;box-sizing:border-box;-webkit-appearance:none">
+      <input id="loginPassword" type="password" placeholder="パスワードを入力" style="width:100%;padding:12px 14px;border:1.5px solid #f9c8d5;border-radius:12px;font-size:14px;color:#3a2030;background:#fff5f7;box-sizing:border-box;-webkit-appearance:none" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     <button onclick="doLogin()" style="width:100%;padding:14px;background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;box-shadow:0 4px 16px rgba(212,83,122,.4)">ログイン</button>
     <div id="loginError" style="margin-top:12px;color:#e05050;font-size:12px;text-align:center;display:none"></div>
@@ -1011,12 +1008,17 @@ function renderStaffList(){
     const workData=s.workData||JSON.parse(ls('sc_admin_work_'+s.id)||'{}');
     const curKey=`${now.getFullYear()}-${pad(now.getMonth()+1)}_${s.name}`;
     const curMonth=workData[curKey]||{};
-    let tw=0,td=0,tf=0;
-    Object.values(curMonth).forEach(r=>{const wm=calcWork(r);if(wm&&wm>0){td++;tw+=wm}tf+=calcFare(r)});
-    const pay=calcPay(tw);
+    const mRate=curMonth.rate||DEF_RATE;
+    const mSnsCount=curMonth.snsCount||0;
+    const mSnsRate=curMonth.snsRate||2000;
+    let tw=0,td=0,tf=0,twa=0;
+    Object.entries(curMonth).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0){td++;tw+=wm}tf+=calcFare(r);twa+=(r.weekendAllow||0)});
+    const pay=calcPay(tw,mRate);
+    const snsPay=mSnsCount*mSnsRate;
+    const grandTotal=pay+tf+twa+snsPay;
     const signed=s.signedAt?new Date(s.signedAt).toLocaleDateString('ja-JP'):'未締結';
-    const confirmed=Object.values(curMonth).filter(r=>r.ok).length;
-    const total=Object.keys(curMonth).length;
+    const confirmed=Object.entries(curMonth).filter(([k,r])=>k.startsWith('d')&&r.ok).length;
+    const total=Object.keys(curMonth).filter(k=>k.startsWith('d')).length;
     return`<div class="staff-card" onclick="openStaff(${i})">
       <div class="sc-head">
         <div class="sc-avatar">👤</div>
@@ -1034,7 +1036,7 @@ function renderStaffList(){
       <div class="sc-details">
         <div class="sd"><div class="sd-l">今月稼働</div><div class="sd-v">${td}日 / ${toStr(tw)||'0:00'}</div></div>
         <div class="sd"><div class="sd-l">今月報酬</div><div class="sd-v pay">¥${pay.toLocaleString()}</div></div>
-        <div class="sd"><div class="sd-l">支払い合計</div><div class="sd-v pay" style="font-size:12px">¥${(pay+tf).toLocaleString()}</div></div>
+        <div class="sd"><div class="sd-l">支払い合計</div><div class="sd-v pay" style="font-size:12px">¥${grandTotal.toLocaleString()}</div></div>
         <div class="sd"><div class="sd-l">交通費</div><div class="sd-v">¥${tf.toLocaleString()}</div></div>
         <div class="sd"><div class="sd-l">確定 / 合計</div><div class="sd-v">${confirmed} / ${total}</div></div>
         <div class="sd"><div class="sd-l">締結日</div><div class="sd-v">${signed}</div></div>
@@ -1073,33 +1075,60 @@ function openStaff(i){
     <div style="font-size:12px">契約：${(currentStaff.contracts||[]).join('・')}</div>
     <div style="font-size:11px;color:#b08090;margin-top:4px">電子署名：</div>
     ${signImg}
-    <button style="margin-top:8px;font-size:11px;padding:5px 12px;background:none;border:1px solid #f9c8d5;border-radius:8px;cursor:pointer;color:#d4537a;font-family:'Zen Maru Gothic',sans-serif" onclick="viewStaffContract()">📋 契約書を印刷</button>`;
+    <button style="margin-top:8px;font-size:11px;padding:5px 12px;background:none;border:1px solid #f9c8d5;border-radius:8px;cursor:pointer;color:#d4537a;font-family:'Zen Maru Gothic',sans-serif" onclick="viewStaffContract()">📋 契約書を印刷</button>
+    <button style="margin-top:8px;margin-left:6px;font-size:11px;padding:5px 12px;background:#d4537a;border:none;border-radius:8px;cursor:pointer;color:#fff;font-family:'Zen Maru Gothic',sans-serif" onclick="copyStaffURL()">🔗 打刻URLをコピー</button>`;
   // Work table
   loadWorkData();
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
+function copyStaffURL(){
+  const url='https://seishokai.github.io/shareconnect/?staff&id='+currentStaff.id;
+  navigator.clipboard.writeText(url).then(()=>toast('🔗 打刻URLをコピーしました')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('🔗 打刻URLをコピーしました');
+  });
+}
 
 function loadWorkData(){
   const yr=+document.getElementById('mYear').value;
   const mo=+document.getElementById('mMonth').value;
-  // Firestoreから取得したworkDataを優先
   const workData=currentStaff.workData||JSON.parse(ls('sc_admin_work_'+currentStaff.id)||'{}');
   const key=`${yr}-${pad(mo)}_${currentStaff.name}`;
   const md=workData[key]||{};
-  const keys=Object.keys(md).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
+  const curRate=md.rate||DEF_RATE;
+  const curSnsCount=md.snsCount||0;
+  const curSnsRate=md.snsRate||2000;
+  const keys=Object.keys(md).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
   const el=document.getElementById('mWorkTable');
-  if(!keys.length){el.innerHTML='<div style="font-size:12px;color:#b08090;padding:8px 0">この月の稼働記録がありません</div>';return}
-  let tw=0,tf=0;
+  // 時給・SNS設定欄
+  let settingsHTML=`
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;padding:10px 12px;background:#fde8ee;border-radius:10px">
+      <div style="flex:1;min-width:100px">
+        <div style="font-size:10px;font-weight:700;color:#b08090;margin-bottom:3px">時給（税込）</div>
+        <input type="number" id="mRate" value="${curRate}" style="width:100%;padding:6px 8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:14px;font-weight:700;color:#d4537a;background:#fff;box-sizing:border-box" onchange="saveMonthSettings()">
+      </div>
+      <div style="flex:1;min-width:80px">
+        <div style="font-size:10px;font-weight:700;color:#b08090;margin-bottom:3px">SNS投稿数</div>
+        <input type="number" id="mSnsCount" value="${curSnsCount}" min="0" style="width:100%;padding:6px 8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:14px;font-weight:700;color:#e07b3a;background:#fff;box-sizing:border-box" onchange="saveMonthSettings()">
+      </div>
+      <div style="flex:1;min-width:80px">
+        <div style="font-size:10px;font-weight:700;color:#b08090;margin-bottom:3px">SNS単価</div>
+        <input type="number" id="mSnsRate" value="${curSnsRate}" style="width:100%;padding:6px 8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:14px;font-weight:700;color:#e07b3a;background:#fff;box-sizing:border-box" onchange="saveMonthSettings()">
+      </div>
+    </div>`;
+  if(!keys.length){el.innerHTML=settingsHTML+'<div style="font-size:12px;color:#b08090;padding:8px 0">この月の稼働記録がありません</div>';return}
+  let tw=0,tf=0,twa=0;
   const rows=keys.map(d=>{
     const r=md[`d${d}`];const dt=new Date(yr,mo-1,d);
-    const wm=calcWork(r),pay=calcPay(wm),fare=calcFare(r);
-    tw+=wm||0;tf+=fare;
+    const wm=calcWork(r),pay=calcPay(wm,curRate),fare=calcFare(r);
+    tw+=wm||0;tf+=fare;twa+=(r.weekendAllow||0);
     const st=r.ok?'<span style="font-size:9px;background:#d4f0e0;color:#4caf7d;padding:1px 6px;border-radius:20px;font-weight:700">✓</span>':'<span style="font-size:9px;background:#fdefd8;color:#e0963a;padding:1px 6px;border-radius:20px;font-weight:700">仮</span>';
     return`<tr><td>${mo}/${d}${WD[dt.getDay()]}</td><td>${r.store||'—'}</td><td>${wm!=null?toStr(wm):'—'}</td><td style="text-align:right">${pay?'¥'+pay.toLocaleString():'—'}</td><td style="text-align:right">${fare?'¥'+fare.toLocaleString():'—'}</td><td>${st}</td></tr>`;
   });
-  const tPay=calcPay(tw);
-  el.innerHTML=`
+  const tPay=calcPay(tw,curRate);
+  const snsPay=curSnsCount*curSnsRate;
+  const grandTotal=tPay+tf+twa+snsPay;
+  el.innerHTML=settingsHTML+`
     <table class="work-table">
       <thead><tr><th>日付</th><th>店舗</th><th>稼働</th><th>報酬</th><th>交通費</th><th>状態</th></tr></thead>
       <tbody>${rows.join('')}</tbody>
@@ -1108,8 +1137,25 @@ function loadWorkData(){
       <div class="tot-item"><div class="tot-v">${toStr(tw)||'0:00'}</div><div class="tot-l">総稼働</div></div>
       <div class="tot-item"><div class="tot-v">¥${tPay.toLocaleString()}</div><div class="tot-l">報酬</div></div>
       <div class="tot-item"><div class="tot-v">¥${tf.toLocaleString()}</div><div class="tot-l">交通費</div></div>
-      <div class="tot-item"><div class="tot-v">¥${(tPay+tf).toLocaleString()}</div><div class="tot-l">合計</div></div>
+      ${twa>0?`<div class="tot-item"><div class="tot-v">¥${twa.toLocaleString()}</div><div class="tot-l">土日手当</div></div>`:''}
+      ${snsPay>0?`<div class="tot-item"><div class="tot-v">¥${snsPay.toLocaleString()}</div><div class="tot-l">SNS協力費</div></div>`:''}
+      <div class="tot-item"><div class="tot-v" style="color:#d4537a;font-size:18px">¥${grandTotal.toLocaleString()}</div><div class="tot-l">合計</div></div>
     </div>`;
+}
+function saveMonthSettings(){
+  const yr=+document.getElementById('mYear').value;
+  const mo=+document.getElementById('mMonth').value;
+  const key=`${yr}-${pad(mo)}_${currentStaff.name}`;
+  const workData=currentStaff.workData||JSON.parse(ls('sc_admin_work_'+currentStaff.id)||'{}');
+  if(!workData[key])workData[key]={};
+  workData[key].rate=parseInt(document.getElementById('mRate').value)||DEF_RATE;
+  workData[key].snsCount=parseInt(document.getElementById('mSnsCount').value)||0;
+  workData[key].snsRate=parseInt(document.getElementById('mSnsRate').value)||2000;
+  currentStaff.workData=workData;
+  save('sc_admin_work_'+currentStaff.id,workData);
+  if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({workData:workData},{merge:true}).catch(e=>console.error(e));
+  loadWorkData();
+  toast('💾 設定を保存しました');
 }
 
 function viewStaffContract(){
@@ -1166,16 +1212,20 @@ function openStaffNotice(){
   const workData=currentStaff.workData||JSON.parse(ls('sc_admin_work_'+currentStaff.id)||'{}');
   const key=`${yr}-${pad(mo)}_${currentStaff.name}`;
   const md=workData[key]||{};
-  const keys=Object.keys(md).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
+  const mRate=md.rate||DEF_RATE;
+  const mSnsCount=md.snsCount||0;
+  const mSnsRate=md.snsRate||2000;
+  const keys=Object.keys(md).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
   if(!keys.length){toast('稼働記録がありません');return}
-  let tw=0,tf=0;
+  let tw=0,tf=0,twa=0;
   const rows=keys.map(d=>{
     const r=md[`d${d}`]||{};const dt=new Date(yr,mo-1,d);
-    const wm=calcWork(r),pay=calcPay(wm),fare=calcFare(r);
-    tw+=wm||0;tf+=fare;
+    const wm=calcWork(r),pay=calcPay(wm,mRate),fare=calcFare(r);
+    tw+=wm||0;tf+=fare;twa+=(r.weekendAllow||0);
     return`<tr><td>${mo}/${d}</td><td>${WD[dt.getDay()]}</td><td>${r.store||'—'}</td><td>${wm!=null?toStr(wm):'—'}</td><td style="text-align:right">${pay?'¥'+pay.toLocaleString():'—'}</td><td style="text-align:right">${fare?'¥'+fare.toLocaleString():'—'}</td></tr>`;
   });
-  const tPay=calcPay(tw);
+  const tPay=calcPay(tw,mRate);
+  const snsPay=mSnsCount*mSnsRate;
   const now=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
   document.getElementById('nContent').innerHTML=`
     <div id="pTarget">
@@ -1189,11 +1239,12 @@ function openStaffNotice(){
       </table>
       <div class="n-tot">
         <div class="n-tr"><span>稼働合計時間</span><span><b>${toStr(tw)}</b></span></div>
-        <div class="n-tr"><span>時給単価</span><span>¥${DEF_RATE.toLocaleString()}</span></div>
+        <div class="n-tr"><span>時給単価</span><span>¥${mRate.toLocaleString()}</span></div>
         <div class="n-tr"><span>業務委託報酬</span><span>¥${tPay.toLocaleString()}</span></div>
         ${twa>0?`<div class="n-tr"><span>土日手当</span><span>¥${twa.toLocaleString()}</span></div>`:''}
         <div class="n-tr"><span>交通費</span><span>¥${tf.toLocaleString()}</span></div>
-        <div class="n-tr big"><span>お支払い合計</span><span>¥${(tPay+twa+tf).toLocaleString()}</span></div>
+        ${snsPay>0?`<div class="n-tr"><span>SNS撮影協力費（${mSnsCount}件 × ¥${mSnsRate.toLocaleString()}）</span><span>¥${snsPay.toLocaleString()}</span></div>`:''}
+        <div class="n-tr big"><span>お支払い合計</span><span>¥${(tPay+twa+tf+snsPay).toLocaleString()}</span></div>
       </div>
       <div style="font-size:11px;color:#aaa;text-align:center;margin-top:10px">振込先：${currentStaff.bank||'—'} ${currentStaff.branch||''} ${currentStaff.accType||''} ${currentStaff.accNum||''} ${currentStaff.accName||''}</div>
     </div>`;
