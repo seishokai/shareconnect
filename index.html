@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <meta name="color-scheme" content="light">
 <title>シェアコネクト</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Zen+Maru+Gothic:wght@400;500;700&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
 <style>
 /* Base */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -235,7 +235,8 @@ html,body{min-height:100svh;background:#fff5f7;color:#3a2030;font-family:'Zen Ma
 .contract-scroll h4{font-size:12px;font-weight:700;color:#3a2030;margin:12px 0 4px;border-bottom:1px solid var(--border);padding-bottom:2px}
 .sign-hint{background:#fde8ee;border-radius:12px;padding:12px 14px;margin-bottom:10px;font-size:12px;color:#b08090}
 #signCanvas{width:100%;height:200px;border:2px solid #d4537a;border-radius:14px;background:#fffafb;touch-action:none;cursor:crosshair;display:block;box-shadow:inset 0 2px 8px rgba(212,83,122,.08)}
-.clear-btn{background:none;border:1px solid #f9c8d5;border-radius:8px;padding:5px 14px;font-size:11px;color:#b08090;cursor:pointer;margin-top:6px}
+.sign-preview-box{background:#fffafb;border:2px solid #d4537a;border-radius:14px;padding:20px 24px;text-align:center;min-height:80px;display:flex;align-items:center;justify-content:center;margin-top:8px}
+.sign-preview-text{font-family:'Dancing Script',cursive,serif;font-size:34px;color:#3a2030;letter-spacing:2px}
 
 /* ─ Complete ─ */
 .complete-ico{font-size:64px;text-align:center;margin:20px 0 10px}
@@ -607,12 +608,19 @@ window.__auth = _auth;
   <!-- Step 2: Contract -->
   <div id="s2" class="hidden">
     <div style="font-size:16px;font-weight:700;color:var(--acc);margin-bottom:4px">📋 業務委託契約書</div>
-    <div style="font-size:12px;color:#b08090;margin-bottom:12px">内容をご確認のうえ、手書きでサインしてください。</div>
+    <div style="font-size:12px;color:#b08090;margin-bottom:12px">内容をご確認のうえ、お名前でサインしてください。</div>
     <div class="contract-scroll" id="contractBox"></div>
-    <div class="sign-hint">✍️ 上記に同意のうえ、手書きでサインしてください（指でなぞる）</div>
-    <canvas id="signCanvas"></canvas>
-    <button class="clear-btn" onclick="clearCanvas()">クリア</button>
-    <div class="err-msg" id="eS" style="margin-top:6px">サインを入力してください</div>
+    <div class="sign-hint">✍️ 上記に同意のうえ、フルネームを入力してサインしてください</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:6px">
+      <div class="field" style="margin:0">
+        <div class="lbl">お名前（フルネーム）</div>
+        <input class="inp" id="signName" type="text" placeholder="例：山田 花子" oninput="updateSignPreview()" autocomplete="name" style="font-size:16px">
+        <div class="err-msg" id="eS">お名前を入力してください</div>
+      </div>
+      <div id="signPreview" class="sign-preview-box" style="display:none">
+        <div id="signPreviewText" class="sign-preview-text"></div>
+      </div>
+    </div>
   </div>
 
   <!-- Step 3: Complete -->
@@ -1052,9 +1060,13 @@ function openStaff(i){
     <div class="ig"><div class="ig-l">種別・番号</div><div class="ig-v">${currentStaff.accType||''} ${currentStaff.accNum||'—'}</div></div>
     <div class="ig"><div class="ig-l">口座名義</div><div class="ig-v">${currentStaff.accName||'—'}</div></div>`;
   // Contract
-  const signImg=currentStaff.signData&&currentStaff.signData.startsWith('data:')?
+  const signImg=currentStaff.signData?(
+    currentStaff.signData.startsWith('data:')?
     `<img src="${currentStaff.signData}" style="max-height:60px;border:1px solid #f9c8d5;border-radius:8px;margin-top:6px;display:block">`:
-    '<div style="color:#b08090;font-size:12px">署名データなし</div>';
+    currentStaff.signData.startsWith('text:')?
+    `<div style="font-family:'Dancing Script',cursive,serif;font-size:24px;color:#3a2030;padding:8px 12px;background:#fffafb;border:1px solid #f9c8d5;border-radius:8px;margin-top:6px;display:inline-block">${currentStaff.signData.slice(5)}</div>`:
+    '<div style="color:#b08090;font-size:12px">署名データなし</div>'
+  ):'<div style="color:#b08090;font-size:12px">署名データなし</div>';
   document.getElementById('mContractInfo').innerHTML=`
     <div style="font-size:12px;color:#b08090;margin-bottom:4px">締結日：${currentStaff.signedAt?new Date(currentStaff.signedAt).toLocaleDateString('ja-JP'):'未締結'}</div>
     <div style="font-size:12px">契約：${(currentStaff.contracts||[]).join('・')}</div>
@@ -1101,7 +1113,10 @@ function loadWorkData(){
 
 function viewStaffContract(){
   if(!currentStaff)return;
-  const si=currentStaff.signData&&currentStaff.signData.startsWith('data:')?`<img src="${currentStaff.signData}" style="max-height:70px;border:1px solid #f9c8d5;border-radius:8px;display:block;margin:6px 0">`:'' ;
+  const si=currentStaff.signData?(
+    currentStaff.signData.startsWith('data:')?`<img src="${currentStaff.signData}" style="max-height:70px;border:1px solid #f9c8d5;border-radius:8px;display:block;margin:6px 0">`:
+    currentStaff.signData.startsWith('text:')?`<div style="font-family:'Dancing Script',cursive,serif;font-size:28px;color:#3a2030;padding:6px 12px;border-bottom:2px solid #3a2030;display:inline-block;margin:6px 0">${currentStaff.signData.slice(5)}</div>`:''
+  ):'';
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>業務委託契約書</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
@@ -1453,7 +1468,7 @@ function boot(){
       }
     }catch(e){}
     document.getElementById('contractBox').innerHTML = contractHTML || buildContract('');
-    setTimeout(initCanvas, 100);
+    // テキスト入力サイン - canvas不要
     show('screenOB');
   } else if(!isApproved(u)) {
     showPending(u);
@@ -1593,7 +1608,8 @@ function buildSummary(){
     `<div style="font-size:11px;color:#b08090;margin-top:4px">署名日：${new Date().toLocaleDateString('ja-JP')}</div>`;
 }
 function finishOB(){
-  const signData=document.getElementById('signCanvas').toDataURL();
+  const signNameVal=document.getElementById('signName')?.value?.trim()||'';
+  const signData='text:'+signNameVal;
   const u={
     name:vv('obName'),birth:vv('obBirth'),phone:vv('obPhone'),email:vv('obEmail'),
     addr:vv('obAddr'),station:vv('obStation'),bank:vv('obBank'),branch:vv('obBranch'),
@@ -1883,7 +1899,10 @@ function buildContract(name){
 
 function viewContract(){
   const u=JSON.parse(ls(UK)||'null');if(!u){toast('登録情報がありません');return}
-  const si=u.signData&&u.signData.startsWith('data:')?`<img src="${u.signData}" style="max-height:70px;border:1px solid #f9c8d5;border-radius:8px;display:block;margin:6px 0">`:'' ;
+  const si=u.signData?(
+    u.signData.startsWith('data:')?`<img src="${u.signData}" style="max-height:70px;border:1px solid #f9c8d5;border-radius:8px;display:block;margin:6px 0">`:
+    u.signData.startsWith('text:')?`<div style="font-family:'Dancing Script',cursive,serif;font-size:28px;color:#3a2030;padding:6px 12px;border-bottom:2px solid #3a2030;display:inline-block;margin:6px 0">${u.signData.slice(5)}</div>`:''
+  ):'';
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>業務委託契約書</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
@@ -2074,12 +2093,20 @@ function initCanvas(){
   },{passive:false});
   c.addEventListener('touchend',()=>{signing=false;pts=[]});
 }
-function clearCanvas(){const c=document.getElementById('signCanvas');c.getContext('2d').clearRect(0,0,c.width,c.height)}
 function canvasHasContent(){
-  const c=document.getElementById('signCanvas');
-  const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
-  for(let i=3;i<d.length;i+=4)if(d[i]>10)return true;
-  return false;
+  const v=document.getElementById('signName')?.value?.trim();
+  return v && v.length>=2;
+}
+function updateSignPreview(){
+  const v=document.getElementById('signName')?.value?.trim();
+  const preview=document.getElementById('signPreview');
+  const text=document.getElementById('signPreviewText');
+  if(v&&v.length>=1){
+    preview.style.display='flex';
+    text.textContent=v;
+  } else {
+    preview.style.display='none';
+  }
 }
   boot();
 }
