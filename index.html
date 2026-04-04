@@ -821,7 +821,7 @@ window.__auth = _auth;
 <div class="toast" id="toast"></div>
 </div>
 
-
+<script>
 // ── Firebase Auth & Firestore ──────────────────────────────
 function doLogin(){
   const email = document.getElementById('loginEmail').value.trim();
@@ -925,6 +925,7 @@ async function approveStaffCloud(staffId){
   refreshAll();
   toast('✅ 承認しました');
 }
+</script>
 
 <!-- Router -->
 <script>
