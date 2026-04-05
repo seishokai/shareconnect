@@ -940,6 +940,7 @@ async function approveStaffCloud(staffId){
   window.__SC_MODE = isStaff ? 'staff' : 'admin';
   if(isStaff){
     document.getElementById('staffApp').className = 'show';
+    document.getElementById('adminApp').style.display = 'none';
     document.getElementById('staffCSS').media = 'all';
     document.title = 'シェアコネクト 稼働記録';
     document.getElementById('loginScreen').style.display = 'none';
@@ -1511,25 +1512,47 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 
 // ── Boot ───────────────────────────────────────────
 function boot(){
-  const u=JSON.parse(ls(UK)||'null');
+  // ?staff&id=xxx でアクセスした場合、Firestoreからスタッフデータを読み込み
+  const params=new URLSearchParams(location.search);
+  const urlId=params.get('id');
+  if(urlId && window.__db){
+    window.__db.collection('staff').doc(urlId).get().then(doc=>{
+      if(doc.exists){
+        const data=doc.data();
+        const u={...data, id:urlId, approved:true};
+        save(UK, u);
+        // workDataがあればローカルにも保存
+        if(data.workData){
+          save(SK, data.workData);
+          db=data.workData;
+        }
+        startApp(u);
+      } else {
+        // Firestoreにない場合、localStorageを確認
+        const u=JSON.parse(ls(UK)||'null');
+        if(u && u.id===urlId) startApp(u);
+        else { show('screenOB'); document.getElementById('contractBox').innerHTML=buildContract(''); }
+      }
+    }).catch(()=>{
+      const u=JSON.parse(ls(UK)||'null');
+      if(u) startApp(u);
+      else { show('screenOB'); document.getElementById('contractBox').innerHTML=buildContract(''); }
+    });
+    return;
+  }
 
+  const u=JSON.parse(ls(UK)||'null');
   if(!u){
-    // Try to load contract from URL param ?i=
     let contractHTML = null;
-    let tmplIdFromUrl = null;
     try{
-      const params = new URLSearchParams(location.search);
       const raw = params.get('i');
       if(raw){
         const decoded = JSON.parse(decodeURIComponent(escape(atob(raw))));
-        tmplIdFromUrl = decoded.tmplId;
-        // Try to get full body from localStorage (same origin) or use default
-        const stored = JSON.parse(ls('sc_invite_'+tmplIdFromUrl)||'null');
+        const stored = JSON.parse(ls('sc_invite_'+decoded.tmplId)||'null');
         if(stored && stored.body) contractHTML = stored.body;
       }
     }catch(e){}
     document.getElementById('contractBox').innerHTML = contractHTML || buildContract('');
-    // テキスト入力サイン - canvas不要
     show('screenOB');
   } else if(!isApproved(u)) {
     showPending(u);
