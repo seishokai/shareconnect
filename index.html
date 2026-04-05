@@ -568,7 +568,10 @@ window.__auth = _auth;
 
 <div id="staffApp">
 <!-- ══ SCREEN: ONBOARDING ══ -->
-<div class="screen active" id="screenOB">
+<div class="screen" id="screenLoading" style="display:flex;align-items:center;justify-content:center;min-height:60vh">
+  <div style="text-align:center"><div style="font-size:40px;margin-bottom:12px">🌸</div><div style="font-size:14px;color:#b08090">読み込み中...</div></div>
+</div>
+<div class="screen" id="screenOB">
 <div class="ob-hero">
   <div class="ico">🌸</div>
   <h1>シェアコネクト<br>業務委託 初期登録</h1>
@@ -1521,7 +1524,9 @@ function boot(){
   // ?staff&id=xxx でアクセスした場合、Firestoreからスタッフデータを読み込み
   const params=new URLSearchParams(location.search);
   const urlId=params.get('id');
-  if(urlId && window.__db){
+  if(urlId){
+    show('screenLoading');
+    if(!window.__db){const u=JSON.parse(ls(UK)||'null');if(u)startApp(u);else show('screenOB');return}
     window.__db.collection('staff').doc(urlId).get().then(doc=>{
       if(doc.exists){
         const data=doc.data();
