@@ -489,6 +489,10 @@ window.__auth = _auth;
         <div class="lbl">契約書テンプレートを選択</div>
         <select class="inp" id="inviteContract" style="font-family:'Zen Maru Gothic',sans-serif"></select>
       </div>
+      <div class="field" style="margin:8px 0">
+        <div class="lbl" style="font-size:11px;font-weight:700;color:#b08090;margin-bottom:4px">📅 契約締結日</div>
+        <input type="date" class="inp" id="inviteSignDate" style="font-family:'Zen Maru Gothic',sans-serif;padding:8px 12px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:14px;color:#3a2030;background:#fff5f7">
+      </div>
       <button class="sbtn" onclick="generateInvite()">🔗 招待URLを発行する</button>
       <div id="inviteResult" style="display:none;margin-top:14px">
         <div style="background:#edfaf3;border:1.5px solid #88d4a8;border-radius:12px;padding:12px 14px;margin-bottom:10px">
@@ -1360,10 +1364,12 @@ function generateInvite(){
   const tmplId=document.getElementById('inviteContract').value;
   const tmpl=templates.find(t=>t.id===tmplId);
   if(!tmpl){toast('テンプレートを選んでください');return}
+  const signDate=document.getElementById('inviteSignDate').value;
+  if(!signDate){toast('契約締結日を入力してください');return}
     localStorage.setItem('sc_invite_'+tmplId, JSON.stringify({tmplId,tmplName:tmpl.name,body:tmpl.body}));
   localStorage.setItem('sc_active_tmpl', tmplId);
   const base = 'https://seishokai.github.io/shareconnect/';
-  const payload = btoa(unescape(encodeURIComponent(JSON.stringify({v:1,tmplId:tmplId,tmplName:tmpl.name}))));
+  const payload = btoa(unescape(encodeURIComponent(JSON.stringify({v:1,tmplId:tmplId,tmplName:tmpl.name,signDate:signDate}))));
   const url = base + '?staff&i=' + payload;
   document.getElementById('inviteUrl').textContent = url;
   document.getElementById('inviteResult').style.display='block';
@@ -1561,6 +1567,7 @@ function boot(){
         const decoded = JSON.parse(decodeURIComponent(escape(atob(raw))));
         const stored = JSON.parse(ls('sc_invite_'+decoded.tmplId)||'null');
         if(stored && stored.body) contractHTML = stored.body;
+        if(decoded.signDate) localStorage.setItem('sc_signDate', decoded.signDate);
       }
     }catch(e){}
     document.getElementById('contractBox').innerHTML = contractHTML || buildContract('');
@@ -1709,7 +1716,7 @@ function finishOB(){
     name:vv('obName'),birth:vv('obBirth'),phone:vv('obPhone'),email:vv('obEmail'),
     addr:vv('obAddr'),station:vv('obStation'),bank:vv('obBank'),branch:vv('obBranch'),
     accType:document.getElementById('obAccType').value,accNum:vv('obAccNum'),accName:vv('obAccName'),
-    signData,signedAt:new Date().toISOString(),contracts:['歯科衛生士業務','動画撮影業務'],
+    signData,signedAt:ls('sc_signDate')?new Date(ls('sc_signDate')).toISOString():new Date().toISOString(),contracts:['歯科衛生士業務','動画撮影業務'],
     id:'u_'+Date.now()
   };
   u.approved=false;
