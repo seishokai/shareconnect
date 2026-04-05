@@ -274,6 +274,8 @@ html,body{min-height:100svh;background:#fff5f7;color:#3a2030;font-family:'Zen Ma
 .day-chip.today .dn{color:#4a90d9}
 #sOverlay.open{opacity:1;pointer-events:all}
 #snOverlay.open{opacity:1;pointer-events:all}
+.detail-tab{flex:1;padding:8px;font-size:12px;font-weight:700;border:none;background:none;cursor:pointer;color:#b08090;border-bottom:2.5px solid transparent;font-family:'Zen Maru Gothic',sans-serif;transition:all .15s}
+.detail-tab.on{color:#d4537a;border-bottom-color:#d4537a}
 .dept-btn{padding:8px 16px;border:none;border-radius:24px;background:#fde8ee;font-size:12px;font-weight:700;color:#d4537a;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;transition:all .2s;box-shadow:0 1px 4px rgba(212,83,122,.08)}
 .dept-btn.on{background:linear-gradient(135deg,#e8607e,#d4537a);color:#fff;box-shadow:0 3px 12px rgba(212,83,122,.3)}
 .dept-btn:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(212,83,122,.15)}
@@ -529,37 +531,36 @@ window.__auth = _auth;
   </div>
   <div class="m-body">
     <!-- Department + Approve -->
-    <div class="m-sec">
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <span style="font-size:12px;font-weight:700;color:#b08090">🏢 部門</span>
-        <select id="mDept" class="inp" style="flex:1;min-width:100px;padding:6px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7" onchange="saveStaffDept()"></select>
-        <span id="mApproveWrap"></span>
-      </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 0 8px">
+      <select id="mDept" class="inp" style="padding:6px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:12px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7" onchange="saveStaffDept()"></select>
+      <span id="mApproveWrap"></span>
+      <button style="margin-left:auto;font-size:11px;padding:5px 12px;background:#d4537a;border:none;border-radius:8px;cursor:pointer;color:#fff;font-family:'Zen Maru Gothic',sans-serif" onclick="copyStaffURL()">🔗 打刻URL</button>
     </div>
-    <!-- Basic info -->
-    <div class="m-sec">
-      <div class="m-sec-ttl">👤 基本情報</div>
-      <div class="info-grid" id="mBasicInfo"></div>
-    </div>
-    <!-- Bank -->
-    <div class="m-sec">
-      <div class="m-sec-ttl">🏦 振込先口座</div>
-      <div class="info-grid" id="mBankInfo"></div>
-    </div>
-    <!-- Contract -->
-    <div class="m-sec">
-      <div class="m-sec-ttl">📋 契約情報</div>
-      <div id="mContractInfo"></div>
-    </div>
-    <!-- Work data -->
-    <div class="m-sec">
-      <div class="m-sec-ttl">📅 稼働データ</div>
-      <div class="month-sel">
-        <select id="mYear"></select>
-        <select id="mMonth"></select>
-        <button style="padding:6px 12px;background:var(--acc);color:#fff;border:none;border-radius:8px;font-family:'Zen Maru Gothic',sans-serif;font-size:12px;cursor:pointer" onclick="loadWorkData()">表示</button>
+
+    <!-- ★ 勤怠データ（メイン） -->
+    <div style="background:#fff;border:2px solid #d4537a;border-radius:14px;padding:12px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="font-size:14px;font-weight:700;color:#d4537a">📅 稼働データ</span>
+        <select id="mYear" style="padding:4px 8px;border:1px solid #f9c8d5;border-radius:6px;font-size:12px;font-family:'Zen Maru Gothic',sans-serif"></select>
+        <select id="mMonth" style="padding:4px 8px;border:1px solid #f9c8d5;border-radius:6px;font-size:12px;font-family:'Zen Maru Gothic',sans-serif"></select>
+        <button style="padding:4px 10px;background:var(--acc);color:#fff;border:none;border-radius:6px;font-family:'Zen Maru Gothic',sans-serif;font-size:11px;cursor:pointer" onclick="loadWorkData()">表示</button>
       </div>
       <div id="mWorkTable"></div>
+    </div>
+
+    <!-- タブ切替：基本情報 / 口座・契約 -->
+    <div style="display:flex;border-bottom:2px solid #f9c8d5;margin-bottom:8px">
+      <button class="detail-tab on" onclick="switchDetailTab('info',this)">👤 基本情報</button>
+      <button class="detail-tab" onclick="switchDetailTab('bank',this)">🏦 口座・契約</button>
+    </div>
+    <div id="detailInfo">
+      <div class="info-grid" id="mBasicInfo"></div>
+    </div>
+    <div id="detailBank" style="display:none">
+      <div class="m-sec-ttl" style="margin-bottom:4px">🏦 振込先口座</div>
+      <div class="info-grid" id="mBankInfo"></div>
+      <div class="m-sec-ttl" style="margin-top:10px;margin-bottom:4px">📋 契約情報</div>
+      <div id="mContractInfo"></div>
     </div>
   </div>
   <div class="m-foot">
@@ -1060,6 +1061,12 @@ function renderDeptFilter(){
     `<button class="dept-btn" onclick="addDept()" style="color:#d4537a;border-style:dashed">+ 追加</button>`;
 }
 function filterDept(d){_deptFilter=d;renderStaffList()}
+function switchDetailTab(tab,btn){
+  document.getElementById('detailInfo').style.display=tab==='info'?'':'none';
+  document.getElementById('detailBank').style.display=tab==='bank'?'':'none';
+  document.querySelectorAll('.detail-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
 function approveCurrentStaff(){
   if(!currentStaff)return;
   currentStaff.approved=true;
