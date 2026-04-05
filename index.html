@@ -1978,8 +1978,12 @@ function buildCards(){
     if(wm)details.push(`稼働 ${toStr(wm)}`);
     if(r.rest)details.push(`休憩 ${r.rest}分`);
     if(pay)details.push(`報酬 ¥${pay.toLocaleString()}`);
-    if(fare)details.push(`交通費 ¥${fare.toLocaleString()}`);
-    if(ta)details.push(`出張 ¥${ta.toLocaleString()}`);
+    // 交通費から出張手当を分離表示
+    const tripInFare=(r.r2a&&r.r2a.includes('出張'))?parseInt(r.f2a)||0:0;
+    const pureFare=fare-tripInFare;
+    if(pureFare)details.push(`交通費 ¥${pureFare.toLocaleString()}`);
+    if(tripInFare)details.push(`出張 ¥${tripInFare.toLocaleString()}`);
+    if(ta)details.push(`出張手当 ¥${ta.toLocaleString()}`);
     if(wa)details.push(`土日 ¥${wa.toLocaleString()}`);
     return`<div class="${cls}" onclick="openModal(${d})" style="cursor:pointer">
       <div class="wc-row">
@@ -1996,17 +2000,19 @@ function buildCards(){
   }).join('');
   // 合計金額セクション
   const md2=getMD();
-  let ttw=0,ttf=0,ttwa=0,ttta=0;
-  Object.entries(md2).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)ttw+=wm;ttf+=calcFare(r);ttwa+=(r.weekendAllow||0);ttta+=(r.tripAllow||0)});
+  let ttw=0,ttf=0,ttwa=0,ttta=0,ttTrip=0;
+  Object.entries(md2).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)ttw+=wm;ttf+=calcFare(r);ttwa+=(r.weekendAllow||0);ttta+=(r.tripAllow||0);if(r.r2a&&r.r2a.includes('出張'))ttTrip+=(parseInt(r.f2a)||0)});
+  const ttPureFare=ttf-ttTrip;
   const ttPay=calcPay(ttw);
   const ttSns=(md2.snsCount||0)*(md2.snsRate||2000);
+  const ttAllTrip=ttta+ttTrip;
   const ttAll=ttPay+ttf+ttwa+ttta+ttSns;
   const allOk=keys.every(d=>md2[`d${d}`]?.ok);
   w.innerHTML+=`
     <div style="background:linear-gradient(135deg,#fce8ef,#fff);border:2px solid #d4537a;border-radius:14px;padding:14px 16px;margin-top:8px">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
         <div>
-          <div style="font-size:11px;color:#b08090">報酬 ¥${ttPay.toLocaleString()} + 交通費 ¥${ttf.toLocaleString()}${ttta>0?' + 出張 ¥'+ttta.toLocaleString():''}${ttwa>0?' + 土日 ¥'+ttwa.toLocaleString():''}${ttSns>0?' + SNS ¥'+ttSns.toLocaleString():''}</div>
+          <div style="font-size:11px;color:#b08090">報酬 ¥${ttPay.toLocaleString()} + 交通費 ¥${ttPureFare.toLocaleString()}${ttAllTrip>0?' + 出張 ¥'+ttAllTrip.toLocaleString():''}${ttwa>0?' + 土日 ¥'+ttwa.toLocaleString():''}${ttSns>0?' + SNS ¥'+ttSns.toLocaleString():''}</div>
           <div style="font-size:24px;font-weight:700;color:#d4537a;margin-top:2px">合計 ¥${ttAll.toLocaleString()}</div>
         </div>
         <div style="display:flex;align-items:center;gap:6px">
