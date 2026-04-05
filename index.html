@@ -1789,19 +1789,31 @@ function buildCards(){
     const r=md[`d${d}`];
     const dt=new Date(yr,mo-1,d),wd=dt.getDay();
     const sat=wd===6,sun=wd===0;
-    const wm=calcWork(r),pay=calcPay(wm);
+    const wm=calcWork(r),pay=calcPay(wm),fare=calcFare(r),wa=parseInt(r.weekendAllow)||0;
+    const total=pay+fare+wa;
     const st=r.ok?`<span class="wc-st confirmed">✓</span>`:`<span class="wc-st draft">仮</span>`;
     let cls='work-card '+(r.ok?'confirmed':'draft');
     if(sat)cls+=' sat';if(sun)cls+=' sun';
     const tStr=r.in&&r.out?`${r.in}〜${r.out}`:'--';
-    return`<div class="${cls}"><div class="wc-row">
-      <span class="wc-date">${mo}/${d}</span>
-      <span class="wc-wd${sat?' sat':sun?' sun':''}">${WD[wd]}</span>
-      ${st}<span class="wc-store">${r.store||'—'}</span>
-      <span class="wc-time">${tStr}${r.rest!=null?' 休'+r.rest+'分':''}</span>
-      <span class="wc-pay">${(pay+(parseInt(r.weekendAllow)||0))?'¥'+(pay+(parseInt(r.weekendAllow)||0)).toLocaleString():''}</span>
-      <button class="wc-edit" onclick="openModal(${d})">編集</button>
-    </div></div>`;
+    // 詳細行
+    const details=[];
+    if(wm)details.push(`稼働 ${toStr(wm)}`);
+    if(r.rest)details.push(`休憩 ${r.rest}分`);
+    if(pay)details.push(`報酬 ¥${pay.toLocaleString()}`);
+    if(fare)details.push(`交通費 ¥${fare.toLocaleString()}`);
+    if(wa)details.push(`手当 ¥${wa.toLocaleString()}`);
+    return`<div class="${cls}" onclick="openModal(${d})" style="cursor:pointer">
+      <div class="wc-row">
+        <span class="wc-date">${mo}/${d}</span>
+        <span class="wc-wd${sat?' sat':sun?' sun':''}">${WD[wd]}</span>
+        ${st}<span class="wc-store">${r.store||'—'}</span>
+        <span class="wc-time">${tStr}</span>
+        <span class="wc-pay">¥${total.toLocaleString()}</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;padding:2px 0 2px 42px;font-size:10px;color:#b08090">
+        ${details.map(d=>`<span>${d}</span>`).join('<span>|</span>')}
+      </div>
+    </div>`;
   }).join('');
 }
 
