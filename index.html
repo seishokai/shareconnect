@@ -754,7 +754,8 @@ window.__auth = _auth;
 </div>
 
 <div class="app-foot">
-  <button class="af-btn af-pink" onclick="openNotice()" style="width:100%">📄 支払通知書</button>
+  <button class="af-btn af-pink" onclick="openNotice()" style="flex:1">📄 通知書</button>
+  <button class="af-btn" onclick="submitForApproval()" style="flex:1;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff" id="submitBtn">📨 承認申請</button>
 </div>
 </div>
 
@@ -1918,7 +1919,13 @@ function startApp(u){
 function render(){
   const md=getMD();
   const cl=document.getElementById('calLabel');
-  if(cl)cl.innerHTML=md.locked?'🔒 この月は承認済みです（閲覧のみ）':'🗓 稼働日を選択';
+  if(cl)cl.innerHTML=md.locked?'🔒 この月は承認済みです（閲覧のみ）':md.submitted?'📨 承認申請済み（承認待ち）':'🗓 稼働日を選択';
+  const sb=document.getElementById('submitBtn');
+  if(sb){
+    if(md.locked){sb.textContent='✅ 承認済';sb.disabled=true;sb.style.background='#888'}
+    else if(md.submitted){sb.textContent='📨 申請済み';sb.disabled=true;sb.style.background='#888'}
+    else{sb.textContent='📨 承認申請';sb.disabled=false;sb.style.background='linear-gradient(135deg,#4caf7d,#3d9a6a)'}
+  }
   buildCal();buildCards();updateSum();
 }
 
@@ -2080,6 +2087,37 @@ function syncAdminData(){
   const allStaff=JSON.parse(ls('sc_admin_staff')||'[]');
   const idx=allStaff.findIndex(s=>s.id===u.id);
   if(idx>=0){allStaff[idx].lastWork=dKey();localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff))}
+}
+function submitForApproval(){
+  const md=getMD();
+  if(md.submitted){toast('📨 この月は既に申請済みです');return}
+  const unc=Object.entries(md).filter(([k,r])=>k.startsWith('d')&&!r.ok).length;
+  if(unc){toast(`⚠️ 未確定${unc}件あります。全日程を確定してから申請してください`);return}
+  const days=Object.keys(md).filter(k=>k.startsWith('d')).length;
+  if(!days){toast('稼働記録がありません');return}
+  if(!confirm(`${yr}年${mo}月の稼働を承認申請しますか？\n申請後は編集できなくなります。`))return;
+  // Calculate total
+  let tw=0,tf=0,twa=0,tta=0;
+  Object.entries(md).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)tw+=wm;tf+=calcFare(r);twa+=(r.weekendAllow||0);tta+=(r.tripAllow||0)});
+  const totalAll=calcPay(tw)+tf+twa+tta+((md.snsCount||0)*(md.snsRate||2000));
+  // Send to Firebase Function
+  fetch('https://us-central1-shareconnect-71706.cloudfunctions.net/requestApproval',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      staffName:staff,
+      staffId:JSON.parse(ls(UK)||'{}').id||'',
+      month:`${yr}年${mo}月`,
+      totalAmount:totalAll,
+      workDays:days
+    })
+  }).then(r=>r.json()).then(d=>{
+    if(d.success){
+      md.submitted=true;md.submittedAt=new Date().toISOString();
+      save(SK,db);
+      if(window.__db){const u=JSON.parse(ls(UK)||'null');if(u&&u.id)window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true}).catch(e=>console.error(e))}
+      toast('📨 承認申請を送信しました！');render();
+    } else toast('❌ 送信に失敗しました: '+(d.error||''));
+  }).catch(e=>{toast('❌ 通信エラー: '+e.message);console.error(e)});
 }
 function saveSnsSettings(){
   const md=getMD();
