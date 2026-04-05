@@ -1286,17 +1286,20 @@ function loadWorkData(){
       </div>
     </div>`;
   if(!keys.length){el.innerHTML=settingsHTML+'<div style="font-size:12px;color:#b08090;padding:8px 0">この月の稼働記録がありません</div>';return}
-  let tw=0,tf=0,twa=0;
+  let tw=0,tf=0,twa=0,tta=0;
   const rows=keys.map(d=>{
     const r=md[`d${d}`];const dt=new Date(yr,mo-1,d);
-    const wm=calcWork(r),pay=calcPay(wm,curRate),fare=calcFare(r);
-    tw+=wm||0;tf+=fare;twa+=(r.weekendAllow||0);
+    const wm=calcWork(r),pay=calcPay(wm,curRate),fare=calcFare(r),ta=parseInt(r.tripAllow)||0,wa=parseInt(r.weekendAllow)||0;
+    tw+=wm||0;tf+=fare;twa+=wa;tta+=ta;
+    const allowTags=[];
+    if(ta)allowTags.push(`<span style="font-size:9px;background:#e8f0fe;color:#4a90d9;padding:1px 5px;border-radius:10px">出張</span>`);
+    if(wa)allowTags.push(`<span style="font-size:9px;background:#fce8ef;color:#d4537a;padding:1px 5px;border-radius:10px">土日</span>`);
     const st=r.ok?'<span style="font-size:9px;background:#d4f0e0;color:#4caf7d;padding:1px 6px;border-radius:20px;font-weight:700">✓</span>':'<span style="font-size:9px;background:#fdefd8;color:#e0963a;padding:1px 6px;border-radius:20px;font-weight:700">仮</span>';
-    return`<tr><td>${mo}/${d}${WD[dt.getDay()]}</td><td>${r.store||'—'}</td><td>${wm!=null?toStr(wm):'—'}</td><td style="text-align:right">${pay?'¥'+pay.toLocaleString():'—'}</td><td style="text-align:right">${fare?'¥'+fare.toLocaleString():'—'}</td><td>${st}</td></tr>`;
+    return`<tr><td>${mo}/${d}${WD[dt.getDay()]}</td><td>${r.store||'—'}</td><td>${wm!=null?toStr(wm):'—'}</td><td style="text-align:right">${pay?'¥'+pay.toLocaleString():'—'}</td><td style="text-align:right">${fare?'¥'+fare.toLocaleString():'—'}</td><td>${allowTags.join(' ')} ${st}</td></tr>`;
   });
   const tPay=calcPay(tw,curRate);
   const snsPay=curSnsCount*curSnsRate;
-  const grandTotal=tPay+tf+twa+snsPay;
+  const grandTotal=tPay+tf+twa+tta+snsPay;
   el.innerHTML=settingsHTML+`
     <table class="work-table">
       <thead><tr><th>日付</th><th>店舗</th><th>稼働</th><th>報酬</th><th>交通費</th><th>状態</th></tr></thead>
@@ -1306,6 +1309,7 @@ function loadWorkData(){
       <div class="tot-item"><div class="tot-v">${toStr(tw)||'0:00'}</div><div class="tot-l">総稼働</div></div>
       <div class="tot-item"><div class="tot-v">¥${tPay.toLocaleString()}</div><div class="tot-l">報酬</div></div>
       <div class="tot-item"><div class="tot-v">¥${tf.toLocaleString()}</div><div class="tot-l">交通費</div></div>
+      ${tta>0?`<div class="tot-item"><div class="tot-v">¥${tta.toLocaleString()}</div><div class="tot-l">出張手当</div></div>`:''}
       ${twa>0?`<div class="tot-item"><div class="tot-v">¥${twa.toLocaleString()}</div><div class="tot-l">土日手当</div></div>`:''}
       ${snsPay>0?`<div class="tot-item"><div class="tot-v">¥${snsPay.toLocaleString()}</div><div class="tot-l">SNS協力費</div></div>`:''}
       <div class="tot-item"><div class="tot-v" style="color:#d4537a;font-size:18px">¥${grandTotal.toLocaleString()}</div><div class="tot-l">合計</div></div>
@@ -1387,11 +1391,11 @@ function openStaffNotice(){
   const mSnsRate=md.snsRate||2000;
   const keys=Object.keys(md).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
   if(!keys.length){toast('稼働記録がありません');return}
-  let tw=0,tf=0,twa=0;
+  let tw=0,tf=0,twa=0,tta=0;
   const rows=keys.map(d=>{
     const r=md[`d${d}`]||{};const dt=new Date(yr,mo-1,d);
     const wm=calcWork(r),pay=calcPay(wm,mRate),fare=calcFare(r);
-    tw+=wm||0;tf+=fare;twa+=(r.weekendAllow||0);
+    tw+=wm||0;tf+=fare;twa+=(r.weekendAllow||0);tta+=(parseInt(r.tripAllow)||0);
     return`<tr><td>${mo}/${d}</td><td>${WD[dt.getDay()]}</td><td>${r.store||'—'}</td><td>${wm!=null?toStr(wm):'—'}</td><td style="text-align:right">${pay?'¥'+pay.toLocaleString():'—'}</td><td style="text-align:right">${fare?'¥'+fare.toLocaleString():'—'}</td></tr>`;
   });
   const tPay=calcPay(tw,mRate);
@@ -1411,10 +1415,11 @@ function openStaffNotice(){
         <div class="n-tr"><span>業務実績</span><span><b>${toStr(tw)}</b></span></div>
         <div class="n-tr"><span>業務単価</span><span>¥${mRate.toLocaleString()}</span></div>
         <div class="n-tr"><span>業務委託報酬</span><span>¥${tPay.toLocaleString()}</span></div>
+        ${tta>0?`<div class="n-tr"><span>出張手当</span><span>¥${tta.toLocaleString()}</span></div>`:''}
         ${twa>0?`<div class="n-tr"><span>土日手当</span><span>¥${twa.toLocaleString()}</span></div>`:''}
         <div class="n-tr"><span>交通費</span><span>¥${tf.toLocaleString()}</span></div>
         ${snsPay>0?`<div class="n-tr"><span>SNS撮影協力費（${mSnsCount}件 × ¥${mSnsRate.toLocaleString()}）</span><span>¥${snsPay.toLocaleString()}</span></div>`:''}
-        <div class="n-tr big"><span>お支払い合計</span><span>¥${(tPay+twa+tf+snsPay).toLocaleString()}</span></div>
+        <div class="n-tr big"><span>お支払い合計</span><span>¥${(tPay+tta+twa+tf+snsPay).toLocaleString()}</span></div>
       </div>
       <div style="font-size:11px;color:#aaa;text-align:center;margin-top:10px">振込先：${currentStaff.bank||'—'} ${currentStaff.branch||''} ${currentStaff.accType||''} ${currentStaff.accNum||''} ${currentStaff.accName||''}</div>
     </div>`;
@@ -2240,11 +2245,11 @@ function openNotice(){
   if(!keys.length){toast('稼働記録がありません');return}
   const unc=Object.entries(md).filter(([k,r])=>k.startsWith('d')&&!r.ok).length;
   if(unc)toast(`⚠️ 未確定${unc}件あります`);
-  let tw=0,tf=0,twa=0;
+  let tw=0,tf=0,twa=0,tta=0;
   const rows=keys.map(d=>{
     const r=md[`d${d}`]||{};const dt=new Date(yr,mo-1,d);
-    const wm=calcWork(r),pay=calcPay(wm),fare=calcFare(r),wa=calcWeekendAllow(r);
-    tw+=wm||0;tf+=fare;twa+=wa;return{d,dt,r,wm,pay,fare,wa};
+    const wm=calcWork(r),pay=calcPay(wm),fare=calcFare(r),wa=calcWeekendAllow(r),ta=parseInt(r.tripAllow)||0;
+    tw+=wm||0;tf+=fare;twa+=wa;tta+=ta;return{d,dt,r,wm,pay,fare,wa,ta};
   });
   const tPay=calcPay(tw),rate=getRate();
   const now=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
@@ -2267,10 +2272,11 @@ function openNotice(){
         <div class="n-tr"><span>業務実績</span><span><b>${toStr(tw)}</b></span></div>
         <div class="n-tr"><span>業務単価</span><span>¥${rate.toLocaleString()}</span></div>
         <div class="n-tr"><span>業務委託報酬</span><span>¥${tPay.toLocaleString()}</span></div>
+        ${tta>0?`<div class="n-tr"><span>出張手当</span><span>¥${tta.toLocaleString()}</span></div>`:''}
         ${twa>0?`<div class="n-tr"><span>土日手当</span><span>¥${twa.toLocaleString()}</span></div>`:''}
         <div class="n-tr"><span>交通費</span><span>¥${tf.toLocaleString()}</span></div>
         ${snsPay>0?`<div class="n-tr"><span>SNS撮影協力費（${mSnsCount}件 × ¥${mSnsRate.toLocaleString()}）</span><span>¥${snsPay.toLocaleString()}</span></div>`:''}
-        <div class="n-tr big"><span>お支払い合計</span><span>¥${(tPay+twa+tf+snsPay).toLocaleString()}</span></div>
+        <div class="n-tr big"><span>お支払い合計</span><span>¥${(tPay+tta+twa+tf+snsPay).toLocaleString()}</span></div>
       </div>
       <div class="n-foot">本書は${yr}年${mo}月分の業務委託費支払通知書です。</div>
     </div>`;
