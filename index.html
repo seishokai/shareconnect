@@ -741,13 +741,12 @@ window.__auth = _auth;
 </div>
 
 <div class="app-foot">
-  <button class="af-btn af-ghost" onclick="exportCSV()">📥 CSV</button>
-  <button class="af-btn af-pink" onclick="openNotice()">📄 通知書</button>
+  <button class="af-btn af-pink" onclick="openNotice()" style="width:100%">📄 支払通知書</button>
 </div>
 </div>
 
 <!-- Entry Modal -->
-<div class="overlay" id="overlay" onclick="bgClose(event)">
+<div class="overlay" id="sOverlay" onclick="bgClose(event)">
 <div class="modal">
   <div class="m-handle"></div>
   <div class="m-head">
@@ -831,10 +830,10 @@ window.__auth = _auth;
 </div>
 
 <!-- Notice modal -->
-<div class="n-overlay" id="nOverlay" onclick="nBgClose(event)">
+<div class="n-overlay" id="snOverlay" onclick="nBgClose(event)">
 <div class="n-modal">
   <div class="n-head"><h2>📄 支払通知書</h2><button class="m-close" onclick="closeNotice()">×</button></div>
-  <div class="n-body"><div id="nContent"></div></div>
+  <div class="n-body"><div id="snContent"></div></div>
   <div class="n-actions">
     <button class="n-print" onclick="printNotice()">🖨️ 印刷 / PDF保存</button>
     <button class="n-close" onclick="closeNotice()">閉じる</button>
@@ -1884,11 +1883,11 @@ function openModal(day){
   document.getElementById('mWeekendAllow').value=savedAllow;
   setWeekendAllow(savedAllow);
   syncRC();prevWork();
-  document.getElementById('overlay').classList.add('open');
+  document.getElementById('sOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
-function closeModal(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';editing=null}
-function bgClose(e){if(e.target===document.getElementById('overlay'))closeModal()}
+function closeModal(){document.getElementById('sOverlay').classList.remove('open');document.body.style.overflow='';editing=null}
+function bgClose(e){if(e.target===document.getElementById('sOverlay'))closeModal()}
 
 function confirmDay(){
   if(!editing)return;
@@ -2090,8 +2089,8 @@ function openNotice(){
   });
   const tPay=calcPay(tw),rate=getRate();
   const now=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
-  document.getElementById('nContent').innerHTML=`
-    <div id="pTarget">
+  document.getElementById('snContent').innerHTML=`
+    <div id="spTarget">
       <div class="nt"><h3>業務委託費 支払通知書</h3><p>発行日：${now}</p></div>
       <div class="n-to">宛先：<b>${staff} 様</b></div>
       <div class="n-from">支払者：${CO.name}</div>
@@ -2116,13 +2115,13 @@ function openNotice(){
       </div>
       <div class="n-foot">本書は${yr}年${mo}月分の業務委託費支払通知書です。</div>
     </div>`;
-  document.getElementById('nOverlay').classList.add('open');
+  document.getElementById('snOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
-function closeNotice(){document.getElementById('nOverlay').classList.remove('open');document.body.style.overflow=''}
-function nBgClose(e){if(e.target===document.getElementById('nOverlay'))closeNotice()}
+function closeNotice(){document.getElementById('snOverlay').classList.remove('open');document.body.style.overflow=''}
+function nBgClose(e){if(e.target===document.getElementById('snOverlay'))closeNotice()}
 function printNotice(){
-  const c=document.getElementById('pTarget').innerHTML;
+  const c=document.getElementById('spTarget').innerHTML;
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>支払通知書</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
