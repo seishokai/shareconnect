@@ -274,6 +274,9 @@ html,body{min-height:100svh;background:#fff5f7;color:#3a2030;font-family:'Zen Ma
 .day-chip.today .dn{color:#4a90d9}
 #sOverlay.open{opacity:1;pointer-events:all}
 #snOverlay.open{opacity:1;pointer-events:all}
+.dept-btn{padding:5px 12px;border:1.5px solid #f9c8d5;border-radius:20px;background:#fff;font-size:11px;font-weight:700;color:#b08090;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;transition:all .15s}
+.dept-btn.on{background:#d4537a;color:#fff;border-color:#d4537a}
+.dept-btn:hover{border-color:#d4537a}
 .day-hdr{font-size:11px;font-weight:700;color:#b08090;text-align:center;padding:4px 0}
 .day-hdr.sat{color:var(--sat)}.day-hdr.sun{color:var(--sun)}
 .day-empty{}
@@ -456,10 +459,11 @@ window.__auth = _auth;
 
 <!-- ── STAFF PANEL ── -->
 <div class="panel on" id="pStaff">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:6px">
     <div style="font-size:13px;font-weight:700;color:#d4537a">登録スタッフ一覧</div>
     <div style="font-size:11px;color:#b08090" id="staffCount">0名</div>
   </div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px" id="deptFilter"></div>
   <div id="staffList"><div class="empty">登録スタッフがいません</div></div>
 </div>
 
@@ -524,6 +528,13 @@ window.__auth = _auth;
     <button class="m-close" onclick="closeModal()">×</button>
   </div>
   <div class="m-body">
+    <!-- Department -->
+    <div class="m-sec">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:12px;font-weight:700;color:#b08090">🏢 部門</span>
+        <select id="mDept" class="inp" style="flex:1;padding:6px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7" onchange="saveStaffDept()"></select>
+      </div>
+    </div>
     <!-- Basic info -->
     <div class="m-sec">
       <div class="m-sec-ttl">👤 基本情報</div>
@@ -993,6 +1004,7 @@ let allStaff=[];      // ← Firestoreから読み込み（staffListと同じ参
 let staffList=[];     // Firestore共有スタッフリスト
 let templates=[];
 let currentStaff=null;
+let departments=JSON.parse(localStorage.getItem('sc_departments')||'null')||['本部','仙豆','太田川','清翔会'];
 let _tt;
 
 function ls(k){return localStorage.getItem(k)}
@@ -1035,13 +1047,41 @@ function switchTab(id,btn){
   btn.classList.add('on');
 }
 
+// ── Departments ───────────────────────────────────
+let _deptFilter='all';
+function saveDepts(){localStorage.setItem('sc_departments',JSON.stringify(departments));if(window.__db)window.__db.collection('admin').doc('departments').set({list:departments}).catch(e=>console.error(e))}
+function renderDeptFilter(){
+  const df=document.getElementById('deptFilter');if(!df)return;
+  const counts={};allStaff.forEach(s=>{const d=s.department||'未分類';counts[d]=(counts[d]||0)+1});
+  df.innerHTML=`<button class="dept-btn${_deptFilter==='all'?' on':''}" onclick="filterDept('all')">全て (${allStaff.length})</button>`+
+    departments.map(d=>`<button class="dept-btn${_deptFilter===d?' on':''}" onclick="filterDept('${d}')">${d} (${counts[d]||0})</button>`).join('')+
+    (counts['未分類']?`<button class="dept-btn${_deptFilter==='未分類'?' on':''}" onclick="filterDept('未分類')">未分類 (${counts['未分類']})</button>`:'')+
+    `<button class="dept-btn" onclick="addDept()" style="color:#d4537a;border-style:dashed">+ 追加</button>`;
+}
+function filterDept(d){_deptFilter=d;renderStaffList()}
+function saveStaffDept(){
+  if(!currentStaff)return;
+  currentStaff.department=document.getElementById('mDept').value||'';
+  localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
+  if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({department:currentStaff.department},{merge:true}).catch(e=>console.error(e));
+  renderStaffList();toast('🏢 部門を変更しました');
+}
+function addDept(){
+  const name=prompt('新しい部門名を入力');
+  if(!name||!name.trim())return;
+  if(departments.includes(name.trim())){toast('既に存在します');return}
+  departments.push(name.trim());saveDepts();renderDeptFilter();toast('✅ 部門「'+name.trim()+'」を追加しました');
+}
+
 // ── Staff ──────────────────────────────────────────
 function renderStaffList(){
   document.getElementById('staffCount').textContent='計 '+allStaff.length+' 名登録';
+  renderDeptFilter();
   const el=document.getElementById('staffList');
-  if(!allStaff.length){el.innerHTML='<div class="empty">登録スタッフがいません<br>招待URLを発行してスタッフに送ってください</div>';return}
+  const filtered=_deptFilter==='all'?allStaff:allStaff.filter(s=>(_deptFilter==='未分類'?!s.department:s.department===_deptFilter));
+  if(!filtered.length){el.innerHTML='<div class="empty">このカテゴリにスタッフがいません</div>';return}
   const now=new Date();
-  el.innerHTML=allStaff.map((s,i)=>{
+  el.innerHTML=filtered.map((s)=>{const i=allStaff.indexOf(s);
     // Firestoreから取得したworkData優先、なければlocalStorage
     const workData=s.workData||JSON.parse(ls('sc_admin_work_'+s.id)||'{}');
     const curKey=`${now.getFullYear()}-${pad(now.getMonth()+1)}_${s.name}`;
@@ -1087,6 +1127,11 @@ function renderStaffList(){
 function openStaff(i){
   currentStaff=allStaff[i];
   document.getElementById('mTitle').textContent=currentStaff.name;
+  // Department
+  const deptSel=document.getElementById('mDept');
+  if(deptSel){
+    deptSel.innerHTML=`<option value="">未分類</option>`+departments.map(d=>`<option value="${d}"${currentStaff.department===d?' selected':''}>${d}</option>`).join('');
+  }
   // Basic info
   const bi=['name:氏名','phone:電話','email:メール','addr:住所','station:最寄駅','signedAt:締結日'];
   document.getElementById('mBasicInfo').innerHTML=bi.map(b=>{
