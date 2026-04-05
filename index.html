@@ -1371,12 +1371,12 @@ function openStaffNotice(){
       <div style="font-size:12px;color:#888;margin-bottom:8px">支払者：${CO.name}</div>
       <div style="font-size:11px;color:#555;margin-bottom:8px">対象期間：${yr}年${mo}月</div>
       <table class="n-tbl">
-        <thead><tr><th>日付</th><th>曜</th><th>店舗</th><th>稼働</th><th>報酬</th><th>交通費</th></tr></thead>
+        <thead><tr><th>日付</th><th>曜</th><th>業務先</th><th>業務量</th><th>委託料</th><th>交通費</th></tr></thead>
         <tbody>${rows.join('')}</tbody>
       </table>
       <div class="n-tot">
-        <div class="n-tr"><span>稼働合計時間</span><span><b>${toStr(tw)}</b></span></div>
-        <div class="n-tr"><span>時給単価</span><span>¥${mRate.toLocaleString()}</span></div>
+        <div class="n-tr"><span>業務実績</span><span><b>${toStr(tw)}</b></span></div>
+        <div class="n-tr"><span>業務単価</span><span>¥${mRate.toLocaleString()}</span></div>
         <div class="n-tr"><span>業務委託報酬</span><span>¥${tPay.toLocaleString()}</span></div>
         ${twa>0?`<div class="n-tr"><span>土日手当</span><span>¥${twa.toLocaleString()}</span></div>`:''}
         <div class="n-tr"><span>交通費</span><span>¥${tf.toLocaleString()}</span></div>
@@ -2214,7 +2214,7 @@ function openNotice(){
       <div class="n-from">支払者：${CO.name}</div>
       <div style="font-size:12px;color:#555;margin-bottom:8px">対象期間：${yr}年${mo}月</div>
       <table class="n-tbl">
-        <thead><tr><th>日付</th><th>曜</th><th>店舗</th><th>稼働</th><th>報酬</th><th>交通費</th></tr></thead>
+        <thead><tr><th>日付</th><th>曜</th><th>業務先</th><th>業務量</th><th>委託料</th><th>交通費</th></tr></thead>
         <tbody>${rows.map(({d,dt,r,wm,pay,fare})=>`<tr>
           <td>${mo}/${d}</td><td>${WD[dt.getDay()]}</td><td>${r.store||'—'}</td>
           <td>${wm!=null?toStr(wm):'—'}</td>
@@ -2223,8 +2223,8 @@ function openNotice(){
         </tr>`).join('')}</tbody>
       </table>
       <div class="n-tot">
-        <div class="n-tr"><span>稼働合計時間</span><span><b>${toStr(tw)}</b></span></div>
-        <div class="n-tr"><span>時給単価</span><span>¥${rate.toLocaleString()}</span></div>
+        <div class="n-tr"><span>業務実績</span><span><b>${toStr(tw)}</b></span></div>
+        <div class="n-tr"><span>業務単価</span><span>¥${rate.toLocaleString()}</span></div>
         <div class="n-tr"><span>業務委託報酬</span><span>¥${tPay.toLocaleString()}</span></div>
         ${twa>0?`<div class="n-tr"><span>土日手当</span><span>¥${twa.toLocaleString()}</span></div>`:''}
         <div class="n-tr"><span>交通費</span><span>¥${tf.toLocaleString()}</span></div>
