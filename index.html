@@ -849,6 +849,7 @@ function doLogout(){
 
 // Auth state
 _auth.onAuthStateChanged(user => {
+  if(window.__SC_MODE==='staff') return; // スタッフモードではadmin UIを操作しない
   if(user){
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminApp').className = 'show';
