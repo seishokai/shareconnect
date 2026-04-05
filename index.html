@@ -528,11 +528,12 @@ window.__auth = _auth;
     <button class="m-close" onclick="closeModal()">×</button>
   </div>
   <div class="m-body">
-    <!-- Department -->
+    <!-- Department + Approve -->
     <div class="m-sec">
-      <div style="display:flex;align-items:center;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
         <span style="font-size:12px;font-weight:700;color:#b08090">🏢 部門</span>
-        <select id="mDept" class="inp" style="flex:1;padding:6px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7" onchange="saveStaffDept()"></select>
+        <select id="mDept" class="inp" style="flex:1;min-width:100px;padding:6px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7" onchange="saveStaffDept()"></select>
+        <span id="mApproveWrap"></span>
       </div>
     </div>
     <!-- Basic info -->
@@ -1059,6 +1060,16 @@ function renderDeptFilter(){
     `<button class="dept-btn" onclick="addDept()" style="color:#d4537a;border-style:dashed">+ 追加</button>`;
 }
 function filterDept(d){_deptFilter=d;renderStaffList()}
+function approveCurrentStaff(){
+  if(!currentStaff)return;
+  currentStaff.approved=true;
+  currentStaff.approvedAt=Date.now();
+  localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
+  localStorage.setItem('sc_approved_'+currentStaff.id,'1');
+  if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({approved:true,approvedAt:currentStaff.approvedAt},{merge:true}).catch(e=>console.error(e));
+  document.getElementById('mApproveWrap').innerHTML='<span style="font-size:11px;color:#4caf7d;font-weight:700">✅ 承認済</span>';
+  renderStaffList();toast('✅ 承認しました');
+}
 function saveStaffDept(){
   if(!currentStaff)return;
   currentStaff.department=document.getElementById('mDept').value||'';
@@ -1131,6 +1142,13 @@ function openStaff(i){
   const deptSel=document.getElementById('mDept');
   if(deptSel){
     deptSel.innerHTML=`<option value="">未分類</option>`+departments.map(d=>`<option value="${d}"${currentStaff.department===d?' selected':''}>${d}</option>`).join('');
+  }
+  // Approve button
+  const aw=document.getElementById('mApproveWrap');
+  if(aw){
+    aw.innerHTML=currentStaff.approved
+      ?'<span style="font-size:11px;color:#4caf7d;font-weight:700">✅ 承認済</span>'
+      :`<button onclick="approveCurrentStaff()" style="padding:6px 14px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">✓ 承認する</button>`;
   }
   // Basic info
   const bi=['name:氏名','phone:電話','email:メール','addr:住所','station:最寄駅','signedAt:締結日'];
