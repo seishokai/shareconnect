@@ -537,10 +537,12 @@ window.__auth = _auth;
       <button style="margin-left:auto;font-size:11px;padding:5px 12px;background:#d4537a;border:none;border-radius:8px;cursor:pointer;color:#fff;font-family:'Zen Maru Gothic',sans-serif" onclick="copyStaffURL()">🔗 打刻URL</button>
     </div>
 
-    <!-- ★ 勤怠データ（メイン） -->
+    <!-- ★ 年間勤怠サマリー + 月別詳細（メイン） -->
+    <div id="mYearSummary" style="margin-bottom:10px"></div>
+
     <div style="background:#fff;border:2px solid #d4537a;border-radius:14px;padding:12px;margin-bottom:10px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <span style="font-size:14px;font-weight:700;color:#d4537a">📅 稼働データ</span>
+        <span style="font-size:14px;font-weight:700;color:#d4537a">📅 月別詳細</span>
         <select id="mYear" style="padding:4px 8px;border:1px solid #f9c8d5;border-radius:6px;font-size:12px;font-family:'Zen Maru Gothic',sans-serif"></select>
         <select id="mMonth" style="padding:4px 8px;border:1px solid #f9c8d5;border-radius:6px;font-size:12px;font-family:'Zen Maru Gothic',sans-serif"></select>
         <button style="padding:4px 10px;background:var(--acc);color:#fff;border:none;border-radius:6px;font-family:'Zen Maru Gothic',sans-serif;font-size:11px;cursor:pointer" onclick="loadWorkData()">表示</button>
@@ -548,20 +550,15 @@ window.__auth = _auth;
       <div id="mWorkTable"></div>
     </div>
 
-    <!-- タブ切替：基本情報 / 口座・契約 -->
-    <div style="display:flex;border-bottom:2px solid #f9c8d5;margin-bottom:8px">
-      <button class="detail-tab on" onclick="switchDetailTab('info',this)">👤 基本情報</button>
-      <button class="detail-tab" onclick="switchDetailTab('bank',this)">🏦 口座・契約</button>
-    </div>
-    <div id="detailInfo">
-      <div class="info-grid" id="mBasicInfo"></div>
-    </div>
-    <div id="detailBank" style="display:none">
+    <!-- 詳細情報（折りたたみ） -->
+    <details style="margin-top:6px">
+      <summary style="font-size:12px;font-weight:700;color:#b08090;cursor:pointer;padding:8px 0">📋 基本情報・口座・契約を表示</summary>
+      <div class="info-grid" id="mBasicInfo" style="margin-bottom:8px"></div>
       <div class="m-sec-ttl" style="margin-bottom:4px">🏦 振込先口座</div>
-      <div class="info-grid" id="mBankInfo"></div>
-      <div class="m-sec-ttl" style="margin-top:10px;margin-bottom:4px">📋 契約情報</div>
+      <div class="info-grid" id="mBankInfo" style="margin-bottom:8px"></div>
+      <div class="m-sec-ttl" style="margin-bottom:4px">📋 契約情報</div>
       <div id="mContractInfo"></div>
-    </div>
+    </details>
   </div>
   <div class="m-foot">
     <button class="ghost-btn" onclick="closeModal()">閉じる</button>
@@ -1061,6 +1058,37 @@ function renderDeptFilter(){
     `<button class="dept-btn" onclick="addDept()" style="color:#d4537a;border-style:dashed">+ 追加</button>`;
 }
 function filterDept(d){_deptFilter=d;renderStaffList()}
+function renderYearSummary(){
+  if(!currentStaff)return;
+  const el=document.getElementById('mYearSummary');if(!el)return;
+  const workData=currentStaff.workData||JSON.parse(ls('sc_admin_work_'+currentStaff.id)||'{}');
+  const yr=new Date().getFullYear();
+  let html='<div style="font-size:13px;font-weight:700;color:#d4537a;margin-bottom:6px">📊 '+yr+'年 月別サマリー</div>';
+  html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px">';
+  for(let m=1;m<=12;m++){
+    const key=`${yr}-${pad(m)}_${currentStaff.name}`;
+    const md=workData[key]||{};
+    const mRate=md.rate||DEF_RATE;
+    let tw=0,td=0,tf=0,twa=0,tta=0;
+    Object.entries(md).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0){td++;tw+=wm}tf+=calcFare(r);twa+=(r.weekendAllow||0);tta+=(r.tripAllow||0)});
+    const pay=calcPay(tw,mRate);
+    const snsPay=(md.snsCount||0)*(md.snsRate||2000);
+    const total=pay+tf+twa+tta+snsPay;
+    const hasData=td>0;
+    const isCur=m===new Date().getMonth()+1;
+    html+=`<div onclick="document.getElementById('mMonth').value=${m};loadWorkData()" style="padding:8px 10px;border-radius:10px;cursor:pointer;border:1.5px solid ${isCur?'#d4537a':hasData?'#88d4a8':'#f0e0e5'};background:${isCur?'#fce8ef':hasData?'#edfaf3':'#fff'};transition:all .15s">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:13px;font-weight:700;color:${isCur?'#d4537a':hasData?'#3d9a6a':'#ccc'}">${m}月</span>
+        ${hasData?`<span style="font-size:10px;color:#888">${td}日</span>`:''}
+      </div>
+      ${hasData?`<div style="font-size:14px;font-weight:700;color:#3a2030;margin-top:2px">¥${total.toLocaleString()}</div>
+      <div style="font-size:9px;color:#b08090">${toStr(tw)} / 交通費¥${tf.toLocaleString()}</div>`
+      :`<div style="font-size:11px;color:#ccc;margin-top:2px">—</div>`}
+    </div>`;
+  }
+  html+='</div>';
+  el.innerHTML=html;
+}
 function switchDetailTab(tab,btn){
   document.getElementById('detailInfo').style.display=tab==='info'?'':'none';
   document.getElementById('detailBank').style.display=tab==='bank'?'':'none';
@@ -1185,7 +1213,8 @@ function openStaff(i){
     ${signImg}
     <button style="margin-top:8px;font-size:11px;padding:5px 12px;background:none;border:1px solid #f9c8d5;border-radius:8px;cursor:pointer;color:#d4537a;font-family:'Zen Maru Gothic',sans-serif" onclick="viewStaffContract()">📋 契約書を印刷</button>
     <button style="margin-top:8px;margin-left:6px;font-size:11px;padding:5px 12px;background:#d4537a;border:none;border-radius:8px;cursor:pointer;color:#fff;font-family:'Zen Maru Gothic',sans-serif" onclick="copyStaffURL()">🔗 打刻URLをコピー</button>`;
-  // Work table
+  // Work table + Year summary
+  renderYearSummary();
   loadWorkData();
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
