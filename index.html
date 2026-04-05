@@ -563,6 +563,7 @@ window.__auth = _auth;
   <div class="m-foot">
     <button class="ghost-btn" onclick="closeModal()">閉じる</button>
     <button class="pink-btn" id="mNoticeBtn" onclick="openStaffNotice()">📄 支払通知書</button>
+    <button id="mLockBtn" onclick="lockMonth()" style="padding:10px 16px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">🔒 稼働承認</button>
   </div>
 </div>
 </div>
@@ -711,7 +712,7 @@ window.__auth = _auth;
     <span style="font-size:12px;color:#e07b3a;font-weight:700;margin-left:auto" id="snsPayDisp"></span>
   </div>
   <div class="cal-bar">
-    <div class="cal-lbl">🗓 稼働日を選択</div>
+    <div class="cal-lbl" id="calLabel">🗓 稼働日を選択</div>
     <div class="cal-grid" id="calGrid"></div>
   </div>
   <div class="cards-wrap" id="cardsWrap">
@@ -1058,6 +1059,37 @@ function renderDeptFilter(){
     `<button class="dept-btn" onclick="addDept()" style="color:#d4537a;border-style:dashed">+ 追加</button>`;
 }
 function filterDept(d){_deptFilter=d;renderStaffList()}
+function lockMonth(){
+  if(!currentStaff)return;
+  const yr=+document.getElementById('mYear').value;
+  const mo=+document.getElementById('mMonth').value;
+  const key=`${yr}-${pad(mo)}_${currentStaff.name}`;
+  const workData=currentStaff.workData||{};
+  if(!workData[key])workData[key]={};
+  if(workData[key].locked){
+    if(!confirm(`${yr}年${mo}月の承認を解除しますか？`))return;
+    workData[key].locked=false;
+    toast('🔓 承認を解除しました');
+  } else {
+    workData[key].locked=true;
+    toast('🔒 稼働を承認しました（スタッフ側は編集不可になります）');
+  }
+  currentStaff.workData=workData;
+  save('sc_admin_work_'+currentStaff.id,workData);
+  if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({workData},{merge:true}).catch(e=>console.error(e));
+  loadWorkData();
+  updateLockBtn();
+}
+function updateLockBtn(){
+  const btn=document.getElementById('mLockBtn');if(!btn||!currentStaff)return;
+  const yr=+document.getElementById('mYear').value;
+  const mo=+document.getElementById('mMonth').value;
+  const key=`${yr}-${pad(mo)}_${currentStaff.name}`;
+  const wd=currentStaff.workData||{};
+  const locked=(wd[key]||{}).locked;
+  btn.textContent=locked?'🔓 承認済（解除）':'🔒 稼働承認';
+  btn.style.background=locked?'linear-gradient(135deg,#888,#666)':'linear-gradient(135deg,#4caf7d,#3d9a6a)';
+}
 function renderYearSummary(){
   if(!currentStaff)return;
   const el=document.getElementById('mYearSummary');if(!el)return;
@@ -1278,6 +1310,7 @@ function loadWorkData(){
       ${snsPay>0?`<div class="tot-item"><div class="tot-v">¥${snsPay.toLocaleString()}</div><div class="tot-l">SNS協力費</div></div>`:''}
       <div class="tot-item"><div class="tot-v" style="color:#d4537a;font-size:18px">¥${grandTotal.toLocaleString()}</div><div class="tot-l">合計</div></div>
     </div>`;
+  updateLockBtn();
 }
 function saveMonthSettings(){
   const yr=+document.getElementById('mYear').value;
@@ -1877,7 +1910,12 @@ function startApp(u){
 }
 
 // ── Render ─────────────────────────────────────────
-function render(){buildCal();buildCards();updateSum()}
+function render(){
+  const md=getMD();
+  const cl=document.getElementById('calLabel');
+  if(cl)cl.innerHTML=md.locked?'🔒 この月は承認済みです（閲覧のみ）':'🗓 稼働日を選択';
+  buildCal();buildCards();updateSum();
+}
 
 function buildCal(){
   const md=getMD(),days=new Date(yr,mo,0).getDate();
@@ -1954,10 +1992,11 @@ function updateSum(){
   const snsCount=md.snsCount||0;
   const snsRate=md.snsRate||2000;
   const snsPay=snsCount*snsRate;
+  const isLocked=!!md.locked;
   const snsInput=document.getElementById('snsCountInput');
-  if(snsInput)snsInput.value=snsCount;
+  if(snsInput){snsInput.value=snsCount;snsInput.disabled=isLocked}
   const snsRateIn=document.getElementById('snsRateInput');
-  if(snsRateIn)snsRateIn.value=snsRate;
+  if(snsRateIn){snsRateIn.value=snsRate;snsRateIn.disabled=isLocked}
   const snsDisp=document.getElementById('snsPayDisp');
   if(snsDisp)snsDisp.textContent=snsPay>0?'= ¥'+snsPay.toLocaleString():'';
   // update subtitle with total
@@ -1977,8 +2016,10 @@ function switchTab(id,btn){
 
 // ── Entry Modal ────────────────────────────────────
 function openModal(day){
+  const md=getMD();
+  if(md.locked){toast('🔒 この月は承認済みのため編集できません');return}
   editing=day;
-  const md=getMD(),r=md[`d${day}`]||{};
+  const r=md[`d${day}`]||{};
   const dt=new Date(yr,mo-1,day);
   document.getElementById('smTitle').textContent=`${mo}月${day}日（${WD[dt.getDay()]}）`;
   pickStore(r.store||'');
