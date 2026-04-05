@@ -703,13 +703,13 @@ window.__auth = _auth;
     <div class="si"><div class="sv" id="sumP">¥0</div><div class="sl">報酬額</div></div>
     <div class="si"><div class="sv" id="sumF">¥0</div><div class="sl">交通費</div></div>
   </div>
-  <div style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:#fff;border:1.5px solid #f9c8d5;border-radius:12px;margin:0 14px 8px;flex-wrap:wrap">
-    <span style="font-size:13px;color:#e07b3a;font-weight:700">📸 SNS</span>
-    <input type="number" id="snsCountInput" value="0" min="0" style="width:46px;padding:5px 6px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:14px;font-weight:700;color:#e07b3a;text-align:center;background:#fff5f7;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsSettings()">
-    <span style="font-size:11px;color:#b08090">件 ×</span>
-    <input type="number" id="snsRateInput" value="2000" style="width:60px;padding:5px 6px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:14px;font-weight:700;color:#e07b3a;text-align:center;background:#fff5f7;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsSettings()">
-    <span style="font-size:11px;color:#b08090">円</span>
-    <span style="font-size:12px;color:#e07b3a;font-weight:700;margin-left:auto" id="snsPayDisp"></span>
+  <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border:2px solid #f0c060;border-radius:14px;margin:0 14px 8px;flex-wrap:wrap">
+    <span style="font-size:15px;font-weight:700;color:#e07b3a">📸 SNS投稿</span>
+    <input type="number" id="snsCountInput" value="0" min="0" style="width:60px;padding:8px 10px;border:2px solid #f0c060;border-radius:10px;font-size:18px;font-weight:700;color:#e07b3a;text-align:center;background:#fffaf0;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsSettings()">
+    <span style="font-size:13px;color:#b08090;font-weight:700">件 ×</span>
+    <input type="number" id="snsRateInput" value="2000" style="width:80px;padding:8px 10px;border:2px solid #f0c060;border-radius:10px;font-size:18px;font-weight:700;color:#e07b3a;text-align:center;background:#fffaf0;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsSettings()">
+    <span style="font-size:13px;color:#b08090;font-weight:700">円</span>
+    <span style="font-size:16px;color:#e07b3a;font-weight:700;margin-left:auto" id="snsPayDisp"></span>
   </div>
   <details class="cal-bar" id="calDetails" open>
     <summary style="font-size:12px;font-weight:700;color:#d4537a;cursor:pointer;padding:6px 0;user-select:none" id="calLabel">🗓 稼働日を選択 ▼</summary>
@@ -1994,6 +1994,26 @@ function buildCards(){
       </div>
     </div>`;
   }).join('');
+  // 合計金額セクション
+  const md2=getMD();
+  let ttw=0,ttf=0,ttwa=0,ttta=0;
+  Object.entries(md2).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)ttw+=wm;ttf+=calcFare(r);ttwa+=(r.weekendAllow||0);ttta+=(r.tripAllow||0)});
+  const ttPay=calcPay(ttw);
+  const ttSns=(md2.snsCount||0)*(md2.snsRate||2000);
+  const ttAll=ttPay+ttf+ttwa+ttta+ttSns;
+  const allOk=keys.every(d=>md2[`d${d}`]?.ok);
+  w.innerHTML+=`
+    <div style="background:linear-gradient(135deg,#fce8ef,#fff);border:2px solid #d4537a;border-radius:14px;padding:14px 16px;margin-top:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <div>
+          <div style="font-size:11px;color:#b08090">報酬 ¥${ttPay.toLocaleString()} + 交通費 ¥${ttf.toLocaleString()}${ttta>0?' + 出張 ¥'+ttta.toLocaleString():''}${ttwa>0?' + 土日 ¥'+ttwa.toLocaleString():''}${ttSns>0?' + SNS ¥'+ttSns.toLocaleString():''}</div>
+          <div style="font-size:24px;font-weight:700;color:#d4537a;margin-top:2px">合計 ¥${ttAll.toLocaleString()}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          ${allOk?'<span style="font-size:13px;color:#4caf7d;font-weight:700">✅ 全日確定済み</span>':'<span style="font-size:12px;color:#e0963a;font-weight:700">⚠️ 未確定あり</span>'}
+        </div>
+      </div>
+    </div>`;
 }
 
 function updateSum(){
