@@ -711,10 +711,10 @@ window.__auth = _auth;
     <span style="font-size:11px;color:#b08090">円</span>
     <span style="font-size:12px;color:#e07b3a;font-weight:700;margin-left:auto" id="snsPayDisp"></span>
   </div>
-  <div class="cal-bar">
-    <div class="cal-lbl" id="calLabel">🗓 稼働日を選択</div>
+  <details class="cal-bar" id="calDetails" open>
+    <summary style="font-size:12px;font-weight:700;color:#d4537a;cursor:pointer;padding:6px 0;user-select:none" id="calLabel">🗓 稼働日を選択 ▼</summary>
     <div class="cal-grid" id="calGrid"></div>
-  </div>
+  </details>
   <div class="cards-wrap" id="cardsWrap">
     <div class="empty-state"><div class="ico">🌸</div><p>上の日付をタップして<br>稼働日を追加してください</p></div>
   </div>
@@ -1919,7 +1919,10 @@ function startApp(u){
 function render(){
   const md=getMD();
   const cl=document.getElementById('calLabel');
-  if(cl)cl.innerHTML=md.locked?'🔒 この月は承認済みです（閲覧のみ）':md.submitted?'📨 承認申請済み（承認待ち）':'🗓 稼働日を選択';
+  const hasData=Object.keys(md).some(k=>k.startsWith('d'));
+  if(cl)cl.innerHTML=md.locked?'🔒 承認済み（閲覧のみ）':md.submitted?'📨 申請済み（承認待ち）':hasData?'🗓 カレンダーを開く':'🗓 稼働日を選択';
+  const cd=document.getElementById('calDetails');
+  if(cd&&hasData&&!md.locked)cd.removeAttribute('open');
   const sb=document.getElementById('submitBtn');
   if(sb){
     if(md.locked){sb.textContent='✅ 承認済';sb.disabled=true;sb.style.background='#888'}
@@ -2072,7 +2075,9 @@ function confirmDay(){
     const u=JSON.parse(localStorage.getItem(UK)||'null');
     if(u&&u.id) window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true}).catch(e=>console.error(e));
   }
-  toast('🌸 仮確定しました');
+  toast('🌸 確定しました');
+  // カレンダーを閉じて実績を見やすく
+  const cd=document.getElementById('calDetails');if(cd)cd.removeAttribute('open');
   syncAdminData();
 }
 function delDay(){if(!editing)return;delete getMD()[`d${editing}`];closeModal();render();toast('🗑 削除しました');syncAdminData()}
