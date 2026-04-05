@@ -804,22 +804,28 @@ window.__auth = _auth;
       </div>
       </div>
     </div>
-    <!-- 土日手当 -->
-    <div class="m-sec" id="weekendAllowSec" style="display:none">
-      <div class="m-sec-ttl">🎉 土日手当</div>
-      <div style="display:flex;gap:10px;align-items:center">
-        <button type="button" class="wa-btn" data-v="0" onclick="setWeekendAllow(0)">なし</button>
-        <button type="button" class="wa-btn" data-v="1000" onclick="setWeekendAllow(1000)">+¥1,000</button>
-        <button type="button" class="wa-btn" data-v="2000" onclick="setWeekendAllow(2000)">+¥2,000</button>
+    <!-- 手当 -->
+    <div class="m-sec">
+      <div class="m-sec-ttl">💰 手当</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:120px">
+          <div style="font-size:10px;color:#b08090;margin-bottom:3px">土日手当</div>
+          <div style="display:flex;gap:6px">
+            <button type="button" class="wa-btn" data-v="0" onclick="setWeekendAllow(0)">なし</button>
+            <button type="button" class="wa-btn" data-v="1000" onclick="setWeekendAllow(1000)">+¥1,000</button>
+            <button type="button" class="wa-btn" data-v="2000" onclick="setWeekendAllow(2000)">+¥2,000</button>
+          </div>
+        </div>
         <input type="hidden" id="mWeekendAllow" value="0">
       </div>
-      <div style="font-size:11px;color:#b08090">※ 選択しなくても確定できます</div>
     </div>
   </div>
-  <div class="m-foot">
-    <button class="m-cancel" onclick="closeModal()">キャンセル</button>
-    <button class="m-del" id="mDel" style="display:none" onclick="delDay()">削除</button>
-    <button class="m-ok" onclick="confirmDay()">✓ 仮確定</button>
+  <div class="m-foot" style="flex-direction:column;gap:8px">
+    <button class="m-ok" onclick="confirmDay()" style="width:100%;padding:16px;font-size:16px;border-radius:14px">✓ 確定する</button>
+    <div style="display:flex;gap:8px">
+      <button class="m-cancel" onclick="closeModal()" style="flex:1">キャンセル</button>
+      <button class="m-del" id="mDel" style="display:none;flex:1" onclick="delDay()">削除</button>
+    </div>
   </div>
 </div>
 </div>
@@ -1794,7 +1800,7 @@ function buildCal(){
 
 function buildCards(){
   const md=getMD();
-  const keys=Object.keys(md).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
+  const keys=Object.keys(md).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
   const w=document.getElementById('cardsWrap');
   if(!keys.length){w.innerHTML='<div class="empty-state"><div class="ico">🗓</div><p>上のカレンダーから<br>出勤した日をタップしてください</p><p style="margin-top:8px;font-size:11px;color:#b08090">タップ → 時間・交通費入力 → 仮確定</p></div>';return}
   w.innerHTML=keys.map(d=>{
@@ -1873,10 +1879,7 @@ function openModal(day){
   document.getElementById('mRest').value=r.rest!=null?r.rest:60;
   ['r1a','f1a','r1b','f1b','r2a','f2a','r2b','f2b'].forEach(id=>document.getElementById(id).value=r[id]||'');
   document.getElementById('mDel').style.display=(md[`d${day}`]&&Object.keys(md[`d${day}`]).length>0)?'':'none';
-  // 土日手当 - 土日のみ表示
-  const _wd=new Date(yr,mo-1,day).getDay();
-  const isWE=_wd===0||_wd===6;
-  document.getElementById('weekendAllowSec').style.display=isWE?'':'none';
+  // 土日手当
   const savedAllow=r.weekendAllow||0;
   document.getElementById('mWeekendAllow').value=savedAllow;
   setWeekendAllow(savedAllow);
@@ -2153,7 +2156,7 @@ function saveData(){
 function exportCSV(){
   if(!staff){toast('スタッフを選択してください');return}
   const md=getMD();
-  const keys=Object.keys(md).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
+  const keys=Object.keys(md).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
   const rows=[['日付','曜日','店舗','開始','終了','休憩(分)','稼働時間','報酬(円)','往路1','額','復路1','額','往路2','額','復路2','額','交通費計','確定']];
   keys.forEach(d=>{
     const r=md[`d${d}`]||{};const dt=new Date(yr,mo-1,d);
