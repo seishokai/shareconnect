@@ -1466,7 +1466,7 @@ function renderContractList(){
       <div class="ct-btns">
         <button class="ct-btn" onclick="previewTemplate(${i})">確認</button>
         <button class="ct-btn" onclick="editTemplate(${i})">編集</button>
-        ${i>0?`<button class="ct-btn danger" onclick="deleteTemplate(${i})">削除</button>`:''}
+        `<button class="ct-btn danger" onclick="deleteTemplate(${i})">削除</button>`
       </div>
     </div>`).join('');
   updateInviteDropdown();
