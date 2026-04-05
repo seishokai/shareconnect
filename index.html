@@ -272,6 +272,9 @@ html,body{min-height:100svh;background:#fff5f7;color:#3a2030;font-family:'Zen Ma
 .day-chip .dw{font-size:10px;color:#b08090}
 .day-chip.today{border-color:#4a90d9;border-width:2.5px;background:#e8f0fe;box-shadow:0 0 0 2px rgba(74,144,217,.2)}
 .day-chip.today .dn{color:#4a90d9}
+.day-hdr{font-size:11px;font-weight:700;color:#b08090;text-align:center;padding:4px 0}
+.day-hdr.sat{color:var(--sat)}.day-hdr.sun{color:var(--sun)}
+.day-empty{}
 .day-chip.sat{border-color:#d0b8f5;background:var(--satB)}.day-chip.sat .dw{color:var(--sat)}
 .day-chip.sun{border-color:#f9c8d5;background:var(--sunB)}.day-chip.sun .dw{color:var(--sun)}
 .day-chip.draft{border-color:var(--warn);background:#fff3e6}.day-chip.draft .dn,.day-chip.draft .dw{color:var(--warn)}
@@ -680,11 +683,13 @@ window.__auth = _auth;
     <div class="si"><div class="sv" id="sumP">¥0</div><div class="sl">報酬額</div></div>
     <div class="si"><div class="sv" id="sumF">¥0</div><div class="sl">交通費</div></div>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;padding:6px 14px;background:#fff;border:1.5px solid #f9c8d5;border-radius:12px;margin:0 14px 8px">
-    <span style="font-size:13px;color:#e07b3a;font-weight:700">📸 SNS投稿</span>
-    <input type="number" id="snsCountInput" value="0" min="0" style="width:50px;padding:6px 8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:15px;font-weight:700;color:#e07b3a;text-align:center;background:#fff5f7;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsCount()">
-    <span style="font-size:12px;color:#b08090">件</span>
-    <span style="font-size:11px;color:#b08090;margin-left:auto" id="snsPayDisp"></span>
+  <div style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:#fff;border:1.5px solid #f9c8d5;border-radius:12px;margin:0 14px 8px;flex-wrap:wrap">
+    <span style="font-size:13px;color:#e07b3a;font-weight:700">📸 SNS</span>
+    <input type="number" id="snsCountInput" value="0" min="0" style="width:46px;padding:5px 6px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:14px;font-weight:700;color:#e07b3a;text-align:center;background:#fff5f7;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsSettings()">
+    <span style="font-size:11px;color:#b08090">件 ×</span>
+    <input type="number" id="snsRateInput" value="2000" style="width:60px;padding:5px 6px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:14px;font-weight:700;color:#e07b3a;text-align:center;background:#fff5f7;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsSettings()">
+    <span style="font-size:11px;color:#b08090">円</span>
+    <span style="font-size:12px;color:#e07b3a;font-weight:700;margin-left:auto" id="snsPayDisp"></span>
   </div>
   <div class="cal-bar">
     <div class="cal-lbl">🗓 稼働日を選択</div>
@@ -1752,6 +1757,16 @@ function buildCal(){
   const md=getMD(),days=new Date(yr,mo,0).getDate();
   const now=new Date();const isThisMonth=(yr===now.getFullYear()&&mo===now.getMonth()+1);
   const g=document.getElementById('calGrid');g.innerHTML='';
+  // 曜日ヘッダー（月曜始まり）
+  const WDH=['月','火','水','木','金','土','日'];
+  WDH.forEach((w,i)=>{
+    const h=document.createElement('div');
+    h.className='day-hdr'+(i===5?' sat':'')+(i===6?' sun':'');
+    h.textContent=w;g.appendChild(h);
+  });
+  // 1日の曜日（月曜=0始まり換算）
+  const firstWd=(new Date(yr,mo-1,1).getDay()+6)%7;
+  for(let i=0;i<firstWd;i++){const e=document.createElement('div');e.className='day-empty';g.appendChild(e)}
   for(let d=1;d<=days;d++){
     const dt=new Date(yr,mo-1,d),wd=dt.getDay();
     const r=md[`d${d}`];
@@ -1760,7 +1775,7 @@ function buildCal(){
     if(wd===6)cls+=' sat';if(wd===0)cls+=' sun';
     if(r)cls+=r.ok?' confirmed':' draft';
     const c=document.createElement('div');c.className=cls;
-    c.innerHTML=`<span class="dn">${d}</span><span class="dw">${WD[wd]}</span>`;
+    c.innerHTML=`<span class="dn">${d}</span>`;
     c.onclick=()=>openModal(d);g.appendChild(c);
   }
 }
@@ -1803,8 +1818,10 @@ function updateSum(){
   const snsPay=snsCount*snsRate;
   const snsInput=document.getElementById('snsCountInput');
   if(snsInput)snsInput.value=snsCount;
+  const snsRateIn=document.getElementById('snsRateInput');
+  if(snsRateIn)snsRateIn.value=snsRate;
   const snsDisp=document.getElementById('snsPayDisp');
-  if(snsDisp)snsDisp.textContent=snsPay>0?'¥'+snsPay.toLocaleString()+' (¥'+snsRate.toLocaleString()+'×'+snsCount+')':'';
+  if(snsDisp)snsDisp.textContent=snsPay>0?'= ¥'+snsPay.toLocaleString():'';
   // update subtitle with total
   const totalAll=calcPay(tw)+tf+twa+snsPay;
   const sub=document.getElementById('appSubtitle');
@@ -1879,16 +1896,17 @@ function syncAdminData(){
   const idx=allStaff.findIndex(s=>s.id===u.id);
   if(idx>=0){allStaff[idx].lastWork=dKey();localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff))}
 }
-function saveSnsCount(){
+function saveSnsSettings(){
   const md=getMD();
   md.snsCount=parseInt(document.getElementById('snsCountInput').value)||0;
+  md.snsRate=parseInt(document.getElementById('snsRateInput').value)||2000;
   save(SK,db);syncAdminData();
   if(window.__db){
     const u=JSON.parse(localStorage.getItem(UK)||'null');
     if(u&&u.id) window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true}).catch(e=>console.error(e));
   }
   updateSum();
-  toast('📸 SNS投稿数を保存しました');
+  toast('📸 SNS設定を保存しました');
 }
 
 // ── Store / Time / Rest ────────────────────────────
