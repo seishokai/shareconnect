@@ -1993,9 +1993,7 @@ function buildCards(){
         <span class="wc-time">${tStr}</span>
         <span class="wc-pay">¥${total.toLocaleString()}</span>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;padding:2px 0 2px 42px;font-size:10px;color:#b08090">
-        ${details.map(d=>`<span>${d}</span>`).join('<span>|</span>')}
-      </div>
+      <div style="padding:2px 0 2px 42px;font-size:10px;color:#b08090;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${details.join(' | ')}</div>
     </div>`;
   }).join('');
   // 合計金額セクション
