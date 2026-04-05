@@ -808,16 +808,24 @@ window.__auth = _auth;
     <!-- 手当 -->
     <div class="m-sec">
       <div class="m-sec-ttl">💰 手当</div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <div style="flex:1;min-width:120px">
-          <div style="font-size:10px;color:#b08090;margin-bottom:3px">土日手当</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div>
+          <div style="font-size:10px;color:#b08090;margin-bottom:3px">🏢 出張手当</div>
           <div style="display:flex;gap:6px">
-            <button type="button" class="wa-btn" data-v="0" onclick="setWeekendAllow(0)">なし</button>
-            <button type="button" class="wa-btn" data-v="1000" onclick="setWeekendAllow(1000)">+¥1,000</button>
-            <button type="button" class="wa-btn" data-v="2000" onclick="setWeekendAllow(2000)">+¥2,000</button>
+            <button type="button" class="wa-btn" data-g="trip" data-v="0" onclick="setTripAllow(0)">なし</button>
+            <button type="button" class="wa-btn" data-g="trip" data-v="2000" onclick="setTripAllow(2000)">+¥2,000</button>
           </div>
+          <input type="hidden" id="mTripAllow" value="0">
         </div>
-        <input type="hidden" id="mWeekendAllow" value="0">
+        <div>
+          <div style="font-size:10px;color:#b08090;margin-bottom:3px">🎉 土日手当</div>
+          <div style="display:flex;gap:6px">
+            <button type="button" class="wa-btn" data-g="we" data-v="0" onclick="setWeekendAllow(0)">なし</button>
+            <button type="button" class="wa-btn" data-g="we" data-v="1000" onclick="setWeekendAllow(1000)">+¥1,000</button>
+            <button type="button" class="wa-btn" data-g="we" data-v="2000" onclick="setWeekendAllow(2000)">+¥2,000</button>
+          </div>
+          <input type="hidden" id="mWeekendAllow" value="0">
+        </div>
       </div>
     </div>
   </div>
@@ -1808,19 +1816,19 @@ function buildCards(){
     const r=md[`d${d}`];
     const dt=new Date(yr,mo-1,d),wd=dt.getDay();
     const sat=wd===6,sun=wd===0;
-    const wm=calcWork(r),pay=calcPay(wm),fare=calcFare(r),wa=parseInt(r.weekendAllow)||0;
-    const total=pay+fare+wa;
+    const wm=calcWork(r),pay=calcPay(wm),fare=calcFare(r),wa=parseInt(r.weekendAllow)||0,ta=parseInt(r.tripAllow)||0;
+    const total=pay+fare+wa+ta;
     const st=r.ok?`<span class="wc-st confirmed">✓</span>`:`<span class="wc-st draft">仮</span>`;
     let cls='work-card '+(r.ok?'confirmed':'draft');
     if(sat)cls+=' sat';if(sun)cls+=' sun';
     const tStr=r.in&&r.out?`${r.in}〜${r.out}`:'--';
-    // 詳細行
     const details=[];
     if(wm)details.push(`稼働 ${toStr(wm)}`);
     if(r.rest)details.push(`休憩 ${r.rest}分`);
     if(pay)details.push(`報酬 ¥${pay.toLocaleString()}`);
     if(fare)details.push(`交通費 ¥${fare.toLocaleString()}`);
-    if(wa)details.push(`手当 ¥${wa.toLocaleString()}`);
+    if(ta)details.push(`出張 ¥${ta.toLocaleString()}`);
+    if(wa)details.push(`土日 ¥${wa.toLocaleString()}`);
     return`<div class="${cls}" onclick="openModal(${d})" style="cursor:pointer">
       <div class="wc-row">
         <span class="wc-date">${mo}/${d}</span>
@@ -1837,8 +1845,8 @@ function buildCards(){
 }
 
 function updateSum(){
-  const md=getMD();let d=0,tw=0,tf=0,twa=0;
-  Object.entries(md).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0){d++;tw+=wm}tf+=calcFare(r);twa+=(r.weekendAllow||0)});
+  const md=getMD();let d=0,tw=0,tf=0,twa=0,tta=0;
+  Object.entries(md).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0){d++;tw+=wm}tf+=calcFare(r);twa+=(r.weekendAllow||0);tta+=(r.tripAllow||0)});
   document.getElementById('sumD').textContent=d+'日';
   document.getElementById('sumH').textContent=toStr(tw)||'0:00';
   document.getElementById('sumP').textContent='¥'+calcPay(tw).toLocaleString();
@@ -1854,7 +1862,7 @@ function updateSum(){
   const snsDisp=document.getElementById('snsPayDisp');
   if(snsDisp)snsDisp.textContent=snsPay>0?'= ¥'+snsPay.toLocaleString():'';
   // update subtitle with total
-  const totalAll=calcPay(tw)+tf+twa+snsPay;
+  const totalAll=calcPay(tw)+tf+twa+tta+snsPay;
   const sub=document.getElementById('appSubtitle');
   if(sub&&staff)sub.textContent=staff+' さん  今月合計: ¥'+totalAll.toLocaleString();
 }
@@ -1880,10 +1888,13 @@ function openModal(day){
   document.getElementById('mRest').value=r.rest!=null?r.rest:60;
   ['r1a','f1a','r1b','f1b','r2a','f2a','r2b','f2b'].forEach(id=>document.getElementById(id).value=r[id]||'');
   document.getElementById('mDel').style.display=(md[`d${day}`]&&Object.keys(md[`d${day}`]).length>0)?'':'none';
-  // 土日手当
+  // 手当
   const savedAllow=r.weekendAllow||0;
   document.getElementById('mWeekendAllow').value=savedAllow;
   setWeekendAllow(savedAllow);
+  const savedTrip=r.tripAllow||0;
+  document.getElementById('mTripAllow').value=savedTrip;
+  setTripAllow(savedTrip);
   syncRC();prevWork();
   document.getElementById('sOverlay').classList.add('open');
   document.body.style.overflow='hidden';
@@ -1900,6 +1911,7 @@ function confirmDay(){
   r.rest=parseInt(document.getElementById('mRest').value)||0;
   ['r1a','f1a','r1b','f1b','r2a','f2a','r2b','f2b'].forEach(id=>r[id]=document.getElementById(id).value);
   r.weekendAllow=parseInt(document.getElementById('mWeekendAllow').value)||0;
+  r.tripAllow=parseInt(document.getElementById('mTripAllow').value)||0;
   r.ok=true;
   closeModal();render();
   // Auto-save and sync to Firestore
@@ -1952,7 +1964,12 @@ function adjTime(id,delta){
 function setRest(v){document.getElementById('mRest').value=v;syncRC();prevWork()}
 function setWeekendAllow(v){
   document.getElementById('mWeekendAllow').value=v;
-  document.querySelectorAll('.wa-btn').forEach(b=>b.classList.toggle('on',+b.dataset.v===v));
+  document.querySelectorAll('.wa-btn[data-g="we"]').forEach(b=>b.classList.toggle('on',+b.dataset.v===v));
+  prevWork();
+}
+function setTripAllow(v){
+  document.getElementById('mTripAllow').value=v;
+  document.querySelectorAll('.wa-btn[data-g="trip"]').forEach(b=>b.classList.toggle('on',+b.dataset.v===v));
   prevWork();
 }
 function syncRC(){
