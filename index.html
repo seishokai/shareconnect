@@ -590,6 +590,18 @@ window.__auth = _auth;
 
 <div id="staffApp">
 <!-- ══ SCREEN: ONBOARDING ══ -->
+<div class="screen" id="screenPin">
+  <div style="display:flex;align-items:center;justify-content:center;min-height:70vh">
+    <div style="background:#fff;border-radius:24px;padding:32px 24px;width:100%;max-width:320px;box-shadow:0 8px 40px rgba(212,83,122,.15);text-align:center">
+      <div style="font-size:40px;margin-bottom:8px">🔒</div>
+      <h2 style="font-size:18px;color:#d4537a;margin-bottom:4px" id="pinName"></h2>
+      <p style="font-size:12px;color:#b08090;margin-bottom:20px">暗証番号を入力してください</p>
+      <input type="password" id="pinInput" placeholder="暗証番号" maxlength="20" style="width:100%;padding:14px;border:2px solid #f9c8d5;border-radius:14px;font-size:20px;text-align:center;letter-spacing:8px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;box-sizing:border-box" onkeydown="if(event.key==='Enter')checkPin()">
+      <div id="pinError" style="color:#e05050;font-size:12px;margin-top:8px;display:none">暗証番号が違います</div>
+      <button onclick="checkPin()" style="width:100%;margin-top:16px;padding:14px;background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">ログイン</button>
+    </div>
+  </div>
+</div>
 <div class="screen" id="screenLoading">
   <div style="display:flex;align-items:center;justify-content:center;min-height:60vh"><div style="text-align:center"><div style="font-size:40px;margin-bottom:12px">🌸</div><div style="font-size:14px;color:#b08090">読み込み中...</div></div></div>
 </div>
@@ -615,6 +627,8 @@ window.__auth = _auth;
     <div class="field"><div class="lbl">メールアドレス</div><input class="inp" id="obEmail" type="email" placeholder="hanako@example.com"></div>
     <div class="field"><div class="lbl">住所</div><input class="inp" id="obAddr" type="text" placeholder="愛知県名古屋市〇〇区〇〇1-2-3"><div class="err-msg" id="eA">住所を入力してください</div></div>
     <div class="field"><div class="lbl">最寄駅</div><input class="inp" id="obStation" type="text" placeholder="例：金山駅"></div>
+    <div class="field"><div class="lbl">🔒 暗証番号（4桁以上）<span style="color:#d4537a;font-size:10px">※必須</span></div><input class="inp" id="obPin" type="password" placeholder="打刻画面のログインに使います" minlength="4"><div class="err-msg" id="eP">暗証番号を入力してください（4桁以上）</div></div>
+    <div class="field"><div class="lbl">📄 インボイス登録番号（任意）</div><input class="inp" id="obInvoiceNum" type="text" placeholder="T1234567890123（未登録の場合は空欄）"></div>
   </div>
 
   <!-- Step 1 -->
@@ -745,6 +759,16 @@ window.__auth = _auth;
           <span style="font-size:13px;color:#b08090">円／時</span>
         </div>
         <button class="sbtn" onclick="saveSettings()">💾 保存</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sc-head">📄 インボイス登録</div>
+      <div class="sc-body">
+        <div style="font-size:12px;color:#b08090;margin-bottom:6px">インボイス登録番号（取得済みの場合）</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" id="staffInvoiceNum" placeholder="T1234567890123" style="flex:1;padding:8px 10px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:14px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7">
+          <button class="sbtn" onclick="saveStaffInvoiceNum()" style="white-space:nowrap">💾 保存</button>
+        </div>
       </div>
     </div>
     <div class="card" style="border-color:#f5bebe">
@@ -1811,12 +1835,9 @@ function boot(){
         const data=doc.data();
         const u={...data, id:urlId, approved:true};
         save(UK, u);
-        // workDataがあればローカルにも保存
-        if(data.workData){
-          save(SK, data.workData);
-          db=data.workData;
-        }
-        startApp(u);
+        if(data.workData){save(SK, data.workData);db=data.workData}
+        // PINが設定されている場合はログイン画面
+        if(u.pin){showPinLogin(u);} else startApp(u);
       } else {
         // Firestoreにない場合、localStorageを確認
         const u=JSON.parse(ls(UK)||'null');
@@ -1940,9 +1961,9 @@ function show(id){
 // ── Onboarding ─────────────────────────────────────
 function obNext(){
   if(obStep===0){
-    const name=vv('obName'),addr=vv('obAddr');
-    tog('eN',!name);tog('eA',!addr);
-    if(!name||!addr)return;
+    const name=vv('obName'),addr=vv('obAddr'),pin=vv('obPin');
+    tog('eN',!name);tog('eA',!addr);tog('eP',!pin||pin.length<4);
+    if(!name||!addr||!pin||pin.length<4)return;
     document.getElementById('contractBox').innerHTML=buildContract(name);
   }
   if(obStep===1){
@@ -2000,6 +2021,8 @@ function finishOB(){
     addr:vv('obAddr'),station:vv('obStation'),bank:vv('obBank'),branch:vv('obBranch'),
     accType:document.getElementById('obAccType').value,accNum:vv('obAccNum'),accName:vv('obAccName'),
     signData,signedAt:ls('sc_signDate')?new Date(ls('sc_signDate')).toISOString():new Date().toISOString(),contracts:['歯科衛生士業務','動画撮影業務'],
+    pin:vv('obPin'),
+    invoiceNum:vv('obInvoiceNum')||'',
     id:'u_'+Date.now()
   };
   u.approved=false;
@@ -2015,7 +2038,7 @@ function finishOB(){
       station:u.station,bank:u.bank,branch:u.branch,accType:u.accType,
       accNum:u.accNum,accName:u.accName,signedAt:u.signedAt,
       contracts:u.contracts,approved:false,registeredAt:Date.now(),
-      department:u.department||''};
+      department:u.department||'',pin:u.pin||'',invoiceNum:u.invoiceNum||''};
     window.__db.collection('staff').doc(u.id).set(fData)
       .then(()=>console.log('✅ Registered to Firestore'))
       .catch(e=>console.error('Firestore error:',e));
@@ -2297,6 +2320,31 @@ function submitForApproval(){
     } else toast('❌ 送信に失敗しました: '+(d.error||''));
   }).catch(e=>{toast('❌ 通信エラー: '+e.message);console.error(e)});
 }
+let _pinUser=null;
+function showPinLogin(u){
+  _pinUser=u;
+  document.getElementById('pinName').textContent=u.name;
+  document.getElementById('pinInput').value='';
+  document.getElementById('pinError').style.display='none';
+  show('screenPin');
+  setTimeout(()=>document.getElementById('pinInput').focus(),300);
+}
+function checkPin(){
+  const input=document.getElementById('pinInput').value;
+  if(!_pinUser||input!==_pinUser.pin){
+    document.getElementById('pinError').style.display='block';
+    document.getElementById('pinInput').value='';
+    return;
+  }
+  startApp(_pinUser);
+}
+function saveStaffInvoiceNum(){
+  const u=JSON.parse(ls(UK)||'null');if(!u)return;
+  u.invoiceNum=document.getElementById('staffInvoiceNum').value.trim();
+  save(UK,u);
+  if(window.__db&&u.id)window.__db.collection('staff').doc(u.id).set({invoiceNum:u.invoiceNum},{merge:true}).catch(e=>console.error(e));
+  toast(u.invoiceNum?'📄 インボイス番号を保存しました':'インボイス番号をクリアしました');
+}
 function saveSnsSettings(){
   const md=getMD();
   md.snsCount=parseInt(document.getElementById('snsCountInput').value)||0;
@@ -2399,6 +2447,9 @@ function loadUserInfo(){
     (u.email?`<div>📧 ${u.email}</div>`:'')+
     `<div>🏦 ${u.bank||'—'} ${u.branch||''} ${u.accType||''} ${u.accNum||''}</div>`+
     `<div style="font-size:11px;color:#b08090;margin-top:4px">締結日：${u.signedAt?new Date(u.signedAt).toLocaleDateString('ja-JP'):'-'}</div>`;
+  // インボイス番号をロード
+  const invInput=document.getElementById('staffInvoiceNum');
+  if(invInput)invInput.value=u.invoiceNum||'';
 }
 function resetApp(){
   if(!confirm('登録情報をリセットします。よろしいですか？'))return;
