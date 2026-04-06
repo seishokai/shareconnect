@@ -1831,20 +1831,29 @@ function boot(){
     return;
   }
 
-  const u=JSON.parse(ls(UK)||'null');
-  if(!u){
+  // ?i= パラメータがある場合は常に新規登録（別のスタッフ用の招待URL）
+  const inviteParam = params.get('i');
+  if(inviteParam){
+    // 既存ユーザーデータをクリア（別スタッフの招待URL）
+    localStorage.removeItem(UK);
+    localStorage.removeItem(SK);
+    db={};
     let contractHTML = null;
     try{
-      const raw = params.get('i');
-      if(raw){
-        const decoded = JSON.parse(decodeURIComponent(escape(atob(raw))));
-        const stored = JSON.parse(ls('sc_invite_'+decoded.tmplId)||'null');
-        if(stored && stored.body) contractHTML = stored.body;
-        if(decoded.signDate) localStorage.setItem('sc_signDate', decoded.signDate);
-        if(decoded.department) localStorage.setItem('sc_department', decoded.department);
-      }
+      const decoded = JSON.parse(decodeURIComponent(escape(atob(inviteParam))));
+      const stored = JSON.parse(ls('sc_invite_'+decoded.tmplId)||'null');
+      if(stored && stored.body) contractHTML = stored.body;
+      if(decoded.signDate) localStorage.setItem('sc_signDate', decoded.signDate);
+      if(decoded.department) localStorage.setItem('sc_department', decoded.department);
     }catch(e){}
     document.getElementById('contractBox').innerHTML = contractHTML || buildContract('');
+    show('screenOB');
+    return;
+  }
+
+  const u=JSON.parse(ls(UK)||'null');
+  if(!u){
+    document.getElementById('contractBox').innerHTML = buildContract('');
     show('screenOB');
   } else if(!isApproved(u)) {
     showPending(u);
