@@ -1076,13 +1076,72 @@ function lockMonth(){
     toast('🔓 承認を解除しました');
   } else {
     workData[key].locked=true;
-    toast('🔒 稼働を承認しました（スタッフ側は編集不可になります）');
+    toast('🔒 稼働を承認しました。メール送信中...');
+    // 承認時に支払通知書PDFをメール送信
+    setTimeout(()=>sendApprovalEmail(yr,mo,key),500);
   }
   currentStaff.workData=workData;
   save('sc_admin_work_'+currentStaff.id,workData);
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({workData},{merge:true}).catch(e=>console.error(e));
   loadWorkData();
   updateLockBtn();
+}
+function sendApprovalEmail(yr,mo,key){
+  if(!currentStaff)return;
+  const workData=currentStaff.workData||{};
+  const md=workData[key]||{};
+  const mRate=md.rate||DEF_RATE;
+  const mSnsCount=md.snsCount||0;const mSnsRate=md.snsRate||2000;
+  const keys2=Object.keys(md).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
+  let tw=0,tf=0,twa=0,tta=0;
+  const rows=keys2.map(d=>{
+    const r=md[`d${d}`]||{};const dt=new Date(yr,mo-1,d);
+    const wm=calcWork(r),pay=calcPay(wm,mRate),fare=calcFare(r);
+    tw+=wm||0;tf+=fare;twa+=(r.weekendAllow||0);tta+=(parseInt(r.tripAllow)||0);
+    return`<tr><td>${mo}/${d}</td><td>${WD[dt.getDay()]}</td><td>${r.store||''}</td><td>${wm!=null?toStr(wm):''}</td><td style="text-align:right">${pay?'\\'+pay.toLocaleString():''}</td><td style="text-align:right">${fare?'\\'+fare.toLocaleString():''}</td></tr>`;
+  });
+  const tPay=calcPay(tw,mRate);const snsPay=mSnsCount*mSnsRate;
+  const grandTotal=tPay+tta+twa+tf+snsPay;
+  const now=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
+  // Build HTML for email body (same as payment notice)
+  const emailHtml=`<html><head><meta charset="utf-8"></head><body style="font-family:Helvetica,Arial,sans-serif;color:#333;max-width:600px;margin:0 auto">
+    <div style="background:#d4537a;color:#fff;padding:16px 20px;border-radius:12px 12px 0 0;text-align:center">
+      <h2 style="margin:0">Payment Notice</h2><p style="margin:4px 0 0;opacity:.8">${yr}-${pad(mo)}</p>
+    </div>
+    <div style="border:1px solid #f9c8d5;border-top:none;padding:20px;border-radius:0 0 12px 12px">
+      <p><b>${currentStaff.name}</b></p>
+      <p>Date: ${now}</p>
+      <table style="width:100%;border-collapse:collapse;font-size:12px;margin:12px 0">
+        <thead><tr style="background:#fde8ee"><th style="padding:6px;border:1px solid #f9c8d5;text-align:left">Date</th><th style="padding:6px;border:1px solid #f9c8d5">Day</th><th style="padding:6px;border:1px solid #f9c8d5">Location</th><th style="padding:6px;border:1px solid #f9c8d5">Hours</th><th style="padding:6px;border:1px solid #f9c8d5;text-align:right">Fee</th><th style="padding:6px;border:1px solid #f9c8d5;text-align:right">Transport</th></tr></thead>
+        <tbody>${rows.join('')}</tbody>
+      </table>
+      <table style="width:100%;max-width:350px;margin:12px 0;font-size:13px">
+        <tr><td style="padding:4px 0">Rate</td><td style="text-align:right">\\${mRate.toLocaleString()}/h</td></tr>
+        <tr><td style="padding:4px 0">Work Fee</td><td style="text-align:right">\\${tPay.toLocaleString()}</td></tr>
+        ${tta>0?`<tr><td style="padding:4px 0">Trip Allow.</td><td style="text-align:right">\\${tta.toLocaleString()}</td></tr>`:''}
+        ${twa>0?`<tr><td style="padding:4px 0">Weekend Allow.</td><td style="text-align:right">\\${twa.toLocaleString()}</td></tr>`:''}
+        <tr><td style="padding:4px 0">Transport</td><td style="text-align:right">\\${tf.toLocaleString()}</td></tr>
+        ${snsPay>0?`<tr><td style="padding:4px 0">SNS (${mSnsCount}x\\${mSnsRate.toLocaleString()})</td><td style="text-align:right">\\${snsPay.toLocaleString()}</td></tr>`:''}
+        <tr style="border-top:2px solid #d4537a"><td style="padding:8px 0;font-size:16px;font-weight:bold;color:#d4537a">TOTAL</td><td style="text-align:right;font-size:18px;font-weight:bold;color:#d4537a">\\${grandTotal.toLocaleString()}</td></tr>
+      </table>
+      <p style="font-size:11px;color:#999">Bank: ${currentStaff.bank||''} ${currentStaff.branch||''} ${currentStaff.accType||''} ${currentStaff.accNum||''} ${currentStaff.accName||''}</p>
+    </div>
+    <p style="font-size:11px;color:#999;text-align:center;margin-top:12px">ShareConnect Auto Notification</p>
+  </body></html>`;
+  // Send via Firebase Function
+  fetch('https://us-central1-shareconnect-71706.cloudfunctions.net/sendPaymentNotice',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      to:'zaim@shareconnect.co.jp',
+      staffName:currentStaff.name,
+      month:yr+'-'+pad(mo),
+      pdfBase64:btoa(emailHtml),
+      cc:''
+    })
+  }).then(r=>r.json()).then(d=>{
+    if(d.success)toast('📧 支払通知書をzaimに送信しました');
+    else toast('❌ メール送信失敗: '+(d.error||''));
+  }).catch(e=>toast('❌ 通信エラー: '+e.message));
 }
 function updateLockBtn(){
   const btn=document.getElementById('mLockBtn');if(!btn||!currentStaff)return;
