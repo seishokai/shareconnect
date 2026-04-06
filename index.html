@@ -494,7 +494,11 @@ window.__auth = _auth;
         ① 契約書を選ぶ　② 発行する　③ LINEで送る
       </div>
       <div class="field">
-        <div class="lbl">契約書テンプレートを選択</div>
+        <div class="lbl">🏢 部門を選択</div>
+        <select class="inp" id="inviteDept" style="font-family:'Zen Maru Gothic',sans-serif"></select>
+      </div>
+      <div class="field">
+        <div class="lbl">📋 契約書テンプレートを選択</div>
         <select class="inp" id="inviteContract" style="font-family:'Zen Maru Gothic',sans-serif"></select>
       </div>
       <div class="field" style="margin:8px 0">
@@ -534,6 +538,7 @@ window.__auth = _auth;
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 0 8px">
       <select id="mDept" class="inp" style="padding:6px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:12px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7" onchange="saveStaffDept()"></select>
       <span id="mApproveWrap"></span>
+      <label style="font-size:11px;color:#b08090;display:flex;align-items:center;gap:3px;cursor:pointer"><input type="checkbox" id="mInvoice" onchange="saveStaffInvoice()">インボイス</label>
       <button style="margin-left:auto;font-size:11px;padding:5px 12px;background:#d4537a;border:none;border-radius:8px;cursor:pointer;color:#fff;font-family:'Zen Maru Gothic',sans-serif" onclick="copyStaffURL()">🔗 打刻URL</button>
     </div>
 
@@ -703,7 +708,7 @@ window.__auth = _auth;
     <div class="si"><div class="sv" id="sumP">¥0</div><div class="sl">報酬額</div></div>
     <div class="si"><div class="sv" id="sumF">¥0</div><div class="sl">交通費</div></div>
   </div>
-  <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border:2px solid #f0c060;border-radius:14px;margin:0 14px 8px;flex-wrap:wrap">
+  <div id="snsSection" style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border:2px solid #f0c060;border-radius:14px;margin:0 14px 8px;flex-wrap:wrap">
     <span style="font-size:15px;font-weight:700;color:#e07b3a">📸 SNS投稿</span>
     <input type="number" id="snsCountInput" value="0" min="0" style="width:60px;padding:8px 10px;border:2px solid #f0c060;border-radius:10px;font-size:18px;font-weight:700;color:#e07b3a;text-align:center;background:#fffaf0;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsSettings()">
     <span style="font-size:13px;color:#b08090;font-weight:700">件 ×</span>
@@ -802,7 +807,7 @@ window.__auth = _auth;
       </div>
       <div class="work-prev" id="workPrev">稼働時間: --</div>
     </div>
-    <div class="m-sec">
+    <div class="m-sec" id="secFare">
       <div class="m-sec-ttl" style="cursor:pointer" onclick="this.parentElement.querySelector('.fare-body').classList.toggle('hidden');this.querySelector('.fare-arrow').textContent=this.parentElement.querySelector('.fare-body.hidden')?'▶':'▼'">🚃 交通費 <span class="fare-arrow" style="font-size:10px;color:#b08090">▼</span></div>
       <div class="fare-body">
       <div class="t-block">
@@ -818,7 +823,7 @@ window.__auth = _auth;
       </div>
     </div>
     <!-- 手当 -->
-    <div class="m-sec">
+    <div class="m-sec" id="secAllow">
       <div class="m-sec-ttl">💰 手当</div>
       <div style="display:flex;flex-direction:column;gap:10px">
         <div>
@@ -1077,8 +1082,9 @@ function lockMonth(){
   } else {
     workData[key].locked=true;
     toast('🔒 稼働を承認しました。メール送信中...');
-    // 承認時に支払通知書PDFをメール送信
     setTimeout(()=>sendApprovalEmail(yr,mo,key),500);
+    // 太田川の場合、吉川先生インセンティブを計算
+    if(currentStaff.department==='太田川') setTimeout(()=>calcYoshikawaIncentive(yr,mo),1000);
   }
   currentStaff.workData=workData;
   save('sc_admin_work_'+currentStaff.id,workData);
@@ -1143,6 +1149,44 @@ function sendApprovalEmail(yr,mo,key){
     else toast('❌ メール送信失敗: '+(d.error||''));
   }).catch(e=>toast('❌ 通信エラー: '+e.message));
 }
+function calcYoshikawaIncentive(yr,mo){
+  // 太田川の全スタッフの月間合計を集計
+  const key_prefix=`${yr}-${pad(mo)}_`;
+  let totalOtagawa=0;
+  allStaff.filter(s=>s.department==='太田川').forEach(s=>{
+    const wd=s.workData||{};
+    const mk=Object.keys(wd).find(k=>k.startsWith(key_prefix));
+    if(!mk)return;
+    const md=wd[mk];
+    const dayRate=md.dayRate||md.rate||DEF_RATE;
+    const days=Object.keys(md).filter(k=>k.startsWith('d')).length;
+    totalOtagawa+=days*dayRate;
+  });
+  if(totalOtagawa<=0)return;
+  const incentive=Math.floor(totalOtagawa*0.05*1.1); // 5% tax included
+  toast(`📊 吉川先生インセンティブ: ¥${incentive.toLocaleString()}（太田川合計¥${totalOtagawa.toLocaleString()}×5%税込）`);
+  // Send email notification
+  fetch('https://us-central1-shareconnect-71706.cloudfunctions.net/sendPaymentNotice',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      to:'zaim@shareconnect.co.jp',
+      staffName:'Yoshikawa-sensei',
+      month:yr+'-'+pad(mo),
+      pdfBase64:btoa('<html><head><meta charset="utf-8"></head><body style="font-family:sans-serif;color:#333;max-width:500px;margin:0 auto">' +
+        '<div style="background:#d4537a;color:#fff;padding:16px;border-radius:12px 12px 0 0;text-align:center"><h2 style="margin:0">Incentive Notice</h2></div>' +
+        '<div style="border:1px solid #f9c8d5;padding:20px;border-radius:0 0 12px 12px">' +
+        '<table style="width:100%;font-size:14px;margin:12px 0">' +
+        '<tr><td style="padding:8px 0">Period</td><td style="text-align:right">' + yr + '-' + pad(mo) + '</td></tr>' +
+        '<tr><td style="padding:8px 0">Otagawa Total</td><td style="text-align:right">\\' + totalOtagawa.toLocaleString() + '</td></tr>' +
+        '<tr><td style="padding:8px 0">Rate</td><td style="text-align:right">5% (tax incl.)</td></tr>' +
+        '<tr style="border-top:2px solid #d4537a"><td style="padding:8px 0;font-weight:bold;color:#d4537a;font-size:18px">Incentive</td><td style="text-align:right;font-weight:bold;color:#d4537a;font-size:20px">\\' + incentive.toLocaleString() + '</td></tr>' +
+        '</table></div>' +
+        '<p style="font-size:11px;color:#999;text-align:center;margin-top:12px">ShareConnect Auto</p></body></html>')
+    })
+  }).then(r=>r.json()).then(d=>{
+    if(d.success)toast('📧 吉川先生インセンティブ通知を送信しました');
+  }).catch(e=>console.error(e));
+}
 function updateLockBtn(){
   const btn=document.getElementById('mLockBtn');if(!btn||!currentStaff)return;
   const yr=+document.getElementById('mYear').value;
@@ -1189,6 +1233,13 @@ function switchDetailTab(tab,btn){
   document.getElementById('detailBank').style.display=tab==='bank'?'':'none';
   document.querySelectorAll('.detail-tab').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
+}
+function saveStaffInvoice(){
+  if(!currentStaff)return;
+  currentStaff.invoice=document.getElementById('mInvoice').checked;
+  localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
+  if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({invoice:currentStaff.invoice},{merge:true}).catch(e=>console.error(e));
+  toast(currentStaff.invoice?'✅ インボイス登録済み':'インボイス未登録に変更');
 }
 function approveCurrentStaff(){
   if(!currentStaff)return;
@@ -1242,7 +1293,7 @@ function renderStaffList(){
       <div class="sc-head">
         <div class="sc-avatar">👤</div>
         <div>
-          <div class="sc-name">${s.name}</div>
+          <div class="sc-name">${s.name} ${s.department?`<span style="font-size:10px;color:#fff;background:#d4537a;padding:1px 6px;border-radius:10px;margin-left:4px;font-weight:400">${s.department}</span>`:''}</div>
           <div class="sc-sub">${s.phone||''} ${s.email||''}</div>
         </div>
         <div class="sc-badges">
@@ -1273,6 +1324,9 @@ function openStaff(i){
   if(deptSel){
     deptSel.innerHTML=`<option value="">未分類</option>`+departments.map(d=>`<option value="${d}"${currentStaff.department===d?' selected':''}>${d}</option>`).join('');
   }
+  // Invoice checkbox
+  const inv=document.getElementById('mInvoice');
+  if(inv)inv.checked=!!currentStaff.invoice;
   // Approve button
   const aw=document.getElementById('mApproveWrap');
   if(aw){
@@ -1574,8 +1628,12 @@ function editTemplate(i){
 function updateInviteDropdown(){
   const sel=document.getElementById('inviteContract');
   sel.innerHTML=templates.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+  const dsel=document.getElementById('inviteDept');
+  if(dsel)dsel.innerHTML=departments.map(d=>`<option value="${d}">${d}</option>`).join('');
 }
 function generateInvite(){
+  const dept=document.getElementById('inviteDept').value;
+  if(!dept){toast('部門を選んでください');return}
   const tmplId=document.getElementById('inviteContract').value;
   const tmpl=templates.find(t=>t.id===tmplId);
   if(!tmpl){toast('テンプレートを選んでください');return}
@@ -1584,7 +1642,7 @@ function generateInvite(){
     localStorage.setItem('sc_invite_'+tmplId, JSON.stringify({tmplId,tmplName:tmpl.name,body:tmpl.body}));
   localStorage.setItem('sc_active_tmpl', tmplId);
   const base = 'https://seishokai.github.io/shareconnect/';
-  const payload = btoa(unescape(encodeURIComponent(JSON.stringify({v:1,tmplId:tmplId,tmplName:tmpl.name,signDate:signDate}))));
+  const payload = btoa(unescape(encodeURIComponent(JSON.stringify({v:1,tmplId:tmplId,tmplName:tmpl.name,signDate:signDate,department:dept}))));
   const url = base + '?staff&i=' + payload;
   document.getElementById('inviteUrl').textContent = url;
   document.getElementById('inviteResult').style.display='block';
@@ -1783,6 +1841,7 @@ function boot(){
         const stored = JSON.parse(ls('sc_invite_'+decoded.tmplId)||'null');
         if(stored && stored.body) contractHTML = stored.body;
         if(decoded.signDate) localStorage.setItem('sc_signDate', decoded.signDate);
+        if(decoded.department) localStorage.setItem('sc_department', decoded.department);
       }
     }catch(e){}
     document.getElementById('contractBox').innerHTML = contractHTML || buildContract('');
@@ -1935,6 +1994,7 @@ function finishOB(){
     id:'u_'+Date.now()
   };
   u.approved=false;
+  u.department=ls('sc_department')||'';
   save(UK,u);
   // Save to admin data store (shared)
   const allStaff=JSON.parse(ls('sc_admin_staff')||'[]');
@@ -1945,7 +2005,8 @@ function finishOB(){
     const fData={id:u.id,name:u.name,phone:u.phone,email:u.email,addr:u.addr,
       station:u.station,bank:u.bank,branch:u.branch,accType:u.accType,
       accNum:u.accNum,accName:u.accName,signedAt:u.signedAt,
-      contracts:u.contracts,approved:false,registeredAt:Date.now()};
+      contracts:u.contracts,approved:false,registeredAt:Date.now(),
+      department:u.department||''};
     window.__db.collection('staff').doc(u.id).set(fData)
       .then(()=>console.log('✅ Registered to Firestore'))
       .catch(e=>console.error('Firestore error:',e));
@@ -1955,8 +2016,13 @@ function finishOB(){
 }
 
 // ── App start ──────────────────────────────────────
+let staffDept='';
+const SIMPLE_DEPTS=['太田川']; // シンプル入力の部門
+function isSimpleDept(){return SIMPLE_DEPTS.includes(staffDept)}
+
 function startApp(u){
   show('screenApp');
+  staffDept=u.department||ls('sc_department')||'';
   document.getElementById('appSubtitle').textContent=u.name+' さんの稼働記録';
   const now=new Date();
   const sy=document.getElementById('selYear'),sm=document.getElementById('selMonth');
@@ -1982,6 +2048,8 @@ function render(){
   const md=getMD();
   const cl=document.getElementById('calLabel');
   const hasData=Object.keys(md).some(k=>k.startsWith('d'));
+  // 太田川はSNSセクション非表示
+  const snsSec=document.getElementById('snsSection');if(snsSec)snsSec.style.display=isSimpleDept()?'none':'';
   if(cl)cl.innerHTML=md.locked?'🔒 承認済み（閲覧のみ）':md.submitted?'📨 申請済み（承認待ち）':hasData?'🗓 カレンダーを開く':'🗓 稼働日を選択';
   const cd=document.getElementById('calDetails');
   if(cd&&hasData&&!md.locked)cd.removeAttribute('open');
@@ -2060,19 +2128,25 @@ function buildCards(){
   }).join('');
   // 合計金額セクション
   const md2=getMD();
+  const simple=isSimpleDept();
+  const dayCount=keys.length;
+  const dayRate=md2.dayRate||parseInt(md2.rate)||DEF_RATE;
   let ttw=0,ttf=0,ttwa=0,ttta=0,ttTrip=0;
-  Object.entries(md2).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)ttw+=wm;ttf+=calcFare(r);ttwa+=(r.weekendAllow||0);ttta+=(r.tripAllow||0);if(r.r2a&&r.r2a.includes('出張'))ttTrip+=(parseInt(r.f2a)||0)});
+  Object.entries(md2).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)ttw+=wm;if(!simple){ttf+=calcFare(r);ttwa+=(r.weekendAllow||0);ttta+=(r.tripAllow||0);if(r.r2a&&r.r2a.includes('出張'))ttTrip+=(parseInt(r.f2a)||0)}});
   const ttPureFare=ttf-ttTrip;
-  const ttPay=calcPay(ttw);
-  const ttSns=(md2.snsCount||0)*(md2.snsRate||2000);
+  const ttPay=simple?dayCount*dayRate:calcPay(ttw);
+  const ttSns=simple?0:((md2.snsCount||0)*(md2.snsRate||2000));
   const ttAllTrip=ttta+ttTrip;
   const ttAll=ttPay+ttf+ttwa+ttta+ttSns;
   const allOk=keys.every(d=>md2[`d${d}`]?.ok);
+  const breakdownText=simple
+    ?`${dayCount}日 × ¥${dayRate.toLocaleString()}`
+    :`報酬 ¥${ttPay.toLocaleString()} + 交通費 ¥${ttPureFare.toLocaleString()}${ttAllTrip>0?' + 出張 ¥'+ttAllTrip.toLocaleString():''}${ttwa>0?' + 土日 ¥'+ttwa.toLocaleString():''}${ttSns>0?' + SNS ¥'+ttSns.toLocaleString():''}`;
   w.innerHTML+=`
     <div style="background:linear-gradient(135deg,#fce8ef,#fff);border:2px solid #d4537a;border-radius:14px;padding:14px 16px;margin-top:8px">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
         <div>
-          <div style="font-size:11px;color:#b08090">報酬 ¥${ttPay.toLocaleString()} + 交通費 ¥${ttPureFare.toLocaleString()}${ttAllTrip>0?' + 出張 ¥'+ttAllTrip.toLocaleString():''}${ttwa>0?' + 土日 ¥'+ttwa.toLocaleString():''}${ttSns>0?' + SNS ¥'+ttSns.toLocaleString():''}</div>
+          <div style="font-size:11px;color:#b08090">${breakdownText}</div>
           <div style="font-size:24px;font-weight:700;color:#d4537a;margin-top:2px">合計 ¥${ttAll.toLocaleString()}</div>
         </div>
         <div style="display:flex;align-items:center;gap:6px">
@@ -2136,6 +2210,10 @@ function openModal(day){
   const savedTrip=r.tripAllow||0;
   document.getElementById('mTripAllow').value=savedTrip;
   setTripAllow(savedTrip);
+  // 太田川はシンプルモード（交通費・手当なし）
+  const simple=isSimpleDept();
+  const sf=document.getElementById('secFare');if(sf)sf.style.display=simple?'none':'';
+  const sa=document.getElementById('secAllow');if(sa)sa.style.display=simple?'none':'';
   syncRC();prevWork();
   document.getElementById('sOverlay').classList.add('open');
   document.body.style.overflow='hidden';
