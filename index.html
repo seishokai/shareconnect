@@ -931,8 +931,11 @@ async function fbBoot(){
     console.warn('Firestore staff load failed, using localStorage:', e);
     staffList = JSON.parse(localStorage.getItem('sc_admin_staff')||'[]');
   }
-  
-  boot();
+
+  // Admin JSブロックのbootが定義されるまで待つ
+  const _waitBoot = setInterval(()=>{
+    if(typeof boot==='function'){clearInterval(_waitBoot);boot()}
+  }, 50);
   
   // リアルタイム監視 - スタッフ登録・更新・稼働データを即時反映
   _db.collection('staff').onSnapshot(snap => {
