@@ -2295,8 +2295,9 @@ function submitForApproval(){
   const unc=Object.entries(md).filter(([k,r])=>k.startsWith('d')&&!r.ok).length;
   if(unc){toast(`⚠️ 未確定${unc}件あります。全日程を確定してから申請してください`);return}
   const days=Object.keys(md).filter(k=>k.startsWith('d')).length;
-  if(!days){toast('稼働記録がありません');return}
-  if(!confirm(`${yr}年${mo}月の稼働を承認申請しますか？\n申請後は編集できなくなります。`))return;
+  const snsCount=md.snsCount||0;
+  if(!days&&!snsCount){toast('稼働・SNS投稿の記録がありません');return}
+  if(!confirm(`${yr}年${mo}月を申請しますか？\n申請後は編集できなくなります。`))return;
   // Calculate total
   let tw=0,tf=0,twa=0,tta=0;
   Object.entries(md).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)tw+=wm;tf+=calcFare(r);twa+=(r.weekendAllow||0);tta+=(r.tripAllow||0)});
