@@ -1426,7 +1426,15 @@ function loadWorkData(){
         <input type="number" id="mSnsRate" value="${curSnsRate}" style="width:100%;padding:6px 8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:14px;font-weight:700;color:#e07b3a;background:#fff;box-sizing:border-box" onchange="saveMonthSettings()">
       </div>
     </div>`;
-  if(!keys.length){el.innerHTML=settingsHTML+'<div style="font-size:12px;color:#b08090;padding:8px 0">この月の稼働記録がありません</div>';return}
+  if(!keys.length){
+    const snsOnly=curSnsCount*curSnsRate;
+    el.innerHTML=settingsHTML+(snsOnly>0
+      ?`<div style="background:linear-gradient(135deg,#fffaf0,#fff);border:2px solid #f0c060;border-radius:14px;padding:14px 16px;margin-top:8px">
+        <div style="font-size:11px;color:#b08090">📸 SNS ${curSnsCount}件 × ¥${curSnsRate.toLocaleString()}</div>
+        <div style="font-size:24px;font-weight:700;color:#e07b3a;margin-top:2px">合計 ¥${snsOnly.toLocaleString()}</div>
+      </div>`
+      :'<div style="font-size:12px;color:#b08090;padding:8px 0">この月の稼働記録がありません</div>');
+    updateLockBtn();return}
   let tw=0,tf=0,twa=0,tta=0;
   const rows=keys.map(d=>{
     const r=md[`d${d}`];const dt=new Date(yr,mo-1,d);
@@ -1531,7 +1539,7 @@ function openStaffNotice(){
   const mSnsCount=md.snsCount||0;
   const mSnsRate=md.snsRate||2000;
   const keys=Object.keys(md).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
-  if(!keys.length){toast('稼働記録がありません');return}
+  if(!keys.length&&!mSnsCount){toast('稼働・SNS投稿の記録がありません');return}
   let tw=0,tf=0,twa=0,tta=0;
   const rows=keys.map(d=>{
     const r=md[`d${d}`]||{};const dt=new Date(yr,mo-1,d);
