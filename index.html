@@ -2614,7 +2614,7 @@ function buildCards(){
   const simple=isSimpleDept();
   const _keys=Object.keys(md2).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).filter(d=>md2[`d${d}`]?.in&&md2[`d${d}`]?.out);
   const dayCount=_keys.length;
-  const dayRate=md2.dayRate||parseInt(md2.rate)||DEF_RATE;
+  const dayRate=md2.dayRate||parseInt(md2.rate)||(typeof DEF_RATE!=='undefined'?DEF_RATE:(settings.rate||2014));
   let ttw=0,ttf=0,ttwa=0,ttta=0,ttTrip=0;
   Object.entries(md2).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)ttw+=wm;if(!simple){ttf+=calcFare(r);ttwa+=(r.weekendAllow||0);ttta+=(r.tripAllow||0);if(r.r2a&&r.r2a.includes('出張'))ttTrip+=(parseInt(r.f2a)||0)}});
   const ttPureFare=ttf-ttTrip;
