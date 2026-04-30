@@ -1020,11 +1020,21 @@ async function fbBoot(){
         staffList = staffList.filter(s => s.id !== id);
       } else {
         const idx = staffList.findIndex(s => s.id === id);
-        if(idx >= 0) staffList[idx] = {...d, id};
+        if(idx >= 0) {
+          // 既存オブジェクトのプロパティを更新（参照を保持）
+          const existing = staffList[idx];
+          // 削除されたフィールドも反映
+          Object.keys(existing).forEach(k=>{if(!(k in d)&&k!=='id')delete existing[k]});
+          Object.assign(existing, d, {id});
+        }
         else staffList.push({...d, id});
       }
     });
-    // localStorageも更新
+    // currentStaffも更新（参照保持済みなので不要だが、念のため）
+    if(typeof currentStaff!=='undefined' && currentStaff){
+      const fresh=staffList.find(s=>s.id===currentStaff.id);
+      if(fresh)currentStaff=fresh;
+    }
     localStorage.setItem('sc_admin_staff', JSON.stringify(staffList));
     if(typeof refreshAll==='function') refreshAll();
   }, err => console.error('Staff listener error:', err));
@@ -2146,6 +2156,7 @@ function toStr(m){if(m==null||m<0)return'';return`${Math.floor(m/60)}:${pad(m%60
 function calcWork(r){if(!r)return null;const i=toMin(r.in),o=toMin(r.out);if(i==null||o==null||o<=i)return null;return Math.max(0,o-i-(parseInt(r.rest)||0))}
 function calcFare(r){return(+r.f1a||0)+(+r.f1b||0)+(+r.f2a||0)+(+r.f2b||0)}
 function calcPay(wm){return wm!=null?Math.floor(wm/60*getRate()):0}
+const IDLE_TIMEOUT_MS=30*60*1000; // 30分（スタッフスコープ）
 let _tt;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('on'),2500)}
 
@@ -2416,6 +2427,27 @@ function startApp(u){
   renderPresetList();
   loadUserInfo();
   render();
+  // 保留中の同期をリトライ
+  if(localStorage.getItem('sc_pending_sync')==='1'&&window.__db&&u.id){
+    window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true})
+      .then(()=>{localStorage.removeItem('sc_pending_sync');toast('✅ 保留データを同期しました')})
+      .catch(()=>{});
+  }
+  // Firestoreリアルタイム同期（管理者の月締め等を即反映）
+  if(window.__db&&u.id&&!window._staffUnsub){
+    window._staffUnsub=window.__db.collection('staff').doc(u.id).onSnapshot(doc=>{
+      if(!doc.exists)return;
+      const data=doc.data();
+      if(data.workData){
+        // 編集中の月以外は同期（編集中の月だけ守る）
+        const editingKey=dKey();
+        const merged={...data.workData};
+        if(db[editingKey])merged[editingKey]=db[editingKey]; // ローカル編集を保持
+        db=merged;save(SK,db);
+      }
+      render();
+    },err=>console.warn('listener err',err));
+  }
 }
 
 // ── Render ─────────────────────────────────────────
@@ -2897,7 +2929,14 @@ function toggleDayInput(d){
   },50);
 }
 function saveDayInline(d){
+  if(!staff){toast('エラー：スタッフ情報が読み込まれていません');return}
   const md=getMD();
+  if(md.locked){toast('🔒 月締め済みのため編集できません');return}
+  // 入力チェック
+  const inEl=document.getElementById('inp_in_'+d);
+  const outEl=document.getElementById('inp_out_'+d);
+  if(!inEl||!outEl){toast('入力フォームが見つかりません');return}
+  if(!inEl.value||!outEl.value){toast('開始時間と終了時間を入力してください');return}
   if(!md[`d${d}`])md[`d${d}`]={};
   const r=md[`d${d}`];
   r.store=document.getElementById('inp_store_'+d).value;
@@ -2912,14 +2951,29 @@ function saveDayInline(d){
   r.weekendAllow=parseInt(document.getElementById('inp_we_'+d)?.value)||0;
   r.ok=true;
   save(SK,db);
-  if(window.__db){const u=JSON.parse(localStorage.getItem(UK)||'null');if(u&&u.id)window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true}).catch(e=>console.error(e))}
+  // Firestore保存（失敗時は通知）
+  if(window.__db){
+    const u=JSON.parse(localStorage.getItem(UK)||'null');
+    if(u&&u.id){
+      window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true})
+        .then(()=>{/* 成功 */})
+        .catch(e=>{
+          console.error('save error:',e);
+          toast('⚠️ ネット接続エラー。次回接続時に同期されます');
+          // 失敗を記録して後でリトライ
+          localStorage.setItem('sc_pending_sync','1');
+        });
+    }
+  }
   window._openedDay=null;
   render();
   toast('🌸 '+mo+'/'+d+' 保存しました');
 }
 function deleteDayInline(d){
-  if(!confirm(mo+'/'+d+'の記録を削除しますか？'))return;
+  if(!staff){toast('エラー：スタッフ情報が読み込まれていません');return}
   const md=getMD();
+  if(md.locked){toast('🔒 月締め済みのため削除できません');return}
+  if(!confirm(mo+'/'+d+'の記録を削除しますか？'))return;
   delete md[`d${d}`];
   save(SK,db);
   // Firestoreでフィールド削除（FieldValue.delete()）
