@@ -2428,11 +2428,18 @@ function startApp(u){
   loadUserInfo();
   render();
   // 保留中の同期をリトライ
-  if(localStorage.getItem('sc_pending_sync')==='1'&&window.__db&&u.id){
+  const _retryPending=()=>{
+    if(localStorage.getItem('sc_pending_sync')!=='1')return;
+    if(!window.__db||!u.id||!navigator.onLine)return;
     window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true})
       .then(()=>{localStorage.removeItem('sc_pending_sync');toast('✅ 保留データを同期しました')})
       .catch(()=>{});
-  }
+  };
+  _retryPending();
+  // オンライン復帰時にもリトライ
+  window.addEventListener('online', _retryPending);
+  // 30秒ごとに再試行
+  setInterval(_retryPending, 30000);
   // Firestoreリアルタイム同期（管理者の月締め等を即反映）
   if(window.__db&&u.id&&!window._staffUnsub){
     window._staffUnsub=window.__db.collection('staff').doc(u.id).onSnapshot(doc=>{
@@ -2574,12 +2581,22 @@ function buildCards(){
               <span style="font-size:11px;color:#b08090;font-weight:700;display:block;margin-bottom:4px">🚃 交通費</span>
               <div style="display:flex;gap:4px;margin-bottom:5px">
                 <input id="inp_r1a_${d}" type="text" value="${r.r1a||''}" placeholder="往（○○駅→○○駅）" style="flex:1;padding:8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:12px;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif">
-                <input id="inp_f1a_${d}" type="number" value="${r.f1a||''}" placeholder="0" style="width:80px;padding:8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:12px;text-align:right;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif">
+                <input id="inp_f1a_${d}" type="number" min="0" step="1" value="${r.f1a||''}" placeholder="0" style="width:80px;padding:8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:12px;text-align:right;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif">
               </div>
               <div style="display:flex;gap:4px">
                 <input id="inp_r1b_${d}" type="text" value="${r.r1b||''}" placeholder="復（○○駅→○○駅）" style="flex:1;padding:8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:12px;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif">
-                <input id="inp_f1b_${d}" type="number" value="${r.f1b||''}" placeholder="0" style="width:80px;padding:8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:12px;text-align:right;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif">
+                <input id="inp_f1b_${d}" type="number" min="0" step="1" value="${r.f1b||''}" placeholder="0" style="width:80px;padding:8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:12px;text-align:right;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif">
               </div>
+              <details style="margin-top:5px"><summary style="font-size:10px;color:#b08090;cursor:pointer;padding:4px 0">+ 2本目を追加</summary>
+              <div style="display:flex;gap:4px;margin-bottom:5px;margin-top:5px">
+                <input id="inp_r2a_${d}" type="text" value="${r.r2a||''}" placeholder="2本目 往" style="flex:1;padding:8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:12px;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif">
+                <input id="inp_f2a_${d}" type="number" min="0" step="1" value="${r.f2a||''}" placeholder="0" style="width:80px;padding:8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:12px;text-align:right;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif">
+              </div>
+              <div style="display:flex;gap:4px">
+                <input id="inp_r2b_${d}" type="text" value="${r.r2b||''}" placeholder="2本目 復" style="flex:1;padding:8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:12px;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif">
+                <input id="inp_f2b_${d}" type="number" min="0" step="1" value="${r.f2b||''}" placeholder="0" style="width:80px;padding:8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:12px;text-align:right;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif">
+              </div>
+              </details>
             </div>
             <!-- 手当 -->
             <div>
@@ -2926,46 +2943,70 @@ function toggleDayInput(d){
     if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
   },50);
 }
+// 入力フォームから値を取得（共通）
+function _readDayForm(d){
+  const get=id=>document.getElementById(id);
+  const inV=get('inp_in_'+d)?.value||'';
+  const outV=get('inp_out_'+d)?.value||'';
+  const storeV=(get('inp_store_'+d)?.value||'').trim();
+  const restV=parseInt(get('inp_rest_'+d)?.value)||0;
+  // 数値フィールドはサニタイズ
+  const num=v=>{const n=parseInt(v);return isNaN(n)||n<0?0:n};
+  return {
+    store:storeV, in:inV, out:outV, rest:restV,
+    r1a:(get('inp_r1a_'+d)?.value||'').trim(),
+    f1a:String(num(get('inp_f1a_'+d)?.value)),
+    r1b:(get('inp_r1b_'+d)?.value||'').trim(),
+    f1b:String(num(get('inp_f1b_'+d)?.value)),
+    r2a:(get('inp_r2a_'+d)?.value||'').trim(),
+    f2a:String(num(get('inp_f2a_'+d)?.value)),
+    r2b:(get('inp_r2b_'+d)?.value||'').trim(),
+    f2b:String(num(get('inp_f2b_'+d)?.value)),
+    tripAllow:num(get('inp_trip_'+d)?.value),
+    weekendAllow:num(get('inp_we_'+d)?.value)
+  };
+}
+// バリデーション（draft=true なら緩い検証）
+function _validateDayForm(d, draft){
+  const f=_readDayForm(d);
+  if(draft) return {ok:true, data:f};
+  if(!f.in||!f.out){toast('開始時間と終了時間を入力してください');return {ok:false}}
+  if(!f.store){toast('業務先を入力してください');return {ok:false}}
+  // 時間の論理チェック
+  const toMinL=t=>{const[h,m]=t.split(':').map(Number);return h*60+m};
+  const inM=toMinL(f.in), outM=toMinL(f.out);
+  if(outM<=inM){toast('⚠️ 終了時間は開始時間より後にしてください');return {ok:false}}
+  if(f.rest>=outM-inM){toast('⚠️ 休憩が勤務時間を超えています');return {ok:false}}
+  return {ok:true, data:f};
+}
+function _firestoreSave(){
+  if(!window.__db)return Promise.resolve();
+  const u=JSON.parse(localStorage.getItem(UK)||'null');
+  if(!u||!u.id)return Promise.resolve();
+  return window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true})
+    .then(()=>{localStorage.removeItem('sc_pending_sync')})
+    .catch(e=>{
+      console.error('save error:',e);
+      toast('⚠️ ネット接続エラー。次回接続時に再同期します');
+      localStorage.setItem('sc_pending_sync','1');
+      throw e;
+    });
+}
 function saveDayInline(d){
   if(!staff){toast('エラー：スタッフ情報が読み込まれていません');return}
   const md=getMD();
   if(md.locked){toast('🔒 月締め済みのため編集できません');return}
-  // 入力チェック
-  const inEl=document.getElementById('inp_in_'+d);
-  const outEl=document.getElementById('inp_out_'+d);
-  if(!inEl||!outEl){toast('入力フォームが見つかりません');return}
-  if(!inEl.value||!outEl.value){toast('開始時間と終了時間を入力してください');return}
+  const v=_validateDayForm(d, false);
+  if(!v.ok)return;
   if(!md[`d${d}`])md[`d${d}`]={};
-  const r=md[`d${d}`];
-  r.store=document.getElementById('inp_store_'+d).value;
-  r.in=document.getElementById('inp_in_'+d).value;
-  r.out=document.getElementById('inp_out_'+d).value;
-  r.rest=parseInt(document.getElementById('inp_rest_'+d).value)||0;
-  r.r1a=document.getElementById('inp_r1a_'+d)?.value||'';
-  r.f1a=document.getElementById('inp_f1a_'+d)?.value||'';
-  r.r1b=document.getElementById('inp_r1b_'+d)?.value||'';
-  r.f1b=document.getElementById('inp_f1b_'+d)?.value||'';
-  r.tripAllow=parseInt(document.getElementById('inp_trip_'+d)?.value)||0;
-  r.weekendAllow=parseInt(document.getElementById('inp_we_'+d)?.value)||0;
-  r.ok=true;
+  Object.assign(md[`d${d}`], v.data, {ok:true});
   save(SK,db);
-  // Firestore保存（失敗時は通知）
-  if(window.__db){
-    const u=JSON.parse(localStorage.getItem(UK)||'null');
-    if(u&&u.id){
-      window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true})
-        .then(()=>{/* 成功 */})
-        .catch(e=>{
-          console.error('save error:',e);
-          toast('⚠️ ネット接続エラー。次回接続時に同期されます');
-          // 失敗を記録して後でリトライ
-          localStorage.setItem('sc_pending_sync','1');
-        });
-    }
-  }
+  syncAdminData();
+  // 楽観的更新：先にrender、Firestoreは非同期
   window._openedDay=null;
   render();
   toast('🌸 '+mo+'/'+d+' 保存しました');
+  _firestoreSave();
 }
 function deleteDayInline(d){
   if(!staff){toast('エラー：スタッフ情報が読み込まれていません');return}
@@ -2993,42 +3034,52 @@ function deleteDayInline(d){
   toast('🗑 '+mo+'/'+d+' 削除しました');
 }
 function saveDraftDayInline(d){
-  // 下書き保存（ok=false）
+  if(!staff){toast('エラー：スタッフ情報が読み込まれていません');return}
   const md=getMD();
+  if(md.locked){toast('🔒 月締め済みのため編集できません');return}
+  const v=_validateDayForm(d, true);
+  if(!v.ok)return;
   if(!md[`d${d}`])md[`d${d}`]={};
-  const r=md[`d${d}`];
-  r.store=document.getElementById('inp_store_'+d).value;
-  r.in=document.getElementById('inp_in_'+d).value;
-  r.out=document.getElementById('inp_out_'+d).value;
-  r.rest=parseInt(document.getElementById('inp_rest_'+d).value)||0;
-  r.r1a=document.getElementById('inp_r1a_'+d)?.value||'';
-  r.f1a=document.getElementById('inp_f1a_'+d)?.value||'';
-  r.r1b=document.getElementById('inp_r1b_'+d)?.value||'';
-  r.f1b=document.getElementById('inp_f1b_'+d)?.value||'';
-  r.tripAllow=parseInt(document.getElementById('inp_trip_'+d)?.value)||0;
-  r.weekendAllow=parseInt(document.getElementById('inp_we_'+d)?.value)||0;
-  r.ok=false;
+  Object.assign(md[`d${d}`], v.data, {ok:false});
   save(SK,db);
-  if(window.__db){const u=JSON.parse(localStorage.getItem(UK)||'null');if(u&&u.id)window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true}).catch(e=>console.error(e))}
+  syncAdminData();
   toast('📝 '+mo+'/'+d+' 下書き保存');
+  _firestoreSave();
 }
 function pickStore(name){
   document.getElementById('mStore').value=name;
   document.querySelectorAll('.store-tag').forEach(b=>b.classList.toggle('on',b.dataset.s===name));
   if(name)applyPreset(name);
 }
+function _esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function addStorePreset(){
   const name=prompt('追加する業務先名を入力（例：金山、池下など）');
   if(!name||!name.trim())return;
-  const trimmed=name.trim();
+  let trimmed=name.trim();
+  // 危険文字を除去（記号は許可、HTML特殊文字とクォートを除去）
+  trimmed=trimmed.replace(/[<>"'`\\]/g,'').slice(0,30);
+  if(!trimmed){toast('使用できない文字が含まれています');return}
   if(STORES.includes(trimmed)){toast('既に登録されています');return}
   STORES.push(trimmed);
   localStorage.setItem('sc_stores',JSON.stringify(STORES));
-  // 再描画
+  // 再描画（addEventListenerで安全に）
   const st=document.getElementById('storeTags');
   if(st){
-    st.innerHTML=STORES.map(s=>`<button class="store-tag" data-s="${s}" onclick="pickStore('${s}')">${s}</button>`).join('')+
-      `<button class="store-tag" style="border-style:dashed;color:#d4537a" onclick="addStorePreset()">+ 追加</button>`;
+    st.innerHTML='';
+    STORES.forEach(s=>{
+      const b=document.createElement('button');
+      b.className='store-tag';
+      b.dataset.s=s;
+      b.textContent=s;
+      b.onclick=()=>pickStore(s);
+      st.appendChild(b);
+    });
+    const add=document.createElement('button');
+    add.className='store-tag';
+    add.style.cssText='border-style:dashed;color:#d4537a';
+    add.textContent='+ 追加';
+    add.onclick=addStorePreset;
+    st.appendChild(add);
   }
   pickStore(trimmed);
   toast('✅ 「'+trimmed+'」を追加しました');
