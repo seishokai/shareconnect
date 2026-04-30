@@ -2393,6 +2393,7 @@ function buildCards(){
       </div>
       ${isOpen&&!isLocked?`<div style="padding:14px;border-top:1px solid ${borderClr};background:#fff">
         ${isCopied?'<div style="background:#e8f0fe;color:#4a90d9;padding:8px 12px;border-radius:10px;font-size:12px;margin-bottom:12px;font-weight:700;text-align:center">📋 前回の内容をコピー済み。確認して保存</div>':''}
+        ${has?`<button onclick="copyDayToOthers(${d})" style="width:100%;padding:8px;background:#fff;border:1.5px dashed #4a90d9;color:#4a90d9;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;margin-bottom:10px">📋 この日を他の日にコピー</button>`:''}
 
         <!-- 業務先 -->
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
@@ -2697,6 +2698,53 @@ function saveSnsSettings(){
 }
 
 // ── Store / Time / Rest ────────────────────────────
+function copyDayToOthers(srcDay){
+  const md=getMD();
+  const src=md[`d${srcDay}`];
+  if(!src||!src.in||!src.out){toast('コピー元のデータがありません');return}
+  // コピー先選択ダイアログ
+  const days=new Date(yr,mo,0).getDate();
+  let html=`<div style="padding:14px;background:#fff;border-radius:14px;max-width:340px;width:90%;max-height:80vh;overflow:auto">
+    <div style="font-size:14px;font-weight:700;color:#d4537a;margin-bottom:8px">📋 ${mo}/${srcDay}（${src.store||''} ${src.in}〜${src.out}）をコピー</div>
+    <div style="font-size:11px;color:#b08090;margin-bottom:10px">コピーしたい日をタップしてください（複数選択可）</div>
+    <div id="copyTargets" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">`;
+  for(let d=1;d<=days;d++){
+    if(d===srcDay)continue;
+    const r=md[`d${d}`];
+    const has=r&&r.in&&r.out;
+    const dt=new Date(yr,mo-1,d),wd=dt.getDay();
+    const wdc=wd===6?'#7a5cb8':wd===0?'#d4537a':'#3a2030';
+    html+=`<button data-d="${d}" onclick="this.classList.toggle('on');this.style.background=this.classList.contains('on')?'#d4537a':'#fff';this.style.color=this.classList.contains('on')?'#fff':'${wdc}'" style="padding:8px 4px;border:1.5px solid ${has?'#88d4a8':'#f9c8d5'};background:#fff;color:${wdc};border-radius:8px;font-size:11px;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;font-weight:700">${d}<br><span style="font-size:9px">${WD[wd]}</span>${has?'<br><span style="font-size:8px;color:#4caf7d">入力済</span>':''}</button>`;
+  }
+  html+=`</div>
+    <div style="display:flex;gap:6px;margin-top:14px">
+      <button onclick="document.getElementById('copyOverlay').remove()" style="flex:1;padding:10px;background:#fff;border:1.5px solid #ccc;color:#666;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">キャンセル</button>
+      <button onclick="executeCopyDays(${srcDay})" style="flex:2;padding:10px;background:linear-gradient(135deg,#4a90d9,#3a7ec9);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">📋 一括コピー実行</button>
+    </div>
+  </div>`;
+  const ov=document.createElement('div');
+  ov.id='copyOverlay';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+  ov.innerHTML=html;
+  ov.onclick=e=>{if(e.target===ov)ov.remove()};
+  document.body.appendChild(ov);
+}
+function executeCopyDays(srcDay){
+  const md=getMD();
+  const src=md[`d${srcDay}`];
+  const targets=Array.from(document.querySelectorAll('#copyTargets button.on')).map(b=>+b.dataset.d);
+  if(!targets.length){toast('コピー先を1日以上選択してください');return}
+  if(!confirm(`${targets.length}日分にコピーします。既存の入力は上書きされます。よろしいですか？`))return;
+  targets.forEach(d=>{
+    md[`d${d}`]={...src,ok:true};
+  });
+  save(SK,db);
+  if(window.__db){const u=JSON.parse(localStorage.getItem(UK)||'null');if(u&&u.id)window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true}).catch(e=>console.error(e))}
+  document.getElementById('copyOverlay').remove();
+  window._openedDay=null;
+  render();
+  toast(`📋 ${targets.length}日分にコピーしました`);
+}
 function toggleDayInput(d){
   if(window._openedDay===d)window._openedDay=null;
   else window._openedDay=d;
