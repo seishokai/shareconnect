@@ -823,38 +823,34 @@ window.__auth = _auth;
   </div>
   <div class="m-body">
     <div class="m-sec">
-      <div class="m-sec-ttl">🏪 店舗</div>
-      <div class="store-tags" id="storeTags">
-        <button class="store-tag" data-s="茶屋" onclick="pickStore('茶屋')">茶屋</button>
-        <button class="store-tag" data-s="京都" onclick="pickStore('京都')">京都</button>
-        <button class="store-tag" data-s="銀座" onclick="pickStore('銀座')">銀座</button>
-      </div>
-      <input type="hidden" id="mStore">
+      <div class="m-sec-ttl">🏪 業務先</div>
+      <div class="store-tags" id="storeTags"></div>
+      <input type="text" id="mStore" placeholder="その他の業務先を入力" style="width:100%;padding:10px 12px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:14px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;margin-top:8px;box-sizing:border-box" oninput="document.querySelectorAll('.store-tag').forEach(b=>b.classList.remove('on'))">
     </div>
     <div class="m-sec">
       <div class="m-sec-ttl">⏰ 稼働時間</div>
       <div class="m-row">
         <div class="mf">
           <div class="ml">開始</div>
-          <div class="stepper"><button class="step-btn" onclick="adjTime('mIn',-30)">−</button><input type="time" id="mIn" oninput="prevWork()"><button class="step-btn" onclick="adjTime('mIn',30)">＋</button></div>
+          <div class="stepper"><button class="step-btn" onclick="adjTime('mIn',-30)">−</button><input type="time" id="mIn" oninput="prevWork()" style="font-size:18px"><button class="step-btn" onclick="adjTime('mIn',30)">＋</button></div>
         </div>
         <div class="mf">
           <div class="ml">終了</div>
-          <div class="stepper"><button class="step-btn" onclick="adjTime('mOut',-30)">−</button><input type="time" id="mOut" oninput="prevWork()"><button class="step-btn" onclick="adjTime('mOut',30)">＋</button></div>
+          <div class="stepper"><button class="step-btn" onclick="adjTime('mOut',-30)">−</button><input type="time" id="mOut" oninput="prevWork()" style="font-size:18px"><button class="step-btn" onclick="adjTime('mOut',30)">＋</button></div>
         </div>
       </div>
       <div class="mf">
-        <div class="ml">休憩時間</div>
-        <div class="rest-row">
-          <input type="number" id="mRest" min="0" max="480" step="1" value="60" oninput="prevWork();syncRC()">
-          <span style="font-size:12px;color:#b08090">分</span>
+        <div class="ml">休憩</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="rc" data-v="0" onclick="setRest(0)">なし</button>
           <button class="rc" data-v="30" onclick="setRest(30)">30分</button>
           <button class="rc on" data-v="60" onclick="setRest(60)">60分</button>
           <button class="rc" data-v="90" onclick="setRest(90)">90分</button>
+          <input type="number" id="mRest" min="0" max="480" step="1" value="60" oninput="prevWork();syncRC()" style="width:60px;padding:6px;border:1.5px solid #f9c8d5;border-radius:8px;text-align:center;font-size:13px;font-family:'Zen Maru Gothic',sans-serif">
+          <span style="font-size:11px;color:#b08090;align-self:center">分</span>
         </div>
       </div>
-      <div class="work-prev" id="workPrev">稼働時間: --</div>
+      <div class="work-prev" id="workPrev" style="margin-top:8px;padding:10px;background:linear-gradient(135deg,#fce8ef,#fff);border-radius:10px;text-align:center;font-size:14px;font-weight:700;color:#d4537a">稼働時間: --</div>
     </div>
     <div class="m-sec" id="secFare">
       <div class="m-sec-ttl" style="cursor:pointer" onclick="this.parentElement.querySelector('.fare-body').classList.toggle('hidden');this.querySelector('.fare-arrow').textContent=this.parentElement.querySelector('.fare-body.hidden')?'▶':'▼'">🚃 交通費 <span class="fare-arrow" style="font-size:10px;color:#b08090">▼</span></div>
@@ -2013,7 +2009,7 @@ if(window.__SC_MODE === 'staff'){
 const WD=['日','月','火','水','木','金','土'];
 const SK='sc_staff_v1',PK='sc_presets',SETK='sc_settings',UK='sc_user',CK='sc_company';
 const DEF_IN='09:30',DEF_OUT='18:30';
-const STORES=['茶屋','京都','銀座'];
+const STORES=JSON.parse(localStorage.getItem('sc_stores')||'null')||['茶屋','京都','銀座'];
 const CO={
   name:'株式会社シェアコネクト',
   rep:'代表取締役　小池拓未',
@@ -2465,7 +2461,14 @@ function openModal(day){
   const r=md[`d${day}`]||{};
   const dt=new Date(yr,mo-1,day);
   document.getElementById('smTitle').textContent=`${mo}月${day}日（${WD[dt.getDay()]}）`;
+  // 業務先ボタンを動的生成
+  const st=document.getElementById('storeTags');
+  if(st){
+    st.innerHTML=STORES.map(s=>`<button class="store-tag" data-s="${s}" onclick="pickStore('${s}')">${s}</button>`).join('')+
+      `<button class="store-tag" style="border-style:dashed;color:#d4537a" onclick="addStorePreset()">+ 追加</button>`;
+  }
   pickStore(r.store||'');
+  document.getElementById('mStore').value=r.store||'';
   document.getElementById('mIn').value=r.in||DEF_IN;
   document.getElementById('mOut').value=r.out||DEF_OUT;
   document.getElementById('mRest').value=r.rest!=null?r.rest:60;
@@ -2629,6 +2632,22 @@ function pickStore(name){
   document.getElementById('mStore').value=name;
   document.querySelectorAll('.store-tag').forEach(b=>b.classList.toggle('on',b.dataset.s===name));
   if(name)applyPreset(name);
+}
+function addStorePreset(){
+  const name=prompt('追加する業務先名を入力（例：金山、池下など）');
+  if(!name||!name.trim())return;
+  const trimmed=name.trim();
+  if(STORES.includes(trimmed)){toast('既に登録されています');return}
+  STORES.push(trimmed);
+  localStorage.setItem('sc_stores',JSON.stringify(STORES));
+  // 再描画
+  const st=document.getElementById('storeTags');
+  if(st){
+    st.innerHTML=STORES.map(s=>`<button class="store-tag" data-s="${s}" onclick="pickStore('${s}')">${s}</button>`).join('')+
+      `<button class="store-tag" style="border-style:dashed;color:#d4537a" onclick="addStorePreset()">+ 追加</button>`;
+  }
+  pickStore(trimmed);
+  toast('✅ 「'+trimmed+'」を追加しました');
 }
 function adjTime(id,delta){
   const el=document.getElementById(id);
