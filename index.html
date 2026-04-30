@@ -800,6 +800,7 @@ window.__auth = _auth;
       <div class="sc-body">
         <div class="s-info" id="userInfoDisp">読み込み中...</div>
         <button class="ghost-btn" style="margin-top:4px" onclick="viewContract()">📋 締結済み契約書を確認</button>
+        <button class="ghost-btn" onclick="logoutStaff()" style="margin-top:6px">🚪 ログアウト</button>
         <button class="danger-btn" onclick="resetApp()">🔄 登録をリセット（再登録）</button>
       </div>
     </div>
@@ -2055,8 +2056,17 @@ function boot(){
         const u={...data, id:urlId, approved:true};
         save(UK, u);
         if(data.workData){save(SK, data.workData);db=data.workData}
-        // PINが設定されている場合はログイン画面
-        if(u.pin){showPinLogin(u);} else startApp(u);
+        // PINが設定されている場合は認証チェック
+        if(u.pin){
+          const authedId=sessionStorage.getItem('sc_authed');
+          const authedAt=parseInt(sessionStorage.getItem('sc_authed_at')||'0');
+          // 同じスタッフで認証済み & 30分以内ならスキップ
+          if(authedId===urlId && (Date.now()-authedAt)<IDLE_TIMEOUT_MS){
+            startApp(u);startIdleTimer();
+          } else {
+            showPinLogin(u);
+          }
+        } else startApp(u);
       } else {
         // Firestoreにない場合、localStorageを確認
         const u=JSON.parse(ls(UK)||'null');
@@ -2548,6 +2558,9 @@ function submitForApproval(){
   }).catch(e=>{toast('❌ 通信エラー: '+e.message);console.error(e)});
 }
 let _pinUser=null;
+let _idleTimer=null;
+const IDLE_TIMEOUT_MS=30*60*1000; // 30分
+
 function showPinLogin(u){
   _pinUser=u;
   document.getElementById('pinName').textContent=u.name;
@@ -2563,7 +2576,33 @@ function checkPin(){
     document.getElementById('pinInput').value='';
     return;
   }
+  // セッショントークン発行（タブ閉じたら消える）
+  sessionStorage.setItem('sc_authed', _pinUser.id);
+  sessionStorage.setItem('sc_authed_at', Date.now());
   startApp(_pinUser);
+  startIdleTimer();
+}
+function startIdleTimer(){
+  resetIdleTimer();
+  ['mousedown','keydown','touchstart','scroll'].forEach(ev=>{
+    document.addEventListener(ev, resetIdleTimer, {passive:true});
+  });
+}
+function resetIdleTimer(){
+  if(_idleTimer)clearTimeout(_idleTimer);
+  _idleTimer=setTimeout(()=>{
+    sessionStorage.removeItem('sc_authed');
+    sessionStorage.removeItem('sc_authed_at');
+    alert('30分間操作がなかったため、ログアウトしました。再度ログインしてください。');
+    location.reload();
+  }, IDLE_TIMEOUT_MS);
+}
+function logoutStaff(){
+  if(!confirm('ログアウトしますか？'))return;
+  sessionStorage.removeItem('sc_authed');
+  sessionStorage.removeItem('sc_authed_at');
+  if(_idleTimer)clearTimeout(_idleTimer);
+  location.reload();
 }
 function saveStaffInvoiceNum(){
   const u=JSON.parse(ls(UK)||'null');if(!u)return;
