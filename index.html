@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <meta name="color-scheme" content="light">
+<meta name="theme-color" content="#d4537a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="seal.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="シェアコネクト">
 <title>シェアコネクト</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Zen+Maru+Gothic:wght@400;500;700&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
 <style>
@@ -447,6 +453,11 @@ window.__auth = _auth;
 </div>
 
 
+<div id="adminLoading" style="display:none;position:fixed;inset:0;background:rgba(255,245,247,.95);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:14px">
+  <div style="width:50px;height:50px;border:4px solid #fde8ee;border-top-color:#d4537a;border-radius:50%;animation:spin 0.8s linear infinite"></div>
+  <div style="font-size:13px;color:#d4537a;font-weight:700">データ読み込み中...</div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}</style>
 <div id="adminApp">
 <header class="hdr">
   <h1>🌸 シェアコネクト 管理画面</h1><button onclick="doLogout()" style="position:absolute;right:14px;top:14px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:20px;padding:4px 12px;font-size:11px;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">ログアウト</button>
@@ -461,6 +472,21 @@ window.__auth = _auth;
 
 <!-- ── STAFF PANEL ── -->
 <div class="panel on" id="pStaff">
+  <!-- ダッシュボード -->
+  <div id="dashboard" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px"></div>
+  <!-- 通知センター -->
+  <div id="notifCenter" style="display:none;background:linear-gradient(135deg,#fff3e6,#fffaf0);border:1.5px solid #f0c060;border-radius:12px;padding:10px 14px;margin-bottom:10px;cursor:pointer" onclick="scrollToFirstSubmitted()"></div>
+  <!-- 検索 -->
+  <div style="display:flex;gap:6px;margin-bottom:8px">
+    <input type="text" id="staffSearch" placeholder="🔍 名前で検索" oninput="renderStaffList()" style="flex:1;padding:8px 12px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;background:#fff5f7">
+    <select id="statusFilter" onchange="renderStaffList()" style="padding:8px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:12px;font-family:'Zen Maru Gothic',sans-serif;background:#fff5f7">
+      <option value="all">全状態</option>
+      <option value="pending">承認待ち</option>
+      <option value="submitted">申請中</option>
+      <option value="locked">締め済</option>
+      <option value="working">入力中</option>
+    </select>
+  </div>
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:6px">
     <div style="font-size:13px;font-weight:700;color:#d4537a">登録スタッフ一覧</div>
     <div style="font-size:11px;color:#b08090" id="staffCount">0名</div>
@@ -471,6 +497,7 @@ window.__auth = _auth;
     <div style="flex:1;text-align:center;font-size:15px;font-weight:700;color:#d4537a" id="listMonthLabel">2026年4月</div>
     <button onclick="changeListMonth(1)" style="padding:6px 10px;border:none;background:#fde8ee;color:#d4537a;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">▶</button>
     <button onclick="resetListMonth()" style="padding:6px 12px;border:none;background:#d4537a;color:#fff;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">今月</button>
+    <button onclick="exportPaymentCSV()" style="padding:6px 10px;border:1.5px solid #4a90d9;background:#fff;color:#4a90d9;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">📥 CSV</button>
   </div>
   <div id="staffList"><div class="empty">登録スタッフがいません</div></div>
 </div>
@@ -746,14 +773,14 @@ window.__auth = _auth;
     <div class="si"><div class="sv" id="sumP">¥0</div><div class="sl">報酬額</div></div>
     <div class="si"><div class="sv" id="sumF">¥0</div><div class="sl">交通費</div></div>
   </div>
-  <div id="snsSection" style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border:2px solid #f0c060;border-radius:14px;margin:0 14px 8px;flex-wrap:wrap">
+  <details id="snsSection" style="margin:0 14px 8px"><summary style="background:#fff;border:2px solid #f0c060;border-radius:14px;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:700;color:#e07b3a;list-style:none;display:flex;align-items:center;gap:8px">📸 SNS投稿を入力する <span id="snsSummary" style="margin-left:auto;font-size:12px;color:#b08090;font-weight:400"></span></summary><div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border:2px solid #f0c060;border-radius:14px;margin-top:6px;flex-wrap:wrap">
     <span style="font-size:15px;font-weight:700;color:#e07b3a">📸 SNS投稿</span>
     <input type="number" id="snsCountInput" value="0" min="0" style="width:60px;padding:8px 10px;border:2px solid #f0c060;border-radius:10px;font-size:18px;font-weight:700;color:#e07b3a;text-align:center;background:#fffaf0;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsSettings()">
     <span style="font-size:13px;color:#b08090;font-weight:700">件 ×</span>
     <input type="number" id="snsRateInput" value="2000" style="width:80px;padding:8px 10px;border:2px solid #f0c060;border-radius:10px;font-size:18px;font-weight:700;color:#e07b3a;text-align:center;background:#fffaf0;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsSettings()">
     <span style="font-size:13px;color:#b08090;font-weight:700">円</span>
     <span style="font-size:16px;color:#e07b3a;font-weight:700;margin-left:auto" id="snsPayDisp"></span>
-  </div>
+  </div></details>
   <div id="calDetails" style="display:none"><div id="calGrid"></div><span id="calLabel"></span></div>
   <div class="cards-wrap" id="cardsWrap">
     <div class="empty-state"><div class="ico">🌸</div><p>上の日付をタップして<br>稼働日を追加してください</p></div>
@@ -940,7 +967,8 @@ _auth.onAuthStateChanged(user => {
     document.getElementById('adminApp').className = 'show';
     document.getElementById('adminCSS').media = 'all';
     document.title = 'シェアコネクト 管理画面';
-    fbBoot();
+    const ld=document.getElementById('adminLoading');if(ld)ld.style.display='flex';
+    fbBoot().then(()=>{const ld=document.getElementById('adminLoading');if(ld)ld.style.display='none'}).catch(()=>{const ld=document.getElementById('adminLoading');if(ld)ld.style.display='none'});
   } else {
     document.getElementById('loginScreen').style.display = 'flex';
     document.getElementById('adminApp').className = '';
@@ -1342,14 +1370,101 @@ function addDept(){
 }
 
 // ── Staff ──────────────────────────────────────────
+function renderDashboard(){
+  const el=document.getElementById('dashboard');if(!el)return;
+  const k=`${_listYear}-${pad(_listMonth)}_`;
+  let totalAmount=0,submittedCount=0,lockedCount=0,pendingApproval=0;
+  allStaff.forEach(s=>{
+    if(!s.approved)pendingApproval++;
+    const wd=s.workData||{};
+    const mk=Object.keys(wd).find(kk=>kk.startsWith(k));
+    if(!mk)return;
+    const md=wd[mk];
+    const mRate=md.rate||DEF_RATE;
+    let tw=0,tf=0,twa=0,tta=0;
+    Object.entries(md).forEach(([kk,r])=>{if(!kk.startsWith('d'))return;const wm=calcWork(r);if(wm)tw+=wm;tf+=calcFare(r);twa+=(r.weekendAllow||0);tta+=(r.tripAllow||0)});
+    const pay=s.snsOnly?0:calcPay(tw,mRate);
+    const snsPay=(md.snsCount||0)*(md.snsRate||2000);
+    totalAmount+=pay+(s.snsOnly?0:tf+twa+tta)+snsPay;
+    if(md.submitted&&!md.locked)submittedCount++;
+    if(md.locked)lockedCount++;
+  });
+  el.innerHTML=`
+    <div style="background:linear-gradient(135deg,#fce8ef,#fff);border:1.5px solid #f9c8d5;border-radius:10px;padding:8px;text-align:center"><div style="font-size:9px;color:#b08090;font-weight:700">支払予定</div><div style="font-size:14px;font-weight:700;color:#d4537a;margin-top:2px">¥${totalAmount.toLocaleString()}</div></div>
+    <div style="background:linear-gradient(135deg,#fff3e6,#fff);border:1.5px solid #f0c060;border-radius:10px;padding:8px;text-align:center"><div style="font-size:9px;color:#b08090;font-weight:700">申請待ち</div><div style="font-size:14px;font-weight:700;color:#e07b3a;margin-top:2px">${submittedCount}件</div></div>
+    <div style="background:linear-gradient(135deg,#edfaf3,#fff);border:1.5px solid #88d4a8;border-radius:10px;padding:8px;text-align:center"><div style="font-size:9px;color:#b08090;font-weight:700">締め済</div><div style="font-size:14px;font-weight:700;color:#3d9a6a;margin-top:2px">${lockedCount}件</div></div>
+    <div style="background:linear-gradient(135deg,#fff3e6,#fff);border:1.5px solid #f0a068;border-radius:10px;padding:8px;text-align:center"><div style="font-size:9px;color:#b08090;font-weight:700">登録待ち</div><div style="font-size:14px;font-weight:700;color:#d47030;margin-top:2px">${pendingApproval}名</div></div>
+  `;
+  // 通知センター
+  const nc=document.getElementById('notifCenter');
+  if(nc){
+    if(submittedCount>0||pendingApproval>0){
+      nc.style.display='block';
+      const msgs=[];
+      if(submittedCount>0)msgs.push(`📨 月締め申請 <b>${submittedCount}件</b>`);
+      if(pendingApproval>0)msgs.push(`⏳ 登録承認待ち <b>${pendingApproval}名</b>`);
+      nc.innerHTML=`<div style="font-size:13px;font-weight:700;color:#a08020">🔔 ${msgs.join(' / ')}</div><div style="font-size:10px;color:#b08090;margin-top:2px">タップで対応してください</div>`;
+    } else {
+      nc.style.display='none';
+    }
+  }
+}
+function scrollToFirstSubmitted(){
+  document.getElementById('statusFilter').value='submitted';
+  renderStaffList();
+}
+// CSV出力
+function exportPaymentCSV(){
+  const k=`${_listYear}-${pad(_listMonth)}_`;
+  const rows=[['氏名','部門','銀行','支店','種別','口座番号','口座名義','支払金額','インボイス番号']];
+  allStaff.forEach(s=>{
+    const wd=s.workData||{};
+    const mk=Object.keys(wd).find(kk=>kk.startsWith(k));
+    if(!mk)return;
+    const md=wd[mk];
+    if(!md.locked)return; // 月締め確定済みのみ
+    const mRate=md.rate||DEF_RATE;
+    let tw=0,tf=0,twa=0,tta=0;
+    Object.entries(md).forEach(([kk,r])=>{if(!kk.startsWith('d'))return;const wm=calcWork(r);if(wm)tw+=wm;tf+=calcFare(r);twa+=(r.weekendAllow||0);tta+=(r.tripAllow||0)});
+    const pay=s.snsOnly?0:calcPay(tw,mRate);
+    const snsPay=(md.snsCount||0)*(md.snsRate||2000);
+    const total=pay+(s.snsOnly?0:tf+twa+tta)+snsPay;
+    rows.push([s.name,s.department||'',s.bank||'',s.branch||'',s.accType||'',s.accNum||'',s.accName||'',total,s.invoiceNum||'']);
+  });
+  if(rows.length<2){toast('月締め確定済みのスタッフがいません');return}
+  const csv='﻿'+rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`振込データ_${_listYear}-${pad(_listMonth)}.csv`;
+  a.click();
+  toast('📥 CSVをダウンロードしました');
+}
 function renderStaffList(){
   document.getElementById('staffCount').textContent='計 '+allStaff.length+' 名登録';
   renderDeptFilter();
+  renderDashboard();
   const el=document.getElementById('staffList');
-  const filtered=_deptFilter==='all'?allStaff:allStaff.filter(s=>(_deptFilter==='未分類'?!s.department:s.department===_deptFilter));
-  if(!filtered.length){el.innerHTML='<div class="empty">このカテゴリにスタッフがいません</div>';return}
+  // 検索・フィルター
+  const searchQ=(document.getElementById('staffSearch')?.value||'').toLowerCase().trim();
+  const statusF=document.getElementById('statusFilter')?.value||'all';
+  let filtered=_deptFilter==='all'?[...allStaff]:allStaff.filter(s=>(_deptFilter==='未分類'?!s.department:s.department===_deptFilter));
+  if(searchQ)filtered=filtered.filter(s=>(s.name||'').toLowerCase().includes(searchQ));
+  if(statusF!=='all'){
+    filtered=filtered.filter(s=>{
+      const wd=s.workData||{};
+      const k=`${_listYear}-${pad(_listMonth)}_${s.name}`;
+      const md=wd[k]||{};
+      const hasData=Object.keys(md).some(kk=>kk.startsWith('d'))||md.snsCount>0;
+      if(statusF==='pending')return !s.approved;
+      if(statusF==='submitted')return md.submitted&&!md.locked;
+      if(statusF==='locked')return md.locked;
+      if(statusF==='working')return hasData&&!md.submitted&&!md.locked;
+      return true;
+    });
+  }
+  if(!filtered.length){el.innerHTML='<div class="empty">該当するスタッフがいません</div>';return}
   const now=new Date();
-  // ラベル更新
   const lbl=document.getElementById('listMonthLabel');
   if(lbl)lbl.textContent=`${_listYear}年${_listMonth}月`;
   el.innerHTML=filtered.map((s)=>{const i=allStaff.indexOf(s);
@@ -1369,9 +1484,9 @@ function renderStaffList(){
     const isSubmitted=!!curMonth.submitted;
     // ステータス
     let statusBadge='';
-    if(isLocked)statusBadge='<span style="font-size:10px;color:#fff;background:#888;padding:2px 8px;border-radius:10px">🔒 承認済</span>';
-    else if(isSubmitted)statusBadge='<span style="font-size:10px;color:#fff;background:#e0963a;padding:2px 8px;border-radius:10px">📨 申請中</span>';
-    else if(grandTotal>0)statusBadge='<span style="font-size:10px;color:#fff;background:#4a90d9;padding:2px 8px;border-radius:10px">💰 入力中</span>';
+    if(isLocked)statusBadge='<span style="font-size:11px;color:#fff;background:linear-gradient(135deg,#888,#666);padding:4px 12px;border-radius:14px;font-weight:700;box-shadow:0 2px 4px rgba(0,0,0,.15)">🔒 締め済</span>';
+    else if(isSubmitted)statusBadge='<span style="font-size:11px;color:#fff;background:linear-gradient(135deg,#f0a040,#e0963a);padding:4px 12px;border-radius:14px;font-weight:700;animation:pulse 2s infinite;box-shadow:0 2px 6px rgba(224,150,58,.4)">📨 申請中</span>';
+    else if(grandTotal>0)statusBadge='<span style="font-size:11px;color:#fff;background:linear-gradient(135deg,#4a90d9,#3a7ec9);padding:4px 12px;border-radius:14px;font-weight:700;box-shadow:0 2px 4px rgba(74,144,217,.3)">✏️ 入力中</span>';
     return`<div style="background:#fff;border:1.5px solid #f9c8d5;border-radius:12px;margin-bottom:8px;overflow:hidden;box-shadow:0 1px 4px rgba(212,83,122,.06)">
       <div onclick="openStaff(${i})" style="padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:10px">
         <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#fce8ef,#f9c8d5);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">👤</div>
@@ -2508,6 +2623,8 @@ function updateSum(){
   if(snsRateIn){snsRateIn.value=snsRate;snsRateIn.disabled=isLocked}
   const snsDisp=document.getElementById('snsPayDisp');
   if(snsDisp)snsDisp.textContent=snsPay>0?'= ¥'+snsPay.toLocaleString():'';
+  const snsSum=document.getElementById('snsSummary');
+  if(snsSum)snsSum.textContent=snsPay>0?`${snsCount}件 ¥${snsPay.toLocaleString()}`:'';
   // update subtitle with total
   const totalAll=calcPay(tw)+tf+twa+tta+snsPay;
   const sub=document.getElementById('appSubtitle');
@@ -2717,7 +2834,11 @@ function copyDayToOthers(srcDay){
     html+=`<button data-d="${d}" onclick="this.classList.toggle('on');this.style.background=this.classList.contains('on')?'#d4537a':'#fff';this.style.color=this.classList.contains('on')?'#fff':'${wdc}'" style="padding:8px 4px;border:1.5px solid ${has?'#88d4a8':'#f9c8d5'};background:#fff;color:${wdc};border-radius:8px;font-size:11px;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;font-weight:700">${d}<br><span style="font-size:9px">${WD[wd]}</span>${has?'<br><span style="font-size:8px;color:#4caf7d">入力済</span>':''}</button>`;
   }
   html+=`</div>
-    <div style="display:flex;gap:6px;margin-top:14px">
+    <div style="display:flex;gap:4px;margin-top:10px;flex-wrap:wrap">
+      <button onclick="selectSameWeekday(${srcDay})" style="flex:1;padding:8px;background:#fff;border:1.5px solid #4a90d9;color:#4a90d9;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">同じ曜日を選択</button>
+      <button onclick="selectAllWeekdays(${srcDay})" style="flex:1;padding:8px;background:#fff;border:1.5px solid #4a90d9;color:#4a90d9;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">全平日</button>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:10px">
       <button onclick="document.getElementById('copyOverlay').remove()" style="flex:1;padding:10px;background:#fff;border:1.5px solid #ccc;color:#666;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">キャンセル</button>
       <button onclick="executeCopyDays(${srcDay})" style="flex:2;padding:10px;background:linear-gradient(135deg,#4a90d9,#3a7ec9);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">📋 一括コピー実行</button>
     </div>
@@ -2728,6 +2849,23 @@ function copyDayToOthers(srcDay){
   ov.innerHTML=html;
   ov.onclick=e=>{if(e.target===ov)ov.remove()};
   document.body.appendChild(ov);
+}
+function selectSameWeekday(srcDay){
+  const srcWd=new Date(yr,mo-1,srcDay).getDay();
+  document.querySelectorAll('#copyTargets button').forEach(b=>{
+    const d=+b.dataset.d;
+    const wd=new Date(yr,mo-1,d).getDay();
+    if(wd===srcWd){b.classList.add('on');b.style.background='#d4537a';b.style.color='#fff'}
+    else{b.classList.remove('on');b.style.background='#fff'}
+  });
+}
+function selectAllWeekdays(srcDay){
+  document.querySelectorAll('#copyTargets button').forEach(b=>{
+    const d=+b.dataset.d;
+    const wd=new Date(yr,mo-1,d).getDay();
+    if(wd!==0&&wd!==6){b.classList.add('on');b.style.background='#d4537a';b.style.color='#fff'}
+    else{b.classList.remove('on');b.style.background='#fff'}
+  });
 }
 function executeCopyDays(srcDay){
   const md=getMD();
