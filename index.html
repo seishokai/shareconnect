@@ -2586,13 +2586,12 @@ function buildCards(){
               <span style="font-size:11px;color:#b08090;font-weight:700;display:block;margin-bottom:4px">💰 手当</span>
               <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px">
                 <span style="font-size:10px;color:#888;align-self:center;min-width:32px">出張</span>
-                <button onclick="document.getElementById('inp_trip_${d}').value=0;this.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='#4a90d9'});this.style.background='#4a90d9';this.style.color='#fff'" style="padding:5px 12px;border:1.5px solid #4a90d9;background:${(parseInt(r.tripAllow)||0)===0?'#4a90d9':'#fff'};color:${(parseInt(r.tripAllow)||0)===0?'#fff':'#4a90d9'};border-radius:14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">なし</button>
-                <button onclick="document.getElementById('inp_trip_${d}').value=2000;this.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='#4a90d9'});this.style.background='#4a90d9';this.style.color='#fff'" style="padding:5px 12px;border:1.5px solid #4a90d9;background:${(parseInt(r.tripAllow)||0)===2000?'#4a90d9':'#fff'};color:${(parseInt(r.tripAllow)||0)===2000?'#fff':'#4a90d9'};border-radius:14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">+¥2,000</button>
+                ${[0,2000,5000].map(v=>`<button onclick="document.getElementById('inp_trip_${d}').value=${v};this.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='#4a90d9'});this.style.background='#4a90d9';this.style.color='#fff'" style="padding:5px 12px;border:1.5px solid #4a90d9;background:${(parseInt(r.tripAllow)||0)===v?'#4a90d9':'#fff'};color:${(parseInt(r.tripAllow)||0)===v?'#fff':'#4a90d9'};border-radius:14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">${v===0?'なし':'+¥'+v.toLocaleString()}</button>`).join('')}
                 <input id="inp_trip_${d}" type="hidden" value="${r.tripAllow||0}">
               </div>
               ${(sat||sun)?`<div style="display:flex;gap:5px;flex-wrap:wrap">
                 <span style="font-size:10px;color:#888;align-self:center;min-width:32px">土日</span>
-                ${[0,1000,2000].map(v=>`<button onclick="document.getElementById('inp_we_${d}').value=${v};this.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='#d4537a'});this.style.background='#d4537a';this.style.color='#fff'" style="padding:5px 12px;border:1.5px solid #d4537a;background:${(parseInt(r.weekendAllow)||0)===v?'#d4537a':'#fff'};color:${(parseInt(r.weekendAllow)||0)===v?'#fff':'#d4537a'};border-radius:14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">${v===0?'なし':'+¥'+v.toLocaleString()}</button>`).join('')}
+                ${[0,1000,2000,5000].map(v=>`<button onclick="document.getElementById('inp_we_${d}').value=${v};this.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='#d4537a'});this.style.background='#d4537a';this.style.color='#fff'" style="padding:5px 12px;border:1.5px solid #d4537a;background:${(parseInt(r.weekendAllow)||0)===v?'#d4537a':'#fff'};color:${(parseInt(r.weekendAllow)||0)===v?'#fff':'#d4537a'};border-radius:14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">${v===0?'なし':'+¥'+v.toLocaleString()}</button>`).join('')}
               </div>`:''}
               <input id="inp_we_${d}" type="hidden" value="${r.weekendAllow||0}">
             </div>
@@ -2614,7 +2613,7 @@ function buildCards(){
   const simple=isSimpleDept();
   const _keys=Object.keys(md2).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).filter(d=>md2[`d${d}`]?.in&&md2[`d${d}`]?.out);
   const dayCount=_keys.length;
-  const dayRate=md2.dayRate||parseInt(md2.rate)||(typeof DEF_RATE!=='undefined'?DEF_RATE:(settings.rate||2014));
+  const dayRate=md2.dayRate||parseInt(md2.rate)||settings.rate||2014;
   let ttw=0,ttf=0,ttwa=0,ttta=0,ttTrip=0;
   Object.entries(md2).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)ttw+=wm;if(!simple){ttf+=calcFare(r);ttwa+=(r.weekendAllow||0);ttta+=(r.tripAllow||0);if(r.r2a&&r.r2a.includes('出張'))ttTrip+=(parseInt(r.f2a)||0)}});
   const ttPureFare=ttf-ttTrip;
