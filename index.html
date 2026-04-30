@@ -539,6 +539,7 @@ window.__auth = _auth;
       <select id="mDept" class="inp" style="padding:6px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:12px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7" onchange="saveStaffDept()"></select>
       <span id="mApproveWrap"></span>
       <label style="font-size:11px;color:#b08090;display:flex;align-items:center;gap:3px;cursor:pointer"><input type="checkbox" id="mInvoice" onchange="saveStaffInvoice()">インボイス</label>
+      <label style="font-size:11px;color:#e07b3a;display:flex;align-items:center;gap:3px;cursor:pointer;font-weight:700"><input type="checkbox" id="mSnsOnly" onchange="saveStaffSnsOnly()">📸SNSのみ</label>
       <button style="margin-left:auto;font-size:11px;padding:5px 12px;background:#d4537a;border:none;border-radius:8px;cursor:pointer;color:#fff;font-family:'Zen Maru Gothic',sans-serif" onclick="copyStaffURL()">🔗 打刻URL</button>
     </div>
 
@@ -1258,6 +1259,14 @@ function switchDetailTab(tab,btn){
   document.querySelectorAll('.detail-tab').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
 }
+function saveStaffSnsOnly(){
+  if(!currentStaff)return;
+  currentStaff.snsOnly=document.getElementById('mSnsOnly').checked;
+  localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
+  if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({snsOnly:currentStaff.snsOnly},{merge:true}).catch(e=>console.error(e));
+  toast(currentStaff.snsOnly?'📸 SNSのみモードに設定':'通常モードに変更');
+  loadWorkData();
+}
 function saveStaffInvoice(){
   if(!currentStaff)return;
   currentStaff.invoice=document.getElementById('mInvoice').checked;
@@ -1351,6 +1360,8 @@ function openStaff(i){
   // Invoice checkbox
   const inv=document.getElementById('mInvoice');
   if(inv)inv.checked=!!currentStaff.invoice;
+  const so=document.getElementById('mSnsOnly');
+  if(so)so.checked=!!currentStaff.snsOnly;
   // Approve button
   const aw=document.getElementById('mApproveWrap');
   if(aw){
@@ -1410,13 +1421,14 @@ function loadWorkData(){
   const curSnsRate=md.snsRate||2000;
   const keys=Object.keys(md).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
   const el=document.getElementById('mWorkTable');
-  // 時給・SNS設定欄
+  // 時給・SNS設定欄（SNSのみスタッフは時給非表示）
+  const isSnsOnly=!!currentStaff.snsOnly;
   let settingsHTML=`
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;padding:10px 12px;background:#fde8ee;border-radius:10px">
-      <div style="flex:1;min-width:100px">
+      ${isSnsOnly?'<input type="hidden" id="mRate" value="0">':`<div style="flex:1;min-width:100px">
         <div style="font-size:10px;font-weight:700;color:#b08090;margin-bottom:3px">時給（税込）</div>
         <input type="number" id="mRate" value="${curRate}" style="width:100%;padding:6px 8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:14px;font-weight:700;color:#d4537a;background:#fff;box-sizing:border-box" onchange="saveMonthSettings()">
-      </div>
+      </div>`}
       <div style="flex:1;min-width:80px">
         <div style="font-size:10px;font-weight:700;color:#b08090;margin-bottom:3px">SNS投稿数</div>
         <input type="number" id="mSnsCount" value="${curSnsCount}" min="0" style="width:100%;padding:6px 8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:14px;font-weight:700;color:#e07b3a;background:#fff;box-sizing:border-box" onchange="saveMonthSettings()">
@@ -2063,6 +2075,13 @@ function isSimpleDept(){return SIMPLE_DEPTS.includes(staffDept)}
 function startApp(u){
   show('screenApp');
   staffDept=u.department||ls('sc_department')||'';
+  // SNSのみスタッフはカレンダー・サマリーを非表示
+  if(u.snsOnly){
+    const sb=document.querySelector('.summary-bar');if(sb)sb.style.display='none';
+    const cb=document.querySelector('.cal-bar');if(cb)cb.style.display='none';
+    const cw=document.getElementById('cardsWrap');if(cw)cw.style.display='none';
+    const tn=document.querySelector('.tab-nav');if(tn)tn.style.display='none';
+  }
   document.getElementById('appSubtitle').textContent=u.name+' さんの稼働記録';
   const now=new Date();
   const sy=document.getElementById('selYear'),sm=document.getElementById('selMonth');
