@@ -592,7 +592,7 @@ window.__auth = _auth;
   <div class="m-foot">
     <button class="ghost-btn" onclick="closeModal()">閉じる</button>
     <button class="pink-btn" id="mNoticeBtn" onclick="openStaffNotice()">📄 支払通知書</button>
-    <button id="mLockBtn" onclick="lockMonth()" style="padding:10px 16px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">🔒 稼働承認</button>
+    <button id="mLockBtn" onclick="lockMonth()" style="padding:10px 16px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">💰 月締め確定</button>
   </div>
 </div>
 </div>
@@ -808,7 +808,7 @@ window.__auth = _auth;
 
 <div class="app-foot">
   <button class="af-btn af-pink" onclick="openNotice()" style="flex:1">📄 通知書</button>
-  <button class="af-btn" onclick="submitForApproval()" style="flex:1;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff" id="submitBtn">📨 承認申請</button>
+  <button class="af-btn" onclick="submitForApproval()" style="flex:1;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff" id="submitBtn">📨 月締め申請</button>
 </div>
 </div>
 
@@ -1136,12 +1136,12 @@ function lockMonth(){
   const workData=currentStaff.workData||{};
   if(!workData[key])workData[key]={};
   if(workData[key].locked){
-    if(!confirm(`${yr}年${mo}月の承認を解除しますか？`))return;
+    if(!confirm(`${yr}年${mo}月の月締めを解除しますか？`))return;
     workData[key].locked=false;
-    toast('🔓 承認を解除しました');
+    toast('🔓 月締めを解除しました');
   } else {
     workData[key].locked=true;
-    toast('🔒 稼働を承認しました。メール送信中...');
+    toast('💰 月締めを確定しました。メール送信中...');
     setTimeout(()=>sendApprovalEmail(yr,mo,key),500);
     // 太田川の場合、吉川先生インセンティブを計算
     if(currentStaff.department==='太田川') setTimeout(()=>calcYoshikawaIncentive(yr,mo),1000);
@@ -1254,7 +1254,7 @@ function updateLockBtn(){
   const key=`${yr}-${pad(mo)}_${currentStaff.name}`;
   const wd=currentStaff.workData||{};
   const locked=(wd[key]||{}).locked;
-  btn.textContent=locked?'🔓 承認済（解除）':'🔒 稼働承認';
+  btn.textContent=locked?'🔓 月締め解除':'💰 月締め確定';
   btn.style.background=locked?'linear-gradient(135deg,#888,#666)':'linear-gradient(135deg,#4caf7d,#3d9a6a)';
 }
 function renderYearSummary(){
@@ -1300,8 +1300,8 @@ function refreshStatusBadges(){
   const badges=[];
   if(currentStaff.department)badges.push(`<span style="font-size:11px;color:#fff;background:#d4537a;padding:3px 10px;border-radius:12px;font-weight:700">🏢 ${currentStaff.department}</span>`);
   badges.push(currentStaff.approved
-    ?'<span style="font-size:11px;color:#fff;background:#4caf7d;padding:3px 10px;border-radius:12px;font-weight:700">✅ 承認済</span>'
-    :'<span style="font-size:11px;color:#fff;background:#e0963a;padding:3px 10px;border-radius:12px;font-weight:700">⏳ 承認待ち</span>');
+    ?'<span style="font-size:11px;color:#fff;background:#4caf7d;padding:3px 10px;border-radius:12px;font-weight:700">✅ 登録承認済</span>'
+    :'<span style="font-size:11px;color:#fff;background:#e0963a;padding:3px 10px;border-radius:12px;font-weight:700">⏳ 登録待ち</span>');
   if(currentStaff.invoice)badges.push('<span style="font-size:11px;color:#fff;background:#4a90d9;padding:3px 10px;border-radius:12px;font-weight:700">📄 インボイス</span>');
   if(currentStaff.snsOnly)badges.push('<span style="font-size:11px;color:#fff;background:#e07b3a;padding:3px 10px;border-radius:12px;font-weight:700">📸 SNSのみ</span>');
   sb.innerHTML=badges.join('');
@@ -1387,7 +1387,7 @@ function renderStaffList(){
             <span style="font-size:14px;font-weight:700;color:#3a2030">${s.name}</span>
             ${s.department?`<span style="font-size:9px;color:#fff;background:#d4537a;padding:2px 7px;border-radius:8px;font-weight:700">${s.department}</span>`:''}
             ${s.snsOnly?'<span style="font-size:9px;color:#fff;background:#e07b3a;padding:2px 7px;border-radius:8px;font-weight:700">📸SNS</span>':''}
-            ${!s.approved?'<span style="font-size:9px;color:#fff;background:#e0963a;padding:2px 7px;border-radius:8px;font-weight:700">⏳承認待</span>':''}
+            ${!s.approved?'<span style="font-size:9px;color:#fff;background:#e0963a;padding:2px 7px;border-radius:8px;font-weight:700">⏳登録待</span>':''}
           </div>
           <div style="font-size:10px;color:#b08090;margin-top:2px">${now.getMonth()+1}月：${s.snsOnly?`SNS ${mSnsCount}件`:`${td}日 ${total>0?`(${total}件中)`:''}`}</div>
         </div>
@@ -1397,8 +1397,8 @@ function renderStaffList(){
         </div>
       </div>
       <div style="display:flex;border-top:1px solid #fde8ee;background:#fffafb">
-        ${!s.approved?`<button onclick="event.stopPropagation();quickApprove(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4caf7d;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">✓ 承認</button>`:''}
-        ${grandTotal>0?`<button onclick="event.stopPropagation();quickNotice(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#d4537a;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">📄 通知書</button>${!isLocked?`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#3d9a6a;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">🔒 月承認</button>`:`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#888;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">🔓 解除</button>`}`:''}
+        ${!s.approved?`<button onclick="event.stopPropagation();quickApprove(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4caf7d;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">✓ 登録承認</button>`:''}
+        ${grandTotal>0?`<button onclick="event.stopPropagation();quickNotice(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#d4537a;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">📄 通知書</button>${!isLocked?`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#3d9a6a;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">💰 月締め</button>`:`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#888;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">🔓 解除</button>`}`:''}
         <button onclick="event.stopPropagation();quickCopyURL(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4a90d9;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">🔗 URL</button>
       </div>
     </div>`;
@@ -1421,8 +1421,8 @@ function openStaff(i){
     const badges=[];
     if(currentStaff.department)badges.push(`<span style="font-size:11px;color:#fff;background:#d4537a;padding:3px 10px;border-radius:12px;font-weight:700">🏢 ${currentStaff.department}</span>`);
     badges.push(currentStaff.approved
-      ?'<span style="font-size:11px;color:#fff;background:#4caf7d;padding:3px 10px;border-radius:12px;font-weight:700">✅ 承認済</span>'
-      :'<span style="font-size:11px;color:#fff;background:#e0963a;padding:3px 10px;border-radius:12px;font-weight:700">⏳ 承認待ち</span>');
+      ?'<span style="font-size:11px;color:#fff;background:#4caf7d;padding:3px 10px;border-radius:12px;font-weight:700">✅ 登録承認済</span>'
+      :'<span style="font-size:11px;color:#fff;background:#e0963a;padding:3px 10px;border-radius:12px;font-weight:700">⏳ 登録待ち</span>');
     if(currentStaff.invoice)badges.push('<span style="font-size:11px;color:#fff;background:#4a90d9;padding:3px 10px;border-radius:12px;font-weight:700">📄 インボイス</span>');
     if(currentStaff.snsOnly)badges.push('<span style="font-size:11px;color:#fff;background:#e07b3a;padding:3px 10px;border-radius:12px;font-weight:700">📸 SNSのみ</span>');
     sb.innerHTML=badges.join('');
@@ -1442,7 +1442,7 @@ function openStaff(i){
   if(aw){
     aw.innerHTML=currentStaff.approved
       ?'<span style="font-size:11px;color:#4caf7d;font-weight:700">✅ 承認済</span>'
-      :`<button onclick="approveCurrentStaff()" style="padding:6px 14px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">✓ 承認する</button>`;
+      :`<button onclick="approveCurrentStaff()" style="padding:6px 14px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">✓ 登録承認</button>`;
   }
   // Basic info
   const bi=['name:氏名','phone:電話','email:メール','addr:住所','station:最寄駅','signedAt:締結日'];
@@ -1723,6 +1723,7 @@ function printNotice(){
     .notes-title{font-size:12px;font-weight:700;color:#a08020;margin-bottom:6px}
     .footer-info{margin-top:32px;padding-top:16px;border-top:1px solid #eee;text-align:center;font-size:10px;color:#999;line-height:1.6}
     .seal-box{display:inline-block;vertical-align:middle;margin-left:14px;transform:rotate(-5deg)}
+    .seal-img{width:62px;height:62px;object-fit:contain;transform:rotate(-4deg);vertical-align:middle;mix-blend-mode:multiply}
     @media print{
       body{padding:18px 24px}
       .doc-header{margin-bottom:18px}
@@ -1749,15 +1750,7 @@ function printNotice(){
       </div>
       <div class="party">
         <div class="party-label">支 払 者</div>
-        <div class="party-name" style="display:flex;align-items:center;gap:8px">${CO.name}<span class="seal-box"><svg width="64" height="64" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="50" cy="50" r="46" fill="rgba(196,48,64,.05)" stroke="#c43040" stroke-width="3"/>
-          <circle cx="50" cy="50" r="40" fill="none" stroke="#c43040" stroke-width="1"/>
-          <text x="22" y="34" font-family="serif" font-size="13" font-weight="900" fill="#c43040">シェ</text>
-          <text x="64" y="34" font-family="serif" font-size="13" font-weight="900" fill="#c43040">ア</text>
-          <text x="22" y="58" font-family="serif" font-size="13" font-weight="900" fill="#c43040">コネ</text>
-          <text x="64" y="58" font-family="serif" font-size="13" font-weight="900" fill="#c43040">クト</text>
-          <text x="50" y="82" font-family="serif" font-size="11" font-weight="900" fill="#c43040" text-anchor="middle">之印</text>
-        </svg></span></div>
+        <div class="party-name" style="display:flex;align-items:center;gap:8px">${CO.name}<img src="https://seishokai.github.io/shareconnect/seal.png" alt="印" class="seal-img"></div>
         <div class="party-detail">
           ${CO.addr}<br>
           ${CO.phone}<br>
@@ -2322,7 +2315,7 @@ function render(){
   if(sb){
     if(md.locked){sb.textContent='✅ 承認済';sb.disabled=true;sb.style.background='#888'}
     else if(md.submitted){sb.textContent='📨 申請済み';sb.disabled=true;sb.style.background='#888'}
-    else{sb.textContent='📨 承認申請';sb.disabled=false;sb.style.background='linear-gradient(135deg,#4caf7d,#3d9a6a)'}
+    else{sb.textContent='📨 月締め申請';sb.disabled=false;sb.style.background='linear-gradient(135deg,#4caf7d,#3d9a6a)'}
   }
   buildCal();buildCards();updateSum();
 }
