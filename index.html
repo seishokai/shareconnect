@@ -1339,47 +1339,57 @@ function renderStaffList(){
   if(!filtered.length){el.innerHTML='<div class="empty">このカテゴリにスタッフがいません</div>';return}
   const now=new Date();
   el.innerHTML=filtered.map((s)=>{const i=allStaff.indexOf(s);
-    // Firestoreから取得したworkData優先、なければlocalStorage
     const workData=s.workData||JSON.parse(ls('sc_admin_work_'+s.id)||'{}');
     const curKey=`${now.getFullYear()}-${pad(now.getMonth()+1)}_${s.name}`;
     const curMonth=workData[curKey]||{};
     const mRate=curMonth.rate||DEF_RATE;
     const mSnsCount=curMonth.snsCount||0;
     const mSnsRate=curMonth.snsRate||2000;
-    let tw=0,td=0,tf=0,twa=0;
-    Object.entries(curMonth).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0){td++;tw+=wm}tf+=calcFare(r);twa+=(r.weekendAllow||0)});
-    const pay=calcPay(tw,mRate);
+    let tw=0,td=0,tf=0,twa=0,tta=0;
+    Object.entries(curMonth).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0){td++;tw+=wm}tf+=calcFare(r);twa+=(r.weekendAllow||0);tta+=(r.tripAllow||0)});
+    const pay=s.snsOnly?0:calcPay(tw,mRate);
     const snsPay=mSnsCount*mSnsRate;
-    const grandTotal=pay+tf+twa+snsPay;
-    const signed=s.signedAt?new Date(s.signedAt).toLocaleDateString('ja-JP'):'未締結';
-    const confirmed=Object.entries(curMonth).filter(([k,r])=>k.startsWith('d')&&r.ok).length;
+    const grandTotal=pay+(s.snsOnly?0:tf+twa+tta)+snsPay;
     const total=Object.keys(curMonth).filter(k=>k.startsWith('d')).length;
-    return`<div class="staff-card" onclick="openStaff(${i})">
-      <div class="sc-head">
-        <div class="sc-avatar">👤</div>
-        <div>
-          <div class="sc-name">${s.name} ${s.department?`<span style="font-size:10px;color:#fff;background:#d4537a;padding:1px 6px;border-radius:10px;margin-left:4px;font-weight:400">${s.department}</span>`:''}</div>
-          <div class="sc-sub">${s.phone||''} ${s.email||''}</div>
+    const isLocked=!!curMonth.locked;
+    const isSubmitted=!!curMonth.submitted;
+    // ステータス
+    let statusBadge='';
+    if(isLocked)statusBadge='<span style="font-size:10px;color:#fff;background:#888;padding:2px 8px;border-radius:10px">🔒 承認済</span>';
+    else if(isSubmitted)statusBadge='<span style="font-size:10px;color:#fff;background:#e0963a;padding:2px 8px;border-radius:10px">📨 申請中</span>';
+    else if(grandTotal>0)statusBadge='<span style="font-size:10px;color:#fff;background:#4a90d9;padding:2px 8px;border-radius:10px">💰 入力中</span>';
+    return`<div style="background:#fff;border:1.5px solid #f9c8d5;border-radius:12px;margin-bottom:8px;overflow:hidden;box-shadow:0 1px 4px rgba(212,83,122,.06)">
+      <div onclick="openStaff(${i})" style="padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#fce8ef,#f9c8d5);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">👤</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span style="font-size:14px;font-weight:700;color:#3a2030">${s.name}</span>
+            ${s.department?`<span style="font-size:9px;color:#fff;background:#d4537a;padding:2px 7px;border-radius:8px;font-weight:700">${s.department}</span>`:''}
+            ${s.snsOnly?'<span style="font-size:9px;color:#fff;background:#e07b3a;padding:2px 7px;border-radius:8px;font-weight:700">📸SNS</span>':''}
+            ${!s.approved?'<span style="font-size:9px;color:#fff;background:#e0963a;padding:2px 7px;border-radius:8px;font-weight:700">⏳承認待</span>':''}
+          </div>
+          <div style="font-size:10px;color:#b08090;margin-top:2px">${now.getMonth()+1}月：${s.snsOnly?`SNS ${mSnsCount}件`:`${td}日 ${total>0?`(${total}件中)`:''}`}</div>
         </div>
-        <div class="sc-badges">
-          <span class="badge ok">登録済</span>
-          ${s.signedAt?'<span class="badge info">締結済</span>':'<span class="badge warn">未締結</span>'}
-          ${s.approved?'<span class="badge ok">承認済</span>':'<span class="badge warn">承認待ち</span>'}
-          ${total>0?`<span class="badge info">${now.getMonth()+1}月${td}日</span>`:''}
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:16px;font-weight:700;color:#d4537a">¥${grandTotal.toLocaleString()}</div>
+          ${statusBadge}
         </div>
       </div>
-      <div class="sc-details">
-        <div class="sd"><div class="sd-l">今月稼働</div><div class="sd-v">${td}日 / ${toStr(tw)||'0:00'}</div></div>
-        <div class="sd"><div class="sd-l">今月報酬</div><div class="sd-v pay">¥${pay.toLocaleString()}</div></div>
-        <div class="sd"><div class="sd-l">支払い合計</div><div class="sd-v pay" style="font-size:12px">¥${grandTotal.toLocaleString()}</div></div>
-        <div class="sd"><div class="sd-l">交通費</div><div class="sd-v">¥${tf.toLocaleString()}</div></div>
-        <div class="sd"><div class="sd-l">確定 / 合計</div><div class="sd-v">${confirmed} / ${total}</div></div>
-        <div class="sd"><div class="sd-l">締結日</div><div class="sd-v">${signed}</div></div>
-        <div class="sd"><div class="sd-l">振込先</div><div class="sd-v">${s.bank||'—'} ${s.accType||''} ${s.accNum||''}</div></div>
+      <div style="display:flex;border-top:1px solid #fde8ee;background:#fffafb">
+        ${!s.approved?`<button onclick="event.stopPropagation();quickApprove(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4caf7d;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">✓ 承認</button>`:''}
+        ${grandTotal>0?`<button onclick="event.stopPropagation();quickNotice(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#d4537a;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">📄 通知書</button>${!isLocked?`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#3d9a6a;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">🔒 月承認</button>`:`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#888;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">🔓 解除</button>`}`:''}
+        <button onclick="event.stopPropagation();quickCopyURL(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4a90d9;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">🔗 URL</button>
       </div>
     </div>`;
   }).join('');
 }
+function quickApprove(i){
+  if(!confirm(`${allStaff[i].name}さんを承認しますか？`))return;
+  currentStaff=allStaff[i];approveCurrentStaff();currentStaff=null;
+}
+function quickNotice(i){currentStaff=allStaff[i];const now=new Date();const my=document.getElementById('mYear');const mm=document.getElementById('mMonth');if(my&&mm){my.value=now.getFullYear();mm.value=now.getMonth()+1;}openStaffNotice();}
+function quickLock(i){currentStaff=allStaff[i];const now=new Date();const my=document.getElementById('mYear');const mm=document.getElementById('mMonth');if(my&&mm){my.value=now.getFullYear();mm.value=now.getMonth()+1;}lockMonth();renderStaffList();}
+function quickCopyURL(i){currentStaff=allStaff[i];copyStaffURL();}
 
 function openStaff(i){
   currentStaff=allStaff[i];
