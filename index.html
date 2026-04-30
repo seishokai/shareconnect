@@ -466,6 +466,12 @@ window.__auth = _auth;
     <div style="font-size:11px;color:#b08090" id="staffCount">0名</div>
   </div>
   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px" id="deptFilter"></div>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:10px 12px;background:#fff;border:1.5px solid #f9c8d5;border-radius:12px">
+    <button onclick="changeListMonth(-1)" style="padding:6px 10px;border:none;background:#fde8ee;color:#d4537a;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">◀</button>
+    <div style="flex:1;text-align:center;font-size:15px;font-weight:700;color:#d4537a" id="listMonthLabel">2026年4月</div>
+    <button onclick="changeListMonth(1)" style="padding:6px 10px;border:none;background:#fde8ee;color:#d4537a;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">▶</button>
+    <button onclick="resetListMonth()" style="padding:6px 12px;border:none;background:#d4537a;color:#fff;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">今月</button>
+  </div>
   <div id="staffList"><div class="empty">登録スタッフがいません</div></div>
 </div>
 
@@ -1100,6 +1106,18 @@ function switchTab(id,btn){
 
 // ── Departments ───────────────────────────────────
 let _deptFilter='all';
+let _listYear=new Date().getFullYear();
+let _listMonth=new Date().getMonth()+1;
+function changeListMonth(delta){
+  _listMonth+=delta;
+  if(_listMonth<1){_listMonth=12;_listYear--}
+  if(_listMonth>12){_listMonth=1;_listYear++}
+  renderStaffList();
+}
+function resetListMonth(){
+  const n=new Date();_listYear=n.getFullYear();_listMonth=n.getMonth()+1;
+  renderStaffList();
+}
 function saveDepts(){localStorage.setItem('sc_departments',JSON.stringify(departments));if(window.__db)window.__db.collection('admin').doc('departments').set({list:departments}).catch(e=>console.error(e))}
 function renderDeptFilter(){
   const df=document.getElementById('deptFilter');if(!df)return;
@@ -1338,9 +1356,12 @@ function renderStaffList(){
   const filtered=_deptFilter==='all'?allStaff:allStaff.filter(s=>(_deptFilter==='未分類'?!s.department:s.department===_deptFilter));
   if(!filtered.length){el.innerHTML='<div class="empty">このカテゴリにスタッフがいません</div>';return}
   const now=new Date();
+  // ラベル更新
+  const lbl=document.getElementById('listMonthLabel');
+  if(lbl)lbl.textContent=`${_listYear}年${_listMonth}月`;
   el.innerHTML=filtered.map((s)=>{const i=allStaff.indexOf(s);
     const workData=s.workData||JSON.parse(ls('sc_admin_work_'+s.id)||'{}');
-    const curKey=`${now.getFullYear()}-${pad(now.getMonth()+1)}_${s.name}`;
+    const curKey=`${_listYear}-${pad(_listMonth)}_${s.name}`;
     const curMonth=workData[curKey]||{};
     const mRate=curMonth.rate||DEF_RATE;
     const mSnsCount=curMonth.snsCount||0;
@@ -1643,20 +1664,143 @@ function openStaffNotice(){
 function closeNotice(){document.getElementById('nOverlay').classList.remove('open')}
 function nBgClose(e){if(e.target===document.getElementById('nOverlay'))closeNotice()}
 function printNotice(){
-  const c=document.getElementById('pTarget').innerHTML;
+  if(!currentStaff)return;
+  const yr=+document.getElementById('mYear').value;
+  const mo=+document.getElementById('mMonth').value;
+  const workData=currentStaff.workData||JSON.parse(ls('sc_admin_work_'+currentStaff.id)||'{}');
+  const key=`${yr}-${pad(mo)}_${currentStaff.name}`;
+  const md=workData[key]||{};
+  const mRate=md.rate||DEF_RATE;
+  const mSnsCount=md.snsCount||0;
+  const mSnsRate=md.snsRate||2000;
+  const keys=Object.keys(md).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
+  let tw=0,tf=0,twa=0,tta=0;
+  const rows=keys.map(d=>{
+    const r=md[`d${d}`]||{};const dt=new Date(yr,mo-1,d);
+    const wm=calcWork(r),pay=calcPay(wm,mRate),fare=calcFare(r);
+    tw+=wm||0;tf+=fare;twa+=(r.weekendAllow||0);tta+=(parseInt(r.tripAllow)||0);
+    return`<tr><td style="text-align:center">${mo}/${d}</td><td style="text-align:center">${WD[dt.getDay()]}</td><td>${r.store||'—'}</td><td>${r.in||''}〜${r.out||''}</td><td style="text-align:center">${r.rest||0}分</td><td style="text-align:right">${wm!=null?toStr(wm):'—'}</td><td style="text-align:right">${pay?'¥'+pay.toLocaleString():'—'}</td><td style="text-align:right">${fare?'¥'+fare.toLocaleString():'—'}</td></tr>`;
+  });
+  const tPay=calcPay(tw,mRate);
+  const snsPay=mSnsCount*mSnsRate;
+  const grandTotal=(currentStaff.snsOnly?0:tPay+tta+twa+tf)+snsPay;
+  const now=new Date();
+  const issueDate=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+  const isSnsOnly=!!currentStaff.snsOnly;
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>支払通知書</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-  <style>body{font-family:'Noto Sans JP',sans-serif;color:#333;padding:24px;max-width:600px;margin:0 auto}
-  h3{font-size:18px;color:#d4537a;font-weight:700;text-align:center}
-  table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px}
-  th{background:#fde8ee;color:#d4537a;padding:5px 6px;text-align:left;font-weight:700;border:1px solid #f9c8d5}
-  td{padding:5px 6px;border:1px solid #f9c8d5}tr:nth-child(even) td{background:#fff9fb}
-  .n-tot{background:#fce8ef;border:1px solid #f9c8d5;border-radius:8px;padding:10px 14px;margin-top:8px}
-  .n-tr{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}
-  .n-tr.big{font-size:16px;font-weight:700;color:#d4537a;border-top:1px solid #f9c8d5;padding-top:6px;margin-top:3px}
-  @media print{body{padding:12px}}</style></head>
-  <body>${c}<script>window.onload=()=>window.print()<\/script></body></html>`);
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>支払通知書 ${currentStaff.name} ${yr}年${mo}月</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Noto Sans JP',sans-serif;color:#333;padding:32px 40px;max-width:780px;margin:0 auto;line-height:1.7;background:#fff}
+    .doc-header{border-bottom:3px solid #d4537a;padding-bottom:18px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end}
+    .doc-title{font-size:26px;font-weight:700;color:#d4537a;letter-spacing:4px}
+    .doc-meta{text-align:right;font-size:12px;color:#666}
+    .doc-meta .issue-no{font-weight:700;color:#333;margin-bottom:4px}
+    .parties{display:flex;justify-content:space-between;margin:24px 0;gap:24px}
+    .party{flex:1;padding:16px 18px;border:1.5px solid #f9c8d5;border-radius:10px;background:#fffafb}
+    .party-label{font-size:10px;color:#b08090;font-weight:700;letter-spacing:1px;margin-bottom:6px}
+    .party-name{font-size:15px;font-weight:700;color:#3a2030;margin-bottom:4px}
+    .party-detail{font-size:11px;color:#666;line-height:1.6}
+    .greeting{font-size:13px;line-height:1.9;margin:24px 0;color:#444}
+    .period-box{display:inline-block;background:#fde8ee;color:#d4537a;font-weight:700;padding:6px 16px;border-radius:20px;font-size:13px;margin:0 4px}
+    h4{font-size:13px;color:#d4537a;font-weight:700;margin:24px 0 8px;padding-left:10px;border-left:4px solid #d4537a}
+    table.detail-tbl{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:12px;border:1px solid #f9c8d5}
+    table.detail-tbl th{background:linear-gradient(135deg,#fde8ee,#fce8ef);color:#d4537a;padding:8px 6px;text-align:center;font-weight:700;border:1px solid #f9c8d5;font-size:10px;letter-spacing:1px}
+    table.detail-tbl td{padding:7px 8px;border:1px solid #f9c8d5;font-size:11px}
+    table.detail-tbl tr:nth-child(even) td{background:#fff9fb}
+    .summary-box{background:linear-gradient(135deg,#fffafb 0%,#fce8ef 100%);border:2px solid #d4537a;border-radius:12px;padding:18px 24px;margin-top:16px}
+    .summary-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px dashed #f9c8d5}
+    .summary-row:last-child{border-bottom:none}
+    .summary-row.total{font-size:20px;font-weight:700;color:#d4537a;border-top:2px solid #d4537a;border-bottom:none;padding-top:12px;margin-top:8px}
+    .summary-label{color:#666}
+    .summary-value{font-weight:700;color:#3a2030}
+    .summary-row.total .summary-value{color:#d4537a;font-size:24px}
+    .bank-box{margin-top:20px;padding:14px 18px;background:#fffafb;border:1px solid #f9c8d5;border-radius:10px}
+    .bank-label{font-size:10px;color:#b08090;font-weight:700;letter-spacing:1px;margin-bottom:6px}
+    .bank-detail{font-size:13px;font-weight:700;color:#3a2030;letter-spacing:1px}
+    .notes{margin-top:24px;padding:14px 18px;background:#fdf6e3;border:1px solid #f0d878;border-radius:10px;font-size:11px;color:#666;line-height:1.8}
+    .notes-title{font-size:12px;font-weight:700;color:#a08020;margin-bottom:6px}
+    .footer-info{margin-top:32px;padding-top:16px;border-top:1px solid #eee;text-align:center;font-size:10px;color:#999;line-height:1.6}
+    .seal-box{display:inline-block;width:60px;height:60px;border:2px solid #d4537a;border-radius:50%;color:#d4537a;text-align:center;line-height:54px;font-size:11px;font-weight:700;margin-left:12px}
+    @media print{
+      body{padding:18px 24px}
+      .doc-header{margin-bottom:18px}
+    }
+  </style></head>
+  <body>
+    <div class="doc-header">
+      <div class="doc-title">支　払　通　知　書</div>
+      <div class="doc-meta">
+        <div class="issue-no">No. ${currentStaff.id.slice(-8)}-${yr}${pad(mo)}</div>
+        <div>発行日：${issueDate}</div>
+      </div>
+    </div>
+
+    <div class="parties">
+      <div class="party">
+        <div class="party-label">受 取 人</div>
+        <div class="party-name">${currentStaff.name} 様</div>
+        <div class="party-detail">
+          ${currentStaff.addr||''}<br>
+          ${currentStaff.phone?'TEL: '+currentStaff.phone:''}
+          ${currentStaff.invoiceNum?'<br><span style="color:#4a90d9;font-weight:700">登録番号: '+currentStaff.invoiceNum+'</span>':''}
+        </div>
+      </div>
+      <div class="party">
+        <div class="party-label">支 払 者</div>
+        <div class="party-name">${CO.name}<span class="seal-box">印</span></div>
+        <div class="party-detail">
+          ${CO.addr}<br>
+          ${CO.phone}<br>
+          ${CO.rep}
+        </div>
+      </div>
+    </div>
+
+    <div class="greeting">
+      平素より格別のご高配を賜り、厚く御礼申し上げます。<br>
+      下記のとおり<span class="period-box">${yr}年 ${mo}月分</span>の業務委託費をお支払いいたしますので、ご確認のほどよろしくお願い申し上げます。
+    </div>
+
+    ${isSnsOnly?'':`
+    <h4>業務実績明細</h4>
+    <table class="detail-tbl">
+      <thead><tr><th>日付</th><th>曜</th><th>業務先</th><th>時間</th><th>休憩</th><th>業務量</th><th>委託料</th><th>交通費</th></tr></thead>
+      <tbody>${rows.length?rows.join(''):'<tr><td colspan="8" style="text-align:center;padding:20px;color:#999">業務実績なし</td></tr>'}</tbody>
+    </table>`}
+
+    <h4>お支払い内訳</h4>
+    <div class="summary-box">
+      ${!isSnsOnly?`<div class="summary-row"><span class="summary-label">業務実績合計</span><span class="summary-value">${toStr(tw)||'0:00'}</span></div>
+      <div class="summary-row"><span class="summary-label">業務単価</span><span class="summary-value">¥${mRate.toLocaleString()} / 時</span></div>
+      <div class="summary-row"><span class="summary-label">業務委託報酬</span><span class="summary-value">¥${tPay.toLocaleString()}</span></div>`:''}
+      ${tta>0?`<div class="summary-row"><span class="summary-label">出張手当</span><span class="summary-value">¥${tta.toLocaleString()}</span></div>`:''}
+      ${twa>0?`<div class="summary-row"><span class="summary-label">土日手当</span><span class="summary-value">¥${twa.toLocaleString()}</span></div>`:''}
+      ${(!isSnsOnly||tf>0)?`<div class="summary-row"><span class="summary-label">交通費（実費）</span><span class="summary-value">¥${tf.toLocaleString()}</span></div>`:''}
+      ${snsPay>0?`<div class="summary-row"><span class="summary-label">SNS撮影協力費（${mSnsCount}件 × ¥${mSnsRate.toLocaleString()}）</span><span class="summary-value">¥${snsPay.toLocaleString()}</span></div>`:''}
+      <div class="summary-row total"><span>お支払い合計金額</span><span class="summary-value">¥${grandTotal.toLocaleString()}</span></div>
+    </div>
+
+    <div class="bank-box">
+      <div class="bank-label">お振込先</div>
+      <div class="bank-detail">${currentStaff.bank||'—'} ${currentStaff.branch||''} ／ ${currentStaff.accType||''} ${currentStaff.accNum||'—'} ／ ${currentStaff.accName||'—'}</div>
+    </div>
+
+    <div class="notes">
+      <div class="notes-title">📌 ご注意事項</div>
+      ・本通知書記載の金額は、業務委託契約に基づき算出されたものです。<br>
+      ・お振込手数料は当社負担にて、上記口座へお振込みいたします。<br>
+      ・記載内容にご不明点がございましたら、下記お問い合わせ先までご連絡ください。
+    </div>
+
+    <div class="footer-info">
+      お問い合わせ：${CO.name}　${CO.phone}<br>
+      本書は ${yr}年${mo}月分の業務委託費 支払通知書です。
+    </div>
+
+    <script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script>
+  </body></html>`);
   w.document.close();
 }
 
