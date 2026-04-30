@@ -754,10 +754,7 @@ window.__auth = _auth;
     <span style="font-size:13px;color:#b08090;font-weight:700">円</span>
     <span style="font-size:16px;color:#e07b3a;font-weight:700;margin-left:auto" id="snsPayDisp"></span>
   </div>
-  <details class="cal-bar" id="calDetails" open>
-    <summary style="font-size:12px;font-weight:700;color:#d4537a;cursor:pointer;padding:6px 0;user-select:none" id="calLabel">🗓 稼働日を選択 ▼</summary>
-    <div class="cal-grid" id="calGrid"></div>
-  </details>
+  <div id="calDetails" style="display:none"><div id="calGrid"></div><span id="calLabel"></span></div>
   <div class="cards-wrap" id="cardsWrap">
     <div class="empty-state"><div class="ico">🌸</div><p>上の日付をタップして<br>稼働日を追加してください</p></div>
   </div>
@@ -822,35 +819,34 @@ window.__auth = _auth;
     <button class="m-close" onclick="closeModal()">×</button>
   </div>
   <div class="m-body">
-    <div class="m-sec">
-      <div class="m-sec-ttl">🏪 業務先</div>
-      <div class="store-tags" id="storeTags"></div>
-      <input type="text" id="mStore" placeholder="その他の業務先を入力" style="width:100%;padding:10px 12px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:14px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;margin-top:8px;box-sizing:border-box" oninput="document.querySelectorAll('.store-tag').forEach(b=>b.classList.remove('on'))">
+    <div style="margin-bottom:14px">
+      <div style="font-size:13px;font-weight:700;color:#d4537a;margin-bottom:8px">🏪 業務先</div>
+      <div class="store-tags" id="storeTags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px"></div>
+      <input type="text" id="mStore" placeholder="またはここに直接入力" style="width:100%;padding:12px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:15px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;box-sizing:border-box" oninput="document.querySelectorAll('.store-tag').forEach(b=>b.classList.remove('on'))">
     </div>
-    <div class="m-sec">
-      <div class="m-sec-ttl">⏰ 稼働時間</div>
-      <div class="m-row">
-        <div class="mf">
-          <div class="ml">開始</div>
-          <div class="stepper"><button class="step-btn" onclick="adjTime('mIn',-30)">−</button><input type="time" id="mIn" oninput="prevWork()" style="font-size:18px"><button class="step-btn" onclick="adjTime('mIn',30)">＋</button></div>
-        </div>
-        <div class="mf">
-          <div class="ml">終了</div>
-          <div class="stepper"><button class="step-btn" onclick="adjTime('mOut',-30)">−</button><input type="time" id="mOut" oninput="prevWork()" style="font-size:18px"><button class="step-btn" onclick="adjTime('mOut',30)">＋</button></div>
-        </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-size:13px;font-weight:700;color:#d4537a;margin-bottom:8px">⏰ 時間</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="time" id="mIn" oninput="prevWork()" style="flex:1;padding:14px;border:2px solid #f9c8d5;border-radius:12px;font-size:22px;font-weight:700;text-align:center;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7">
+        <span style="font-size:18px;color:#b08090;font-weight:700">〜</span>
+        <input type="time" id="mOut" oninput="prevWork()" style="flex:1;padding:14px;border:2px solid #f9c8d5;border-radius:12px;font-size:22px;font-weight:700;text-align:center;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7">
       </div>
-      <div class="mf">
-        <div class="ml">休憩</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="rc" data-v="0" onclick="setRest(0)">なし</button>
-          <button class="rc" data-v="30" onclick="setRest(30)">30分</button>
-          <button class="rc on" data-v="60" onclick="setRest(60)">60分</button>
-          <button class="rc" data-v="90" onclick="setRest(90)">90分</button>
-          <input type="number" id="mRest" min="0" max="480" step="1" value="60" oninput="prevWork();syncRC()" style="width:60px;padding:6px;border:1.5px solid #f9c8d5;border-radius:8px;text-align:center;font-size:13px;font-family:'Zen Maru Gothic',sans-serif">
-          <span style="font-size:11px;color:#b08090;align-self:center">分</span>
-        </div>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-size:13px;font-weight:700;color:#d4537a;margin-bottom:8px">☕ 休憩</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="rc" data-v="0" onclick="setRest(0)">なし</button>
+        <button class="rc" data-v="30" onclick="setRest(30)">30分</button>
+        <button class="rc on" data-v="60" onclick="setRest(60)">60分</button>
+        <button class="rc" data-v="90" onclick="setRest(90)">90分</button>
+        <button class="rc" data-v="120" onclick="setRest(120)">120分</button>
+        <input type="hidden" id="mRest" value="60">
       </div>
-      <div class="work-prev" id="workPrev" style="margin-top:8px;padding:10px;background:linear-gradient(135deg,#fce8ef,#fff);border-radius:10px;text-align:center;font-size:14px;font-weight:700;color:#d4537a">稼働時間: --</div>
+    </div>
+
+    <div class="work-prev" id="workPrev" style="margin-bottom:14px;padding:14px;background:linear-gradient(135deg,#fce8ef,#fff);border-radius:12px;text-align:center;font-size:18px;font-weight:700;color:#d4537a">稼働時間: --</div>
     </div>
     <div class="m-sec" id="secFare">
       <div class="m-sec-ttl" style="cursor:pointer" onclick="this.parentElement.querySelector('.fare-body').classList.toggle('hidden');this.querySelector('.fare-arrow').textContent=this.parentElement.querySelector('.fare-body.hidden')?'▶':'▼'">🚃 交通費 <span class="fare-arrow" style="font-size:10px;color:#b08090">▼</span></div>
@@ -2355,41 +2351,83 @@ function buildCal(){
 
 function buildCards(){
   const md=getMD();
-  const keys=Object.keys(md).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
   const w=document.getElementById('cardsWrap');
-  if(!keys.length){w.innerHTML='<div class="empty-state"><div class="ico">🗓</div><p>上のカレンダーから<br>出勤した日をタップしてください</p><p style="margin-top:8px;font-size:11px;color:#b08090">タップ → 時間・交通費入力 → 仮確定</p></div>';return}
-  w.innerHTML=keys.map(d=>{
-    const r=md[`d${d}`];
+  const days=new Date(yr,mo,0).getDate();
+  const isLocked=!!md.locked;
+  // 月の全日を表示
+  let html='<div style="font-size:12px;color:#b08090;margin-bottom:8px;padding:0 4px">⬇ 出勤した日をタップして入力してください</div>';
+  for(let d=1;d<=days;d++){
+    const r=md[`d${d}`]||{};
+    const has=r.in&&r.out;
     const dt=new Date(yr,mo-1,d),wd=dt.getDay();
     const sat=wd===6,sun=wd===0;
-    const wm=calcWork(r),pay=calcPay(wm),fare=calcFare(r),wa=parseInt(r.weekendAllow)||0,ta=parseInt(r.tripAllow)||0;
+    const wm=has?calcWork(r):null;
+    const pay=wm?calcPay(wm):0;
+    const fare=calcFare(r);
+    const wa=parseInt(r.weekendAllow)||0,ta=parseInt(r.tripAllow)||0;
     const total=pay+fare+wa+ta;
-    const st=r.ok?`<span class="wc-st confirmed">✓</span>`:`<span class="wc-st draft">仮</span>`;
-    let cls='work-card '+(r.ok?'confirmed':'draft');
-    if(sat)cls+=' sat';if(sun)cls+=' sun';
-    const tStr=r.in&&r.out?`${r.in}〜${r.out}`:'--';
-    const details=[];
-    if(wm)details.push(`稼働 ${toStr(wm)}`);
-    if(r.rest)details.push(`休憩 ${r.rest}分`);
-    if(pay)details.push(`報酬 ¥${pay.toLocaleString()}`);
-    // 交通費から出張手当を分離表示
     const tripInFare=(r.r2a&&r.r2a.includes('出張'))?parseInt(r.f2a)||0:0;
-    const pureFare=fare-tripInFare;
-    if(pureFare)details.push(`交通費 ¥${pureFare.toLocaleString()}`);
-    if(tripInFare)details.push(`出張 ¥${tripInFare.toLocaleString()}`);
-    if(ta)details.push(`出張手当 ¥${ta.toLocaleString()}`);
-    if(wa)details.push(`土日 ¥${wa.toLocaleString()}`);
-    return`<div class="${cls}" onclick="openModal(${d})" style="cursor:pointer">
-      <div class="wc-row">
-        <span class="wc-date">${mo}/${d}</span>
-        <span class="wc-wd${sat?' sat':sun?' sun':''}">${WD[wd]}</span>
-        ${st}<span class="wc-store">${r.store||'—'}</span>
-        <span class="wc-time">${tStr}</span>
-        <span style="font-size:10px;color:#b08090;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${details.join(' | ')}</span>
-        <span class="wc-pay">¥${total.toLocaleString()}</span>
+    const isOpen=window._openedDay===d;
+    const cardBg=has?(sat?'#f3f0ff':sun?'#fff5f7':'#f0fbf5'):'#fff';
+    const borderClr=has?(sat?'#d0b8f5':sun?'#f9c8d5':'#88d4a8'):'#f0e0e5';
+    html+=`<div style="background:${cardBg};border:1.5px solid ${borderClr};border-radius:10px;margin-bottom:6px;overflow:hidden">
+      <div onclick="${isLocked?'':`toggleDayInput(${d})`}" style="padding:10px 12px;cursor:${isLocked?'default':'pointer'};display:flex;align-items:center;gap:10px;font-size:13px">
+        <span style="min-width:42px;font-weight:700;color:${sat?'#7a5cb8':sun?'#d4537a':'#3a2030'}">${mo}/${d}</span>
+        <span style="font-size:11px;color:${sat?'#7a5cb8':sun?'#d4537a':'#888'};min-width:16px">${WD[wd]}</span>
+        ${has?`<span style="flex:1;color:#3a2030">${r.store||''} <span style="color:#888;font-size:11px">${r.in}〜${r.out}</span></span>
+              <span style="font-weight:700;color:#d4537a">¥${total.toLocaleString()}</span>`:`<span style="flex:1;color:#ccc;font-size:11px">+ タップして入力</span>`}
       </div>
+      ${isOpen&&!isLocked?`<div style="padding:12px;border-top:1px solid ${borderClr};background:#fff">
+        <div style="margin-bottom:10px">
+          <div style="font-size:11px;color:#b08090;margin-bottom:4px;font-weight:700">🏪 業務先</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">${STORES.map(s=>`<button onclick="document.getElementById('inp_store_${d}').value='${s}';document.querySelectorAll('#card_${d} .stbtn').forEach(b=>b.classList.remove('on'));event.target.classList.add('on')" class="stbtn${r.store===s?' on':''}" style="padding:5px 12px;border:1.5px solid #f9c8d5;background:${r.store===s?'#d4537a':'#fff'};color:${r.store===s?'#fff':'#d4537a'};border-radius:18px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">${s}</button>`).join('')}</div>
+          <input id="inp_store_${d}" type="text" value="${r.store||''}" placeholder="または直接入力" style="width:100%;padding:8px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif">
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px" id="card_${d}">
+          <input id="inp_in_${d}" type="time" value="${r.in||DEF_IN}" style="flex:1;padding:10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:16px;text-align:center;font-family:'Zen Maru Gothic',sans-serif">
+          <span style="font-size:14px;color:#b08090">〜</span>
+          <input id="inp_out_${d}" type="time" value="${r.out||DEF_OUT}" style="flex:1;padding:10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:16px;text-align:center;font-family:'Zen Maru Gothic',sans-serif">
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">
+          <span style="font-size:11px;color:#b08090;align-self:center;font-weight:700;margin-right:4px">☕ 休憩</span>
+          ${[0,30,60,90,120].map(v=>`<button onclick="document.getElementById('inp_rest_${d}').value=${v};document.querySelectorAll('#rest_${d} button').forEach(b=>b.classList.remove('on'));event.target.classList.add('on')" class="${(r.rest||60)===v?'on':''}" style="padding:5px 10px;border:1.5px solid #f9c8d5;background:${(r.rest||60)===v?'#d4537a':'#fff'};color:${(r.rest||60)===v?'#fff':'#d4537a'};border-radius:14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">${v===0?'なし':v+'分'}</button>`).join('')}
+          <input id="inp_rest_${d}" type="hidden" value="${r.rest!=null?r.rest:60}">
+          <span id="rest_${d}" style="display:none"></span>
+        </div>
+        <details style="margin-bottom:10px">
+          <summary style="font-size:11px;color:#b08090;cursor:pointer;padding:4px 0;font-weight:700">🚃 交通費・手当 ▼</summary>
+          <div style="padding:8px 0">
+            <div style="display:flex;gap:4px;margin-bottom:5px;align-items:center">
+              <span style="font-size:10px;color:#888;min-width:28px">往</span>
+              <input id="inp_r1a_${d}" type="text" value="${r.r1a||''}" placeholder="○○駅→○○駅" style="flex:1;padding:6px 8px;border:1px solid #f9c8d5;border-radius:6px;font-size:11px;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif">
+              <input id="inp_f1a_${d}" type="number" value="${r.f1a||''}" placeholder="0" style="width:70px;padding:6px;border:1px solid #f9c8d5;border-radius:6px;font-size:11px;text-align:right;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif">
+              <span style="font-size:10px;color:#888">円</span>
+            </div>
+            <div style="display:flex;gap:4px;margin-bottom:5px;align-items:center">
+              <span style="font-size:10px;color:#888;min-width:28px">復</span>
+              <input id="inp_r1b_${d}" type="text" value="${r.r1b||''}" placeholder="○○駅→○○駅" style="flex:1;padding:6px 8px;border:1px solid #f9c8d5;border-radius:6px;font-size:11px;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif">
+              <input id="inp_f1b_${d}" type="number" value="${r.f1b||''}" placeholder="0" style="width:70px;padding:6px;border:1px solid #f9c8d5;border-radius:6px;font-size:11px;text-align:right;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif">
+              <span style="font-size:10px;color:#888">円</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+              <span style="font-size:10px;color:#888;align-self:center">出張</span>
+              <button onclick="document.getElementById('inp_trip_${d}').value=0;event.target.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));event.target.classList.add('on')" class="${(parseInt(r.tripAllow)||0)===0?'on':''}" style="padding:4px 10px;border:1px solid #f9c8d5;background:${(parseInt(r.tripAllow)||0)===0?'#4a90d9':'#fff'};color:${(parseInt(r.tripAllow)||0)===0?'#fff':'#4a90d9'};border-radius:12px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">なし</button>
+              <button onclick="document.getElementById('inp_trip_${d}').value=2000;event.target.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));event.target.classList.add('on')" class="${(parseInt(r.tripAllow)||0)===2000?'on':''}" style="padding:4px 10px;border:1px solid #f9c8d5;background:${(parseInt(r.tripAllow)||0)===2000?'#4a90d9':'#fff'};color:${(parseInt(r.tripAllow)||0)===2000?'#fff':'#4a90d9'};border-radius:12px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">+¥2,000</button>
+              <input id="inp_trip_${d}" type="hidden" value="${r.tripAllow||0}">
+              ${(sat||sun)?`<span style="font-size:10px;color:#888;align-self:center;margin-left:8px">土日</span>
+              ${[0,1000,2000].map(v=>`<button onclick="document.getElementById('inp_we_${d}').value=${v};event.target.parentElement.querySelectorAll('button:not(:nth-of-type(-n+2))').forEach(b=>b.classList.remove('on'));event.target.classList.add('on')" class="${(parseInt(r.weekendAllow)||0)===v?'on':''}" style="padding:4px 10px;border:1px solid #f9c8d5;background:${(parseInt(r.weekendAllow)||0)===v?'#d4537a':'#fff'};color:${(parseInt(r.weekendAllow)||0)===v?'#fff':'#d4537a'};border-radius:12px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">${v===0?'なし':'+¥'+v.toLocaleString()}</button>`).join('')}`:''}
+              <input id="inp_we_${d}" type="hidden" value="${r.weekendAllow||0}">
+            </div>
+          </div>
+        </details>
+        <div style="display:flex;gap:6px">
+          ${has?`<button onclick="deleteDayInline(${d})" style="padding:10px;background:#fff;border:1.5px solid #e05050;color:#e05050;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">削除</button>`:''}
+          <button onclick="saveDayInline(${d})" style="flex:1;padding:12px;background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;box-shadow:0 2px 8px rgba(212,83,122,.3)">✓ 保存</button>
+        </div>
+      </div>`:''}
     </div>`;
-  }).join('');
+  }
+  w.innerHTML=html;
   // 合計金額セクション
   const md2=getMD();
   const simple=isSimpleDept();
@@ -2628,6 +2666,47 @@ function saveSnsSettings(){
 }
 
 // ── Store / Time / Rest ────────────────────────────
+function toggleDayInput(d){
+  if(window._openedDay===d)window._openedDay=null;
+  else window._openedDay=d;
+  buildCards();
+  // スクロール
+  setTimeout(()=>{
+    const el=document.getElementById('inp_in_'+d);
+    if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
+  },50);
+}
+function saveDayInline(d){
+  const md=getMD();
+  if(!md[`d${d}`])md[`d${d}`]={};
+  const r=md[`d${d}`];
+  r.store=document.getElementById('inp_store_'+d).value;
+  r.in=document.getElementById('inp_in_'+d).value;
+  r.out=document.getElementById('inp_out_'+d).value;
+  r.rest=parseInt(document.getElementById('inp_rest_'+d).value)||0;
+  r.r1a=document.getElementById('inp_r1a_'+d)?.value||'';
+  r.f1a=document.getElementById('inp_f1a_'+d)?.value||'';
+  r.r1b=document.getElementById('inp_r1b_'+d)?.value||'';
+  r.f1b=document.getElementById('inp_f1b_'+d)?.value||'';
+  r.tripAllow=parseInt(document.getElementById('inp_trip_'+d)?.value)||0;
+  r.weekendAllow=parseInt(document.getElementById('inp_we_'+d)?.value)||0;
+  r.ok=true;
+  save(SK,db);
+  if(window.__db){const u=JSON.parse(localStorage.getItem(UK)||'null');if(u&&u.id)window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true}).catch(e=>console.error(e))}
+  window._openedDay=null;
+  render();
+  toast('🌸 '+mo+'/'+d+' 保存しました');
+}
+function deleteDayInline(d){
+  if(!confirm(mo+'/'+d+'の記録を削除しますか？'))return;
+  const md=getMD();
+  delete md[`d${d}`];
+  save(SK,db);
+  if(window.__db){const u=JSON.parse(localStorage.getItem(UK)||'null');if(u&&u.id)window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true}).catch(e=>console.error(e))}
+  window._openedDay=null;
+  render();
+  toast('🗑 '+mo+'/'+d+' 削除しました');
+}
 function pickStore(name){
   document.getElementById('mStore').value=name;
   document.querySelectorAll('.store-tag').forEach(b=>b.classList.toggle('on',b.dataset.s===name));
