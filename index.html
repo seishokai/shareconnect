@@ -2504,6 +2504,7 @@ function buildCards(){
         <span style="min-width:42px;font-weight:700;color:${sat?'#7a5cb8':sun?'#d4537a':'#3a2030'}">${mo}/${d}</span>
         <span style="font-size:11px;color:${sat?'#7a5cb8':sun?'#d4537a':'#888'};min-width:16px">${WD[wd]}</span>
         ${has?`<span style="flex:1;color:#3a2030">${r.store||''} <span style="color:#888;font-size:11px">${r.in}〜${r.out}</span></span>
+              ${!r.ok?'<span style="font-size:9px;color:#fff;background:#e0963a;padding:2px 6px;border-radius:8px;font-weight:700">仮</span>':''}
               <span style="font-weight:700;color:#d4537a">¥${total.toLocaleString()}</span>`:`<span style="flex:1;color:#ccc;font-size:11px">+ タップして入力</span>`}
       </div>
       ${isOpen&&!isLocked?`<div style="padding:14px;border-top:1px solid ${borderClr};background:#fff">
@@ -2567,9 +2568,10 @@ function buildCards(){
         </details>
 
         <!-- 保存・削除 -->
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
           ${has?`<button onclick="deleteDayInline(${d})" style="padding:14px 16px;background:#fff;border:1.5px solid #e05050;color:#e05050;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">🗑</button>`:''}
-          <button onclick="saveDayInline(${d})" style="flex:1;padding:14px;background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;box-shadow:0 3px 10px rgba(212,83,122,.4)">✓ 保存する</button>
+          <button onclick="saveDraftDayInline(${d})" style="flex:1;min-width:100px;padding:14px;background:#fff;border:1.5px solid #e0963a;color:#e0963a;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">📝 下書き</button>
+          <button onclick="saveDayInline(${d})" style="flex:2;min-width:140px;padding:14px;background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;box-shadow:0 3px 10px rgba(212,83,122,.4)">✓ 確定保存</button>
         </div>
       </div>`:''}
     </div>`;
@@ -2578,7 +2580,8 @@ function buildCards(){
   // 合計金額セクション
   const md2=getMD();
   const simple=isSimpleDept();
-  const dayCount=keys.length;
+  const _keys=Object.keys(md2).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).filter(d=>md2[`d${d}`]?.in&&md2[`d${d}`]?.out);
+  const dayCount=_keys.length;
   const dayRate=md2.dayRate||parseInt(md2.rate)||DEF_RATE;
   let ttw=0,ttf=0,ttwa=0,ttta=0,ttTrip=0;
   Object.entries(md2).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)ttw+=wm;if(!simple){ttf+=calcFare(r);ttwa+=(r.weekendAllow||0);ttta+=(r.tripAllow||0);if(r.r2a&&r.r2a.includes('出張'))ttTrip+=(parseInt(r.f2a)||0)}});
@@ -2587,7 +2590,7 @@ function buildCards(){
   const ttSns=simple?0:((md2.snsCount||0)*(md2.snsRate||2000));
   const ttAllTrip=ttta+ttTrip;
   const ttAll=ttPay+ttf+ttwa+ttta+ttSns;
-  const allOk=keys.every(d=>md2[`d${d}`]?.ok);
+  const allOk=_keys.length>0&&_keys.every(d=>md2[`d${d}`]?.ok);
   const breakdownText=simple
     ?`${dayCount}日 × ¥${dayRate.toLocaleString()}`
     :`報酬 ¥${ttPay.toLocaleString()} + 交通費 ¥${ttPureFare.toLocaleString()}${ttAllTrip>0?' + 出張 ¥'+ttAllTrip.toLocaleString():''}${ttwa>0?' + 土日 ¥'+ttwa.toLocaleString():''}${ttSns>0?' + SNS ¥'+ttSns.toLocaleString():''}`;
@@ -2919,10 +2922,43 @@ function deleteDayInline(d){
   const md=getMD();
   delete md[`d${d}`];
   save(SK,db);
-  if(window.__db){const u=JSON.parse(localStorage.getItem(UK)||'null');if(u&&u.id)window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true}).catch(e=>console.error(e))}
+  // Firestoreでフィールド削除（FieldValue.delete()）
+  if(window.__db){
+    const u=JSON.parse(localStorage.getItem(UK)||'null');
+    if(u&&u.id){
+      const fieldPath=`workData.${dKey()}.d${d}`;
+      window.__db.collection('staff').doc(u.id).update({
+        [fieldPath]: firebase.firestore.FieldValue.delete()
+      }).catch(e=>{
+        console.error('delete error:',e);
+        // フォールバック：通常のset/merge
+        window.__db.collection('staff').doc(u.id).set({workData:db},{merge:false}).catch(e2=>console.error(e2));
+      });
+    }
+  }
   window._openedDay=null;
   render();
   toast('🗑 '+mo+'/'+d+' 削除しました');
+}
+function saveDraftDayInline(d){
+  // 下書き保存（ok=false）
+  const md=getMD();
+  if(!md[`d${d}`])md[`d${d}`]={};
+  const r=md[`d${d}`];
+  r.store=document.getElementById('inp_store_'+d).value;
+  r.in=document.getElementById('inp_in_'+d).value;
+  r.out=document.getElementById('inp_out_'+d).value;
+  r.rest=parseInt(document.getElementById('inp_rest_'+d).value)||0;
+  r.r1a=document.getElementById('inp_r1a_'+d)?.value||'';
+  r.f1a=document.getElementById('inp_f1a_'+d)?.value||'';
+  r.r1b=document.getElementById('inp_r1b_'+d)?.value||'';
+  r.f1b=document.getElementById('inp_f1b_'+d)?.value||'';
+  r.tripAllow=parseInt(document.getElementById('inp_trip_'+d)?.value)||0;
+  r.weekendAllow=parseInt(document.getElementById('inp_we_'+d)?.value)||0;
+  r.ok=false;
+  save(SK,db);
+  if(window.__db){const u=JSON.parse(localStorage.getItem(UK)||'null');if(u&&u.id)window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true}).catch(e=>console.error(e))}
+  toast('📝 '+mo+'/'+d+' 下書き保存');
 }
 function pickStore(name){
   document.getElementById('mStore').value=name;
@@ -3096,7 +3132,7 @@ function openNotice(){
   let tw=0,tf=0,twa=0,tta=0;
   const rows=keys.map(d=>{
     const r=md[`d${d}`]||{};const dt=new Date(yr,mo-1,d);
-    const wm=calcWork(r),pay=calcPay(wm),fare=calcFare(r),wa=calcWeekendAllow(r),ta=parseInt(r.tripAllow)||0;
+    const wm=calcWork(r),pay=calcPay(wm),fare=calcFare(r),wa=parseInt(r.weekendAllow)||0,ta=parseInt(r.tripAllow)||0;
     tw+=wm||0;tf+=fare;twa+=wa;tta+=ta;return{d,dt,r,wm,pay,fare,wa,ta};
   });
   const tPay=calcPay(tw),rate=getRate();
