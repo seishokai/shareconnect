@@ -534,36 +534,53 @@ window.__auth = _auth;
     <button class="m-close" onclick="closeModal()">×</button>
   </div>
   <div class="m-body">
-    <!-- Department + Approve -->
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 0 8px">
-      <select id="mDept" class="inp" style="padding:6px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:12px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7" onchange="saveStaffDept()"></select>
-      <span id="mApproveWrap"></span>
-      <label style="font-size:11px;color:#b08090;display:flex;align-items:center;gap:3px;cursor:pointer"><input type="checkbox" id="mInvoice" onchange="saveStaffInvoice()">インボイス</label>
-      <label style="font-size:11px;color:#e07b3a;display:flex;align-items:center;gap:3px;cursor:pointer;font-weight:700"><input type="checkbox" id="mSnsOnly" onchange="saveStaffSnsOnly()">📸SNSのみ</label>
-      <button style="margin-left:auto;font-size:11px;padding:5px 12px;background:#d4537a;border:none;border-radius:8px;cursor:pointer;color:#fff;font-family:'Zen Maru Gothic',sans-serif" onclick="copyStaffURL()">🔗 打刻URL</button>
-    </div>
+    <!-- ステータスバッジ -->
+    <div id="mStatusBadges" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
 
-    <!-- ★ 年間勤怠サマリー + 月別詳細（メイン） -->
-    <div id="mYearSummary" style="margin-bottom:10px"></div>
-
-    <div style="background:#fff;border:2px solid #d4537a;border-radius:14px;padding:12px;margin-bottom:10px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <span style="font-size:14px;font-weight:700;color:#d4537a">📅 月別詳細</span>
-        <select id="mYear" style="padding:4px 8px;border:1px solid #f9c8d5;border-radius:6px;font-size:12px;font-family:'Zen Maru Gothic',sans-serif"></select>
-        <select id="mMonth" style="padding:4px 8px;border:1px solid #f9c8d5;border-radius:6px;font-size:12px;font-family:'Zen Maru Gothic',sans-serif"></select>
-        <button style="padding:4px 10px;background:var(--acc);color:#fff;border:none;border-radius:6px;font-family:'Zen Maru Gothic',sans-serif;font-size:11px;cursor:pointer" onclick="loadWorkData()">表示</button>
+    <!-- ★ 月別詳細（メイン） -->
+    <div style="background:#fff;border:2px solid #d4537a;border-radius:16px;padding:14px;margin-bottom:10px;box-shadow:0 4px 16px rgba(212,83,122,.08)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+        <span style="font-size:15px;font-weight:700;color:#d4537a">📅</span>
+        <select id="mYear" style="padding:6px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-weight:700;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030"></select>
+        <select id="mMonth" style="padding:6px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-weight:700;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030"></select>
+        <button style="padding:6px 14px;background:var(--acc);color:#fff;border:none;border-radius:8px;font-family:'Zen Maru Gothic',sans-serif;font-size:12px;font-weight:700;cursor:pointer" onclick="loadWorkData()">表示</button>
       </div>
       <div id="mWorkTable"></div>
     </div>
 
+    <!-- 設定（折りたたみ） -->
+    <details style="margin-bottom:8px">
+      <summary style="font-size:12px;font-weight:700;color:#b08090;cursor:pointer;padding:8px 12px;background:#fde8ee;border-radius:10px;list-style:none">⚙️ 設定（部門・承認・インボイス・打刻URL）</summary>
+      <div style="padding:12px 4px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;font-weight:700;color:#b08090;min-width:50px">🏢 部門</span>
+          <select id="mDept" class="inp" style="flex:1;padding:6px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7" onchange="saveStaffDept()"></select>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <span id="mApproveWrap"></span>
+          <label style="font-size:12px;color:#b08090;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" id="mInvoice" onchange="saveStaffInvoice()">📄 インボイス登録</label>
+          <label style="font-size:12px;color:#e07b3a;display:flex;align-items:center;gap:4px;cursor:pointer;font-weight:700"><input type="checkbox" id="mSnsOnly" onchange="saveStaffSnsOnly()">📸 SNSのみのスタッフ</label>
+        </div>
+        <button style="font-size:12px;padding:8px 14px;background:#d4537a;border:none;border-radius:10px;cursor:pointer;color:#fff;font-family:'Zen Maru Gothic',sans-serif;font-weight:700" onclick="copyStaffURL()">🔗 打刻URLをコピー</button>
+      </div>
+    </details>
+
+    <!-- 年間サマリー（折りたたみ） -->
+    <details style="margin-bottom:8px">
+      <summary style="font-size:12px;font-weight:700;color:#b08090;cursor:pointer;padding:8px 12px;background:#fde8ee;border-radius:10px;list-style:none">📊 年間月別サマリー</summary>
+      <div id="mYearSummary" style="padding:8px 0"></div>
+    </details>
+
     <!-- 詳細情報（折りたたみ） -->
-    <details style="margin-top:6px">
-      <summary style="font-size:12px;font-weight:700;color:#b08090;cursor:pointer;padding:8px 0">📋 基本情報・口座・契約を表示</summary>
-      <div class="info-grid" id="mBasicInfo" style="margin-bottom:8px"></div>
-      <div class="m-sec-ttl" style="margin-bottom:4px">🏦 振込先口座</div>
-      <div class="info-grid" id="mBankInfo" style="margin-bottom:8px"></div>
-      <div class="m-sec-ttl" style="margin-bottom:4px">📋 契約情報</div>
-      <div id="mContractInfo"></div>
+    <details>
+      <summary style="font-size:12px;font-weight:700;color:#b08090;cursor:pointer;padding:8px 12px;background:#fde8ee;border-radius:10px;list-style:none">📋 基本情報・口座・契約</summary>
+      <div style="padding:8px 0">
+        <div class="info-grid" id="mBasicInfo" style="margin-bottom:8px"></div>
+        <div class="m-sec-ttl" style="margin-bottom:4px">🏦 振込先口座</div>
+        <div class="info-grid" id="mBankInfo" style="margin-bottom:8px"></div>
+        <div class="m-sec-ttl" style="margin-bottom:4px">📋 契約情報</div>
+        <div id="mContractInfo"></div>
+      </div>
     </details>
   </div>
   <div class="m-foot">
@@ -1259,12 +1276,25 @@ function switchDetailTab(tab,btn){
   document.querySelectorAll('.detail-tab').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
 }
+function refreshStatusBadges(){
+  if(!currentStaff)return;
+  const sb=document.getElementById('mStatusBadges');if(!sb)return;
+  const badges=[];
+  if(currentStaff.department)badges.push(`<span style="font-size:11px;color:#fff;background:#d4537a;padding:3px 10px;border-radius:12px;font-weight:700">🏢 ${currentStaff.department}</span>`);
+  badges.push(currentStaff.approved
+    ?'<span style="font-size:11px;color:#fff;background:#4caf7d;padding:3px 10px;border-radius:12px;font-weight:700">✅ 承認済</span>'
+    :'<span style="font-size:11px;color:#fff;background:#e0963a;padding:3px 10px;border-radius:12px;font-weight:700">⏳ 承認待ち</span>');
+  if(currentStaff.invoice)badges.push('<span style="font-size:11px;color:#fff;background:#4a90d9;padding:3px 10px;border-radius:12px;font-weight:700">📄 インボイス</span>');
+  if(currentStaff.snsOnly)badges.push('<span style="font-size:11px;color:#fff;background:#e07b3a;padding:3px 10px;border-radius:12px;font-weight:700">📸 SNSのみ</span>');
+  sb.innerHTML=badges.join('');
+}
 function saveStaffSnsOnly(){
   if(!currentStaff)return;
   currentStaff.snsOnly=document.getElementById('mSnsOnly').checked;
   localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({snsOnly:currentStaff.snsOnly},{merge:true}).catch(e=>console.error(e));
   toast(currentStaff.snsOnly?'📸 SNSのみモードに設定':'通常モードに変更');
+  refreshStatusBadges();
   loadWorkData();
 }
 function saveStaffInvoice(){
@@ -1273,6 +1303,7 @@ function saveStaffInvoice(){
   localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({invoice:currentStaff.invoice},{merge:true}).catch(e=>console.error(e));
   toast(currentStaff.invoice?'✅ インボイス登録済み':'インボイス未登録に変更');
+  refreshStatusBadges();
 }
 function approveCurrentStaff(){
   if(!currentStaff)return;
@@ -1281,7 +1312,8 @@ function approveCurrentStaff(){
   localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
   localStorage.setItem('sc_approved_'+currentStaff.id,'1');
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({approved:true,approvedAt:currentStaff.approvedAt},{merge:true}).catch(e=>console.error(e));
-  document.getElementById('mApproveWrap').innerHTML='<span style="font-size:11px;color:#4caf7d;font-weight:700">✅ 承認済</span>';
+  document.getElementById('mApproveWrap').innerHTML='<span style="font-size:12px;color:#4caf7d;font-weight:700">✅ 承認済</span>';
+  refreshStatusBadges();
   renderStaffList();toast('✅ 承認しました');
 }
 function saveStaffDept(){
@@ -1289,7 +1321,7 @@ function saveStaffDept(){
   currentStaff.department=document.getElementById('mDept').value||'';
   localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({department:currentStaff.department},{merge:true}).catch(e=>console.error(e));
-  renderStaffList();toast('🏢 部門を変更しました');
+  renderStaffList();refreshStatusBadges();toast('🏢 部門を変更しました');
 }
 function addDept(){
   const name=prompt('新しい部門名を入力');
@@ -1352,6 +1384,18 @@ function renderStaffList(){
 function openStaff(i){
   currentStaff=allStaff[i];
   document.getElementById('mTitle').textContent=currentStaff.name;
+  // ステータスバッジ
+  const sb=document.getElementById('mStatusBadges');
+  if(sb){
+    const badges=[];
+    if(currentStaff.department)badges.push(`<span style="font-size:11px;color:#fff;background:#d4537a;padding:3px 10px;border-radius:12px;font-weight:700">🏢 ${currentStaff.department}</span>`);
+    badges.push(currentStaff.approved
+      ?'<span style="font-size:11px;color:#fff;background:#4caf7d;padding:3px 10px;border-radius:12px;font-weight:700">✅ 承認済</span>'
+      :'<span style="font-size:11px;color:#fff;background:#e0963a;padding:3px 10px;border-radius:12px;font-weight:700">⏳ 承認待ち</span>');
+    if(currentStaff.invoice)badges.push('<span style="font-size:11px;color:#fff;background:#4a90d9;padding:3px 10px;border-radius:12px;font-weight:700">📄 インボイス</span>');
+    if(currentStaff.snsOnly)badges.push('<span style="font-size:11px;color:#fff;background:#e07b3a;padding:3px 10px;border-radius:12px;font-weight:700">📸 SNSのみ</span>');
+    sb.innerHTML=badges.join('');
+  }
   // Department
   const deptSel=document.getElementById('mDept');
   if(deptSel){
