@@ -2355,10 +2355,24 @@ function buildCards(){
   const days=new Date(yr,mo,0).getDate();
   const isLocked=!!md.locked;
   // 月の全日を表示
-  let html='<div style="font-size:12px;color:#b08090;margin-bottom:8px;padding:0 4px">⬇ 出勤した日をタップして入力してください</div>';
+  let html='<div style="font-size:12px;color:#b08090;margin-bottom:8px;padding:0 4px">⬇ 出勤した日をタップ。前回の内容が自動でコピーされます</div>';
+  // 直近の入力済みデータを取得（コピー用）
+  function getLastEntry(beforeDay){
+    for(let i=beforeDay-1;i>=1;i--){
+      if(md[`d${i}`]&&md[`d${i}`].in&&md[`d${i}`].out)return md[`d${i}`];
+    }
+    return null;
+  }
   for(let d=1;d<=days;d++){
-    const r=md[`d${d}`]||{};
-    const has=r.in&&r.out;
+    const actualR=md[`d${d}`]||{};
+    const has=actualR.in&&actualR.out;
+    // 開いている空の日 → 前回データで初期化
+    let r=actualR;
+    let isCopied=false;
+    if(!has&&window._openedDay===d){
+      const last=getLastEntry(d);
+      if(last){r={...last,ok:false};isCopied=true}
+    }
     const dt=new Date(yr,mo-1,d),wd=dt.getDay();
     const sat=wd===6,sun=wd===0;
     const wm=has?calcWork(r):null;
@@ -2378,6 +2392,7 @@ function buildCards(){
               <span style="font-weight:700;color:#d4537a">¥${total.toLocaleString()}</span>`:`<span style="flex:1;color:#ccc;font-size:11px">+ タップして入力</span>`}
       </div>
       ${isOpen&&!isLocked?`<div style="padding:12px;border-top:1px solid ${borderClr};background:#fff">
+        ${isCopied?'<div style="background:#e8f0fe;color:#4a90d9;padding:6px 10px;border-radius:8px;font-size:11px;margin-bottom:10px;font-weight:700">📋 前回の内容をコピーしました。時間を確認して保存してください</div>':''}
         <div style="margin-bottom:10px">
           <div style="font-size:11px;color:#b08090;margin-bottom:4px;font-weight:700">🏪 業務先</div>
           <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">${STORES.map(s=>`<button onclick="document.getElementById('inp_store_${d}').value='${s}';document.querySelectorAll('#card_${d} .stbtn').forEach(b=>b.classList.remove('on'));event.target.classList.add('on')" class="stbtn${r.store===s?' on':''}" style="padding:5px 12px;border:1.5px solid #f9c8d5;background:${r.store===s?'#d4537a':'#fff'};color:${r.store===s?'#fff':'#d4537a'};border-radius:18px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">${s}</button>`).join('')}</div>
