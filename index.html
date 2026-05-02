@@ -773,14 +773,26 @@ window.__auth = _auth;
     <div class="si"><div class="sv" id="sumP">¥0</div><div class="sl">報酬額</div></div>
     <div class="si"><div class="sv" id="sumF">¥0</div><div class="sl">交通費</div></div>
   </div>
-  <details id="snsSection" style="margin:0 14px 8px"><summary style="background:#fff;border:2px solid #f0c060;border-radius:14px;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:700;color:#e07b3a;list-style:none;display:flex;align-items:center;gap:8px">📸 SNS投稿を入力する <span id="snsSummary" style="margin-left:auto;font-size:12px;color:#b08090;font-weight:400"></span></summary><div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border:2px solid #f0c060;border-radius:14px;margin-top:6px;flex-wrap:wrap">
-    <span style="font-size:15px;font-weight:700;color:#e07b3a">📸 SNS投稿</span>
-    <input type="number" id="snsCountInput" value="0" min="0" style="width:60px;padding:8px 10px;border:2px solid #f0c060;border-radius:10px;font-size:18px;font-weight:700;color:#e07b3a;text-align:center;background:#fffaf0;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsSettings()">
-    <span style="font-size:13px;color:#b08090;font-weight:700">件 ×</span>
-    <input type="number" id="snsRateInput" value="2000" style="width:80px;padding:8px 10px;border:2px solid #f0c060;border-radius:10px;font-size:18px;font-weight:700;color:#e07b3a;text-align:center;background:#fffaf0;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsSettings()">
-    <span style="font-size:13px;color:#b08090;font-weight:700">円</span>
-    <span style="font-size:16px;color:#e07b3a;font-weight:700;margin-left:auto" id="snsPayDisp"></span>
-  </div></details>
+  <details id="snsSection" style="margin:0 14px 8px"><summary style="background:#fff;border:2px solid #f0c060;border-radius:14px;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:700;color:#e07b3a;list-style:none;display:flex;align-items:center;gap:8px">📸 SNS投稿・広告出演料を入力 <span id="snsSummary" style="margin-left:auto;font-size:12px;color:#b08090;font-weight:400"></span></summary>
+    <div style="background:#fff;border:2px solid #f0c060;border-radius:14px;margin-top:6px;padding:12px 16px">
+      <!-- SNS投稿 -->
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed #f0c060">
+        <span style="font-size:14px;font-weight:700;color:#e07b3a;min-width:90px">📸 SNS投稿</span>
+        <input type="number" id="snsCountInput" value="0" min="0" style="width:56px;padding:8px;border:1.5px solid #f0c060;border-radius:8px;font-size:16px;font-weight:700;color:#e07b3a;text-align:center;background:#fffaf0;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsSettings()">
+        <span style="font-size:12px;color:#b08090;font-weight:700">件 ×</span>
+        <input type="number" id="snsRateInput" value="2000" min="0" style="width:74px;padding:8px;border:1.5px solid #f0c060;border-radius:8px;font-size:16px;font-weight:700;color:#e07b3a;text-align:center;background:#fffaf0;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsSettings()">
+        <span style="font-size:12px;color:#b08090;font-weight:700">円</span>
+        <span style="font-size:14px;color:#e07b3a;font-weight:700;margin-left:auto" id="snsPayDisp"></span>
+      </div>
+      <!-- 広告出演料 -->
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-size:14px;font-weight:700;color:#e07b3a;min-width:90px">🎬 広告出演料</span>
+        <input type="number" id="snsAdFeeInput" value="0" min="0" placeholder="0" style="flex:1;min-width:120px;padding:8px;border:1.5px solid #f0c060;border-radius:8px;font-size:16px;font-weight:700;color:#e07b3a;text-align:right;background:#fffaf0;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsSettings()">
+        <span style="font-size:12px;color:#b08090;font-weight:700">円</span>
+      </div>
+      <input type="text" id="snsAdNoteInput" value="" placeholder="備考（案件名など）任意" style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:12px;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif" onchange="saveSnsSettings()">
+    </div>
+  </details>
   <div id="calDetails" style="display:none"><div id="calGrid"></div><span id="calLabel"></span></div>
   <div class="cards-wrap" id="cardsWrap">
     <div class="empty-state"><div class="ico">🌸</div><p>上の日付をタップして<br>稼働日を追加してください</p></div>
@@ -1198,7 +1210,9 @@ function sendApprovalEmail(yr,mo,key){
     return`<tr><td>${mo}/${d}</td><td>${WD[dt.getDay()]}</td><td>${r.store||''}</td><td>${wm!=null?toStr(wm):''}</td><td style="text-align:right">${pay?'\\'+pay.toLocaleString():''}</td><td style="text-align:right">${fare?'\\'+fare.toLocaleString():''}</td></tr>`;
   });
   const tPay=calcPay(tw,mRate);const snsPay=mSnsCount*mSnsRate;
-  const grandTotal=tPay+tta+twa+tf+snsPay;
+  const mAdFee=parseInt(md.snsAdFee)||0;
+  const mAdNote=md.snsAdNote||'';
+  const grandTotal=tPay+tta+twa+tf+snsPay+mAdFee;
   const now=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
   // Build HTML for email body (same as payment notice)
   const emailHtml=`<html><head><meta charset="utf-8"></head><body style="font-family:Helvetica,Arial,sans-serif;color:#333;max-width:600px;margin:0 auto">
@@ -1219,6 +1233,7 @@ function sendApprovalEmail(yr,mo,key){
         ${twa>0?`<tr><td style="padding:4px 0">Weekend Allow.</td><td style="text-align:right">\\${twa.toLocaleString()}</td></tr>`:''}
         <tr><td style="padding:4px 0">Transport</td><td style="text-align:right">\\${tf.toLocaleString()}</td></tr>
         ${snsPay>0?`<tr><td style="padding:4px 0">SNS (${mSnsCount}x\\${mSnsRate.toLocaleString()})</td><td style="text-align:right">\\${snsPay.toLocaleString()}</td></tr>`:''}
+        ${mAdFee>0?`<tr><td style="padding:4px 0">SNS Ad Fee${mAdNote?' ('+mAdNote+')':''}</td><td style="text-align:right">\\${mAdFee.toLocaleString()}</td></tr>`:''}
         <tr style="border-top:2px solid #d4537a"><td style="padding:8px 0;font-size:16px;font-weight:bold;color:#d4537a">TOTAL</td><td style="text-align:right;font-size:18px;font-weight:bold;color:#d4537a">\\${grandTotal.toLocaleString()}</td></tr>
       </table>
       <p style="font-size:11px;color:#999">Bank: ${currentStaff.bank||''} ${currentStaff.branch||''} ${currentStaff.accType||''} ${currentStaff.accNum||''} ${currentStaff.accName||''}</p>
@@ -1303,7 +1318,8 @@ function renderYearSummary(){
     Object.entries(md).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0){td++;tw+=wm}tf+=calcFare(r);twa+=(r.weekendAllow||0);tta+=(r.tripAllow||0)});
     const pay=calcPay(tw,mRate);
     const snsPay=(md.snsCount||0)*(md.snsRate||2000);
-    const total=pay+tf+twa+tta+snsPay;
+    const adFee=parseInt(md.snsAdFee)||0;
+    const total=pay+tf+twa+tta+snsPay+adFee;
     const hasData=td>0;
     const isCur=m===new Date().getMonth()+1;
     html+=`<div onclick="document.getElementById('mMonth').value=${m};loadWorkData()" style="padding:8px 10px;border-radius:10px;cursor:pointer;border:1.5px solid ${isCur?'#d4537a':hasData?'#88d4a8':'#f0e0e5'};background:${isCur?'#fce8ef':hasData?'#edfaf3':'#fff'};transition:all .15s">
@@ -1395,7 +1411,8 @@ function renderDashboard(){
     Object.entries(md).forEach(([kk,r])=>{if(!kk.startsWith('d'))return;const wm=calcWork(r);if(wm)tw+=wm;tf+=calcFare(r);twa+=(r.weekendAllow||0);tta+=(r.tripAllow||0)});
     const pay=s.snsOnly?0:calcPay(tw,mRate);
     const snsPay=(md.snsCount||0)*(md.snsRate||2000);
-    totalAmount+=pay+(s.snsOnly?0:tf+twa+tta)+snsPay;
+    const adFee=parseInt(md.snsAdFee)||0;
+    totalAmount+=pay+(s.snsOnly?0:tf+twa+tta)+snsPay+adFee;
     if(md.submitted&&!md.locked)submittedCount++;
     if(md.locked)lockedCount++;
   });
@@ -1438,7 +1455,8 @@ function exportPaymentCSV(){
     Object.entries(md).forEach(([kk,r])=>{if(!kk.startsWith('d'))return;const wm=calcWork(r);if(wm)tw+=wm;tf+=calcFare(r);twa+=(r.weekendAllow||0);tta+=(r.tripAllow||0)});
     const pay=s.snsOnly?0:calcPay(tw,mRate);
     const snsPay=(md.snsCount||0)*(md.snsRate||2000);
-    const total=pay+(s.snsOnly?0:tf+twa+tta)+snsPay;
+    const adFee=parseInt(md.snsAdFee)||0;
+    const total=pay+(s.snsOnly?0:tf+twa+tta)+snsPay+adFee;
     rows.push([s.name,s.department||'',s.bank||'',s.branch||'',s.accType||'',s.accNum||'',s.accName||'',total,s.invoiceNum||'']);
   });
   if(rows.length<2){toast('月締め確定済みのスタッフがいません');return}
@@ -1488,7 +1506,8 @@ function renderStaffList(){
     Object.entries(curMonth).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0){td++;tw+=wm}tf+=calcFare(r);twa+=(r.weekendAllow||0);tta+=(r.tripAllow||0)});
     const pay=s.snsOnly?0:calcPay(tw,mRate);
     const snsPay=mSnsCount*mSnsRate;
-    const grandTotal=pay+(s.snsOnly?0:tf+twa+tta)+snsPay;
+    const adFee=parseInt(curMonth.snsAdFee)||0;
+    const grandTotal=pay+(s.snsOnly?0:tf+twa+tta)+snsPay+adFee;
     const total=Object.keys(curMonth).filter(k=>k.startsWith('d')).length;
     const isLocked=!!curMonth.locked;
     const isSubmitted=!!curMonth.submitted;
@@ -1630,6 +1649,14 @@ function loadWorkData(){
         <div style="font-size:10px;font-weight:700;color:#b08090;margin-bottom:3px">SNS単価</div>
         <input type="number" id="mSnsRate" value="${curSnsRate}" style="width:100%;padding:6px 8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:14px;font-weight:700;color:#e07b3a;background:#fff;box-sizing:border-box" onchange="saveMonthSettings()">
       </div>
+      <div style="flex:1;min-width:120px">
+        <div style="font-size:10px;font-weight:700;color:#b08090;margin-bottom:3px">🎬 広告出演料</div>
+        <input type="number" id="mAdFee" value="${parseInt(md.snsAdFee)||0}" min="0" style="width:100%;padding:6px 8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:14px;font-weight:700;color:#e07b3a;background:#fff;box-sizing:border-box" onchange="saveMonthSettings()">
+      </div>
+      <div style="flex:2;min-width:140px">
+        <div style="font-size:10px;font-weight:700;color:#b08090;margin-bottom:3px">広告 備考</div>
+        <input type="text" id="mAdNote" value="${(md.snsAdNote||'').replace(/"/g,'&quot;')}" placeholder="案件名など" style="width:100%;padding:6px 8px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;color:#3a2030;background:#fff;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif" onchange="saveMonthSettings()">
+      </div>
     </div>`;
   if(!keys.length){
     const snsOnly=curSnsCount*curSnsRate;
@@ -1653,7 +1680,8 @@ function loadWorkData(){
   });
   const tPay=calcPay(tw,curRate);
   const snsPay=curSnsCount*curSnsRate;
-  const grandTotal=tPay+tf+twa+tta+snsPay;
+  const curAdFee=parseInt(md.snsAdFee)||0;
+  const grandTotal=tPay+tf+twa+tta+snsPay+curAdFee;
   el.innerHTML=settingsHTML+`
     <table class="work-table">
       <thead><tr><th>日付</th><th>店舗</th><th>稼働</th><th>報酬</th><th>交通費</th><th>状態</th></tr></thead>
@@ -1666,6 +1694,7 @@ function loadWorkData(){
       ${tta>0?`<div class="tot-item"><div class="tot-v">¥${tta.toLocaleString()}</div><div class="tot-l">出張手当</div></div>`:''}
       ${twa>0?`<div class="tot-item"><div class="tot-v">¥${twa.toLocaleString()}</div><div class="tot-l">土日手当</div></div>`:''}
       ${snsPay>0?`<div class="tot-item"><div class="tot-v">¥${snsPay.toLocaleString()}</div><div class="tot-l">SNS協力費</div></div>`:''}
+      ${curAdFee>0?`<div class="tot-item"><div class="tot-v">¥${curAdFee.toLocaleString()}</div><div class="tot-l">広告出演料</div></div>`:''}
       <div class="tot-item"><div class="tot-v" style="color:#d4537a;font-size:18px">¥${grandTotal.toLocaleString()}</div><div class="tot-l">合計</div></div>
     </div>`;
   updateLockBtn();
@@ -1679,6 +1708,8 @@ function saveMonthSettings(){
   workData[key].rate=parseInt(document.getElementById('mRate').value)||DEF_RATE;
   workData[key].snsCount=parseInt(document.getElementById('mSnsCount').value)||0;
   workData[key].snsRate=parseInt(document.getElementById('mSnsRate').value)||2000;
+  workData[key].snsAdFee=parseInt(document.getElementById('mAdFee')?.value)||0;
+  workData[key].snsAdNote=(document.getElementById('mAdNote')?.value||'').trim().slice(0,100);
   currentStaff.workData=workData;
   save('sc_admin_work_'+currentStaff.id,workData);
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({workData:workData},{merge:true}).catch(e=>console.error(e));
@@ -1773,7 +1804,8 @@ function openStaffNotice(){
         ${twa>0?`<div class="n-tr"><span>土日手当</span><span>¥${twa.toLocaleString()}</span></div>`:''}
         ${(!currentStaff.snsOnly||tf>0)?`<div class="n-tr"><span>交通費</span><span>¥${tf.toLocaleString()}</span></div>`:''}
         ${snsPay>0?`<div class="n-tr"><span>SNS撮影協力費（${mSnsCount}件 × ¥${mSnsRate.toLocaleString()}）</span><span>¥${snsPay.toLocaleString()}</span></div>`:''}
-        <div class="n-tr big"><span>お支払い合計</span><span>¥${(tPay+tta+twa+tf+snsPay).toLocaleString()}</span></div>
+        ${(parseInt(md.snsAdFee)||0)>0?`<div class="n-tr"><span>SNS広告出演料${md.snsAdNote?'（'+md.snsAdNote+'）':''}</span><span>¥${(parseInt(md.snsAdFee)||0).toLocaleString()}</span></div>`:''}
+        <div class="n-tr big"><span>お支払い合計</span><span>¥${(tPay+tta+twa+tf+snsPay+(parseInt(md.snsAdFee)||0)).toLocaleString()}</span></div>
       </div>
       <div style="font-size:11px;color:#aaa;text-align:center;margin-top:10px">振込先：${currentStaff.bank||'—'} ${currentStaff.branch||''} ${currentStaff.accType||''} ${currentStaff.accNum||''} ${currentStaff.accName||''}</div>
     </div>`;
@@ -1801,7 +1833,9 @@ function printNotice(){
   });
   const tPay=calcPay(tw,mRate);
   const snsPay=mSnsCount*mSnsRate;
-  const grandTotal=(currentStaff.snsOnly?0:tPay+tta+twa+tf)+snsPay;
+  const mAdFeePr=parseInt(md.snsAdFee)||0;
+  const mAdNotePr=md.snsAdNote||'';
+  const grandTotal=(currentStaff.snsOnly?0:tPay+tta+twa+tf)+snsPay+mAdFeePr;
   const now=new Date();
   const issueDate=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
   const isSnsOnly=!!currentStaff.snsOnly;
@@ -1898,6 +1932,7 @@ function printNotice(){
       ${twa>0?`<div class="summary-row"><span class="summary-label">土日手当</span><span class="summary-value">¥${twa.toLocaleString()}</span></div>`:''}
       ${(!isSnsOnly||tf>0)?`<div class="summary-row"><span class="summary-label">交通費（実費）</span><span class="summary-value">¥${tf.toLocaleString()}</span></div>`:''}
       ${snsPay>0?`<div class="summary-row"><span class="summary-label">SNS撮影協力費（${mSnsCount}件 × ¥${mSnsRate.toLocaleString()}）</span><span class="summary-value">¥${snsPay.toLocaleString()}</span></div>`:''}
+      ${mAdFeePr>0?`<div class="summary-row"><span class="summary-label">SNS広告出演料${mAdNotePr?'（'+mAdNotePr.replace(/[<>]/g,'')+'）':''}</span><span class="summary-value">¥${mAdFeePr.toLocaleString()}</span></div>`:''}
       <div class="summary-row total"><span>お支払い合計金額</span><span class="summary-value">¥${grandTotal.toLocaleString()}</span></div>
     </div>
 
@@ -2636,12 +2671,13 @@ function buildCards(){
   const ttPureFare=ttf-ttTrip;
   const ttPay=simple?dayCount*dayRate:calcPay(ttw);
   const ttSns=simple?0:((md2.snsCount||0)*(md2.snsRate||2000));
+  const ttAdFee=parseInt(md2.snsAdFee)||0;
   const ttAllTrip=ttta+ttTrip;
-  const ttAll=ttPay+ttf+ttwa+ttta+ttSns;
+  const ttAll=ttPay+ttf+ttwa+ttta+ttSns+ttAdFee;
   const allOk=_keys.length>0&&_keys.every(d=>md2[`d${d}`]?.ok);
   const breakdownText=simple
-    ?`${dayCount}日 × ¥${dayRate.toLocaleString()}`
-    :`報酬 ¥${ttPay.toLocaleString()} + 交通費 ¥${ttPureFare.toLocaleString()}${ttAllTrip>0?' + 出張 ¥'+ttAllTrip.toLocaleString():''}${ttwa>0?' + 土日 ¥'+ttwa.toLocaleString():''}${ttSns>0?' + SNS ¥'+ttSns.toLocaleString():''}`;
+    ?`${dayCount}日 × ¥${dayRate.toLocaleString()}${ttAdFee>0?' + 広告 ¥'+ttAdFee.toLocaleString():''}`
+    :`報酬 ¥${ttPay.toLocaleString()} + 交通費 ¥${ttPureFare.toLocaleString()}${ttAllTrip>0?' + 出張 ¥'+ttAllTrip.toLocaleString():''}${ttwa>0?' + 土日 ¥'+ttwa.toLocaleString():''}${ttSns>0?' + SNS ¥'+ttSns.toLocaleString():''}${ttAdFee>0?' + 広告 ¥'+ttAdFee.toLocaleString():''}`;
   w.innerHTML+=`
     <div style="background:linear-gradient(135deg,#fce8ef,#fff);border:2px solid #d4537a;border-radius:14px;padding:14px 16px;margin-top:8px">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
@@ -2672,12 +2708,24 @@ function updateSum(){
   if(snsInput){snsInput.value=snsCount;snsInput.disabled=isLocked}
   const snsRateIn=document.getElementById('snsRateInput');
   if(snsRateIn){snsRateIn.value=snsRate;snsRateIn.disabled=isLocked}
+  // 広告出演料
+  const snsAdFee=parseInt(md.snsAdFee)||0;
+  const adFeeIn=document.getElementById('snsAdFeeInput');
+  if(adFeeIn){adFeeIn.value=snsAdFee;adFeeIn.disabled=isLocked}
+  const adNoteIn=document.getElementById('snsAdNoteInput');
+  if(adNoteIn){adNoteIn.value=md.snsAdNote||'';adNoteIn.disabled=isLocked}
+  const snsTotal=snsPay+snsAdFee;
   const snsDisp=document.getElementById('snsPayDisp');
   if(snsDisp)snsDisp.textContent=snsPay>0?'= ¥'+snsPay.toLocaleString():'';
   const snsSum=document.getElementById('snsSummary');
-  if(snsSum)snsSum.textContent=snsPay>0?`${snsCount}件 ¥${snsPay.toLocaleString()}`:'';
+  if(snsSum){
+    const parts=[];
+    if(snsPay>0)parts.push(`📸${snsCount}件`);
+    if(snsAdFee>0)parts.push(`🎬¥${snsAdFee.toLocaleString()}`);
+    snsSum.textContent=parts.length?parts.join(' / ')+` 計¥${snsTotal.toLocaleString()}`:'';
+  }
   // update subtitle with total
-  const totalAll=calcPay(tw)+tf+twa+tta+snsPay;
+  const totalAll=calcPay(tw)+tf+twa+tta+snsPay+snsAdFee;
   const sub=document.getElementById('appSubtitle');
   if(sub&&staff)sub.textContent=staff+' さん  今月合計: ¥'+totalAll.toLocaleString();
 }
@@ -2853,8 +2901,11 @@ function saveStaffInvoiceNum(){
 }
 function saveSnsSettings(){
   const md=getMD();
+  if(md.locked){toast('🔒 月締め済みのため変更できません');return}
   md.snsCount=parseInt(document.getElementById('snsCountInput').value)||0;
   md.snsRate=parseInt(document.getElementById('snsRateInput').value)||2000;
+  md.snsAdFee=parseInt(document.getElementById('snsAdFeeInput')?.value)||0;
+  md.snsAdNote=(document.getElementById('snsAdNoteInput')?.value||'').trim().slice(0,100);
   save(SK,db);syncAdminData();
   if(window.__db){
     const u=JSON.parse(localStorage.getItem(UK)||'null');
@@ -3263,7 +3314,8 @@ function openNotice(){
         ${twa>0?`<div class="n-tr"><span>土日手当</span><span>¥${twa.toLocaleString()}</span></div>`:''}
         <div class="n-tr"><span>交通費</span><span>¥${tf.toLocaleString()}</span></div>
         ${snsPay>0?`<div class="n-tr"><span>SNS撮影協力費（${mSnsCount}件 × ¥${mSnsRate.toLocaleString()}）</span><span>¥${snsPay.toLocaleString()}</span></div>`:''}
-        <div class="n-tr big"><span>お支払い合計</span><span>¥${(tPay+tta+twa+tf+snsPay).toLocaleString()}</span></div>
+        ${(parseInt(md.snsAdFee)||0)>0?`<div class="n-tr"><span>SNS広告出演料${md.snsAdNote?'（'+md.snsAdNote+'）':''}</span><span>¥${(parseInt(md.snsAdFee)||0).toLocaleString()}</span></div>`:''}
+        <div class="n-tr big"><span>お支払い合計</span><span>¥${(tPay+tta+twa+tf+snsPay+(parseInt(md.snsAdFee)||0)).toLocaleString()}</span></div>
       </div>
       <div class="n-foot">本書は${yr}年${mo}月分の業務委託費支払通知書です。</div>
     </div>`;
