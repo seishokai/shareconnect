@@ -658,6 +658,12 @@ window.__auth = _auth;
         </select>
       </div>
       <div>
+        <div style="font-size:12px;font-weight:700;color:#b08090;margin-bottom:4px">業務タイプ</div>
+        <select id="addStaffJobType" style="width:100%;padding:10px 12px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;background:#fff5f7;box-sizing:border-box">
+          <option value="">選択（任意）</option>
+        </select>
+      </div>
+      <div>
         <div style="font-size:12px;font-weight:700;color:#b08090;margin-bottom:4px">メール</div>
         <input type="email" id="addStaffEmail" placeholder="例：nozo@example.com" style="width:100%;padding:10px 12px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;background:#fff5f7;box-sizing:border-box">
       </div>
@@ -1150,7 +1156,8 @@ let allStaff=[];      // ← Firestoreから読み込み（staffListと同じ参
 let staffList=[];     // Firestore共有スタッフリスト
 let templates=[];
 let currentStaff=null;
-let departments=JSON.parse(localStorage.getItem('sc_departments')||'null')||['本部','仙豆','太田川','清翔会','歯科医療業務','SNS'];
+let departments=JSON.parse(localStorage.getItem('sc_departments')||'null')||['本部','仙豆','太田川','清翔会'];
+let jobTypes=['歯科医療業務','SNS'];
 let _tt;
 
 function ls(k){return localStorage.getItem(k)}
@@ -1197,7 +1204,9 @@ function switchTab(id,btn){
 function openAddStaffModal(){
   const overlay=document.getElementById('addStaffOverlay');
   const deptSel=document.getElementById('addStaffDept');
+  const jobSel=document.getElementById('addStaffJobType');
   deptSel.innerHTML='<option value="">選択してください</option>'+departments.map(d=>`<option value="${d}">${d}</option>`).join('');
+  jobSel.innerHTML='<option value="">選択（任意）</option>'+(jobTypes||[]).map(j=>`<option value="${j}">${j}</option>`).join('');
   document.getElementById('addStaffName').value='';
   document.getElementById('addStaffEmail').value='';
   document.getElementById('addStaffPhone').value='';
@@ -1214,6 +1223,7 @@ function closeAddStaffModal(e){
 function createNewStaff(){
   const name=document.getElementById('addStaffName').value.trim();
   const dept=document.getElementById('addStaffDept').value;
+  const jobType=document.getElementById('addStaffJobType').value;
   const email=document.getElementById('addStaffEmail').value.trim();
   const phone=document.getElementById('addStaffPhone').value.trim();
   const snsOnly=document.getElementById('addStaffSnsOnly').checked;
@@ -1224,9 +1234,9 @@ function createNewStaff(){
 
   const id='u_'+Date.now();
   const newStaff={
-    id,name,email,phone,dept,
+    id,name,email,phone,dept,jobType,
     snsOnly,invoice,
-    phone,email,addr:'',station:'',
+    addr:'',station:'',
     bank:'',branch:'',accType:'普通',accNum:'',accName:'',
     contracts:[],signedAt:null,approved:false,workData:{}
   };
@@ -1238,7 +1248,7 @@ function createNewStaff(){
     window.__db.collection('staff').doc(id).set(newStaff).catch(e=>console.error('Firestore error:',e));
   }
 
-  toast(`✅ ${name} を追加しました。契約書署名用URLを発行してください。`);
+  toast(`✅ ${name} (${jobType||'指定なし'}) を追加しました。契約書署名用URLを発行してください。`);
   closeAddStaffModal();
   renderStaffList();
 
