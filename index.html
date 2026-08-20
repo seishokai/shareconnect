@@ -498,6 +498,7 @@ window.__auth = _auth;
     <button onclick="changeListMonth(1)" style="padding:6px 10px;border:none;background:#fde8ee;color:#d4537a;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">▶</button>
     <button onclick="resetListMonth()" style="padding:6px 12px;border:none;background:#d4537a;color:#fff;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">今月</button>
     <button onclick="exportPaymentCSV()" style="padding:6px 10px;border:1.5px solid #4a90d9;background:#fff;color:#4a90d9;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">📥 CSV</button>
+    <button onclick="openAddStaffModal()" style="padding:6px 12px;border:none;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">➕ スタッフ追加</button>
   </div>
   <div id="staffList"><div class="empty">登録スタッフがいません</div></div>
 </div>
@@ -632,6 +633,51 @@ window.__auth = _auth;
   <div class="n-actions">
     <button class="ghost-btn" style="flex:1" onclick="printNotice()">🖨️ 印刷 / PDF</button>
     <button class="pink-btn" style="flex:1" onclick="closeNotice()">閉じる</button>
+  </div>
+</div>
+</div>
+
+<!-- Add Staff Modal -->
+<div class="overlay" id="addStaffOverlay" onclick="closeAddStaffModal(event)">
+<div class="modal" style="max-width:500px">
+  <div class="m-handle"></div>
+  <div class="m-head">
+    <div class="m-title">➕ スタッフ追加</div>
+    <button class="m-close" onclick="closeAddStaffModal()">×</button>
+  </div>
+  <div class="m-body">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#b08090;margin-bottom:4px">氏名 *</div>
+        <input type="text" id="addStaffName" placeholder="例：上野 望" style="width:100%;padding:10px 12px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;background:#fff5f7;box-sizing:border-box">
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#b08090;margin-bottom:4px">部門 *</div>
+        <select id="addStaffDept" style="width:100%;padding:10px 12px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;background:#fff5f7;box-sizing:border-box">
+          <option value="">選択してください</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#b08090;margin-bottom:4px">メール</div>
+        <input type="email" id="addStaffEmail" placeholder="例：nozo@example.com" style="width:100%;padding:10px 12px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;background:#fff5f7;box-sizing:border-box">
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#b08090;margin-bottom:4px">電話</div>
+        <input type="tel" id="addStaffPhone" placeholder="090-0000-0000" style="width:100%;padding:10px 12px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;background:#fff5f7;box-sizing:border-box">
+      </div>
+      <div style="display:flex;gap:6px">
+        <label style="flex:1;display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px">
+          <input type="checkbox" id="addStaffSnsOnly">📸 SNSのみ
+        </label>
+        <label style="flex:1;display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px">
+          <input type="checkbox" id="addStaffInvoice">📄 インボイス登録
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="m-foot">
+    <button class="ghost-btn" onclick="closeAddStaffModal()">キャンセル</button>
+    <button class="pink-btn" onclick="createNewStaff()">✓ 追加</button>
   </div>
 </div>
 </div>
@@ -1104,7 +1150,7 @@ let allStaff=[];      // ← Firestoreから読み込み（staffListと同じ参
 let staffList=[];     // Firestore共有スタッフリスト
 let templates=[];
 let currentStaff=null;
-let departments=JSON.parse(localStorage.getItem('sc_departments')||'null')||['本部','仙豆','太田川','清翔会'];
+let departments=JSON.parse(localStorage.getItem('sc_departments')||'null')||['本部','仙豆','太田川','清翔会','歯科医療業務','SNS'];
 let _tt;
 
 function ls(k){return localStorage.getItem(k)}
@@ -1145,6 +1191,58 @@ function switchTab(id,btn){
   document.getElementById('p'+id.charAt(0).toUpperCase()+id.slice(1)).classList.add('on');
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
+}
+
+// ── Add Staff Modal ────────────────────────────────
+function openAddStaffModal(){
+  const overlay=document.getElementById('addStaffOverlay');
+  const deptSel=document.getElementById('addStaffDept');
+  deptSel.innerHTML='<option value="">選択してください</option>'+departments.map(d=>`<option value="${d}">${d}</option>`).join('');
+  document.getElementById('addStaffName').value='';
+  document.getElementById('addStaffEmail').value='';
+  document.getElementById('addStaffPhone').value='';
+  document.getElementById('addStaffSnsOnly').checked=false;
+  document.getElementById('addStaffInvoice').checked=false;
+  overlay.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeAddStaffModal(e){
+  if(e&&e.target!==document.getElementById('addStaffOverlay'))return;
+  document.getElementById('addStaffOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function createNewStaff(){
+  const name=document.getElementById('addStaffName').value.trim();
+  const dept=document.getElementById('addStaffDept').value;
+  const email=document.getElementById('addStaffEmail').value.trim();
+  const phone=document.getElementById('addStaffPhone').value.trim();
+  const snsOnly=document.getElementById('addStaffSnsOnly').checked;
+  const invoice=document.getElementById('addStaffInvoice').checked;
+
+  if(!name){toast('氏名を入力してください');return}
+  if(!dept){toast('部門を選択してください');return}
+
+  const id='u_'+Date.now();
+  const newStaff={
+    id,name,email,phone,dept,
+    snsOnly,invoice,
+    phone,email,addr:'',station:'',
+    bank:'',branch:'',accType:'普通',accNum:'',accName:'',
+    contracts:[],signedAt:null,approved:false,workData:{}
+  };
+
+  allStaff.push(newStaff);
+  localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
+
+  if(window.__db){
+    window.__db.collection('staff').doc(id).set(newStaff).catch(e=>console.error('Firestore error:',e));
+  }
+
+  toast(`✅ ${name} を追加しました。契約書署名用URLを発行してください。`);
+  closeAddStaffModal();
+  renderStaffList();
+
+  setTimeout(()=>alert(`【手順】\n1. 「🔗 招待URL」タブから契約書署名用URLを発行\n2. ${name} さんに送信\n3. 完了後、「承認」ボタンで承認`),300);
 }
 
 // ── Departments ───────────────────────────────────
