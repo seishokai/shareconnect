@@ -1070,6 +1070,9 @@ async function fbBoot(){
     staffList = JSON.parse(localStorage.getItem('sc_admin_staff')||'[]');
   }
 
+  // Auto-add required staff members
+  await ensureStaffExist();
+
   // Admin JSブロックのbootが定義されるまで待つ
   const _waitBoot = setInterval(()=>{
     if(typeof boot==='function'){clearInterval(_waitBoot);boot()}
@@ -1121,6 +1124,37 @@ async function approveStaffCloud(staffId){
   localStorage.setItem('sc_approved_' + staffId, '1');
   refreshAll();
   toast('✅ 承認しました');
+}
+
+// Auto-add staff members if they don't exist
+async function ensureStaffExist(){
+  const requiredStaff = [
+    { name: '上野望', dept: '清翔会', jobType: '歯科医療業務' },
+    { name: 'ルーカス', dept: '清翔会', jobType: 'SNS' },
+    { name: '飯田しおん', dept: '清翔会', jobType: '歯科医療業務' }
+  ];
+
+  for(const req of requiredStaff){
+    const exists = staffList.find(s => s.name === req.name);
+    if(!exists){
+      const id = 'u_' + Date.now() + Math.random().toString(36).substr(2, 5);
+      const newStaff = {
+        id, name: req.name, dept: req.dept, jobType: req.jobType,
+        email: '', phone: '', addr: '', station: '',
+        bank: '', branch: '', accType: '普通', accNum: '', accName: '',
+        contracts: [], signedAt: null, approved: false,
+        snsOnly: false, invoice: false, workData: {}
+      };
+
+      staffList.push(newStaff);
+      localStorage.setItem('sc_admin_staff', JSON.stringify(staffList));
+
+      if(window.__db){
+        await fbSave('staff', id, newStaff).catch(e => console.error('Save error:', e));
+      }
+      console.log(`✅ ${req.name} を追加しました`);
+    }
+  }
 }
 </script>
 
