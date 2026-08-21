@@ -1145,6 +1145,11 @@ async function ensureStaffExist(){
     const exists = staffList.find(s => s.name === req.name);
     if(!exists){
       const id = 'u_' + Date.now() + Math.random().toString(36).substr(2, 5);
+      // jobType に応じたデフォルト rate を設定
+      let defaultRate = 2014; // デフォルト時給
+      if(req.jobType === 'SNS') defaultRate = 2000; // SNS投稿単価
+      else if(req.isFixedDaily) defaultRate = 0; // 日当制は rate を使わない
+
       const newStaff = {
         id, name: req.name, dept: req.dept, jobType: req.jobType,
         email: '', phone: '', addr: '', station: '',
@@ -1153,7 +1158,7 @@ async function ensureStaffExist(){
         snsOnly: false, invoice: false, workData: {},
         isFixedDaily: req.isFixedDaily || false,
         dailyRate: req.dailyRate || 0,
-        rate: 2014
+        rate: defaultRate
       };
 
       staffList.push(newStaff);
@@ -1277,13 +1282,17 @@ function createNewStaff(){
   if(!dept){toast('部門を選択してください');return}
 
   const id='u_'+Date.now();
+  // jobType に応じたデフォルト rate を設定
+  let defaultRate = 2014; // デフォルト時給
+  if(jobType === 'SNS') defaultRate = 2000; // SNS投稿単価
+
   const newStaff={
     id,name,email,phone,dept,jobType,
     snsOnly,invoice,
     addr:'',station:'',
     bank:'',branch:'',accType:'普通',accNum:'',accName:'',
     contracts:[],signedAt:null,approved:false,workData:{},
-    rate:2014
+    rate:defaultRate
   };
 
   allStaff.push(newStaff);
@@ -3489,7 +3498,7 @@ function buildContract(name, jobType, rate){
     jobDesc = `甲が運営する各店舗における歯科助手業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金${staffRate.toLocaleString()}円（税込）とする。`;
   } else if(jobType === 'SNS'){
     jobTitle = 'SNS業務';
-    jobDesc = `甲の指定する媒体・内容に基づくSNS業務。委託料は稼働時間に応じ、1時間あたり金${staffRate.toLocaleString()}円（税込）とする。`;
+    jobDesc = `甲の指定する媒体・内容に基づくSNS投稿業務。委託料は1投稿あたり金${staffRate.toLocaleString()}円（税込）とする。`;
   }
 
   return`<h3>業務委託基本契約書</h3>
