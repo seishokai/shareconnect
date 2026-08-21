@@ -644,6 +644,13 @@ window.__auth = _auth;
           <span style="font-size:11px;color:#b08090">円/時</span>
           <button onclick="saveStaffRate()" style="padding:6px 10px;background:#d4537a;color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">保存</button>
         </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <label style="font-size:11px;font-weight:700;color:#3d9a6a;display:flex;align-items:center;gap:4px;cursor:pointer;min-width:76px"><input type="checkbox" id="mFixedDaily" onchange="toggleDailyRow()">📅 日当制</label>
+          <input type="number" id="mDailyRate" placeholder="17000" style="flex:1;min-width:90px;padding:6px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;box-sizing:border-box">
+          <span style="font-size:11px;color:#b08090">円/日</span>
+          <button onclick="saveStaffDaily()" style="padding:6px 10px;background:#3d9a6a;color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">保存</button>
+        </div>
+        <div id="mDailyHint" style="display:none;font-size:11px;color:#3d9a6a;background:#edfaf3;border:1px solid #88d4a8;border-radius:8px;padding:6px 10px;line-height:1.6">日当制のスタッフです。契約書・打刻画面とも時給ではなくこの日額が使われます。</div>
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
           <span id="mApproveWrap"></span>
           <label style="font-size:12px;color:#b08090;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" id="mInvoice" onchange="saveStaffInvoice()">📄 インボイス登録</label>
@@ -1668,9 +1675,33 @@ function saveStaffDept(){
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({department:currentStaff.department},{merge:true}).catch(e=>console.error(e));
   renderStaffList();refreshStatusBadges();toast('🏢 部門を変更しました');
 }
+// 単価未設定のスタッフの既定値（SNSは1投稿¥2,000、それ以外は時給¥2,014）
+function defaultRateFor(s){return (s&&s.jobType==='SNS')||(s&&s.snsOnly)?2000:DEF_RATE}
+
+function toggleDailyRow(){
+  const fd=document.getElementById('mFixedDaily'),h=document.getElementById('mDailyHint');
+  if(h)h.style.display=(fd&&fd.checked)?'block':'none';
+}
+
+function saveStaffDaily(){
+  if(!currentStaff)return;
+  const on=document.getElementById('mFixedDaily').checked;
+  const dr=parseInt(document.getElementById('mDailyRate').value)||0;
+  if(on&&dr<=0){toast('日額を入力してください');return}
+  const patch={isFixedDaily:on, dailyRate:on?dr:0};
+  Object.assign(currentStaff,patch);
+  const idx=allStaff.findIndex(s=>s.id===currentStaff.id);
+  if(idx>=0)Object.assign(allStaff[idx],patch);
+  localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
+  if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set(patch,{merge:true}).catch(e=>console.error(e));
+  toggleDailyRow();
+  renderStaffList();
+  toast(on?`✅ 日当制（¥${dr.toLocaleString()}/日）に設定しました`:'✅ 日当制を解除しました');
+}
+
 function saveStaffRate(){
   if(!currentStaff)return;
-  const rate=parseInt(document.getElementById('mRate').value)||2014;
+  const rate=parseInt(document.getElementById('mRate').value)||defaultRateFor(currentStaff);
   currentStaff.rate=rate;
   const idx=allStaff.findIndex(s=>s.id===currentStaff.id);
   if(idx>=0)allStaff[idx].rate=rate;
@@ -1816,6 +1847,7 @@ function renderStaffList(){
             ${s.snsOnly?'<span style="font-size:9px;color:#fff;background:#e07b3a;padding:2px 7px;border-radius:8px;font-weight:700">📸SNS</span>':''}
             ${!s.approved?'<span style="font-size:9px;color:#fff;background:#e0963a;padding:2px 7px;border-radius:8px;font-weight:700">⏳登録待</span>':''}
             ${s.signedAt?'<span style="font-size:9px;color:#fff;background:#4caf7d;padding:2px 7px;border-radius:8px;font-weight:700">✍️署名済</span>':'<span style="font-size:9px;color:#fff;background:#b0a0a8;padding:2px 7px;border-radius:8px;font-weight:700">✍️未署名</span>'}
+            ${s.isFixedDaily&&s.dailyRate?`<span style="font-size:9px;color:#fff;background:#3d9a6a;padding:2px 7px;border-radius:8px;font-weight:700">📅日当 ¥${Number(s.dailyRate).toLocaleString()}</span>`:''}
           </div>
           <div style="font-size:10px;color:#b08090;margin-top:2px">${now.getMonth()+1}月：${s.snsOnly?`SNS ${mSnsCount}件`:`${td}日 ${total>0?`(${total}件中)`:''}`}</div>
         </div>
@@ -1864,8 +1896,13 @@ function openStaff(i){
   // Rate (時給)
   const rateSel=document.getElementById('mRate');
   if(rateSel){
-    rateSel.value=currentStaff.rate||2014;
+    rateSel.value=currentStaff.rate||defaultRateFor(currentStaff);
   }
+  // 日当制
+  const fd=document.getElementById('mFixedDaily'),dr=document.getElementById('mDailyRate');
+  if(fd)fd.checked=!!currentStaff.isFixedDaily;
+  if(dr)dr.value=currentStaff.dailyRate||'';
+  toggleDailyRow();
   // Invoice checkbox
   const inv=document.getElementById('mInvoice');
   if(inv)inv.checked=!!currentStaff.invoice;
@@ -2040,7 +2077,7 @@ function viewStaffContract(){
 
 function buildContractHTML(name, jobType, rate, opts){
   const today=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
-  const staffRate = rate || DEF_RATE;
+  const staffRate = rate || (jobType==='SNS'?2000:DEF_RATE);
   const o = opts || {};
 
   // スタッフ側 buildContract() と同じロジックに揃える
@@ -2384,7 +2421,7 @@ function scCopy(text,msg){
 // スタッフの単価ラベル（表示用）
 function staffRateLabel(s){
   if(s.isFixedDaily&&s.dailyRate)return'1日 ¥'+Number(s.dailyRate).toLocaleString();
-  const r=Number(s.rate)||DEF_RATE;
+  const r=Number(s.rate)||defaultRateFor(s);
   if(s.jobType==='SNS')return'1投稿 ¥'+r.toLocaleString();
   return'1時間 ¥'+r.toLocaleString();
 }
@@ -2707,7 +2744,7 @@ function sgFatal(msg){
 // 単価の表示ラベル
 function sgRateLabel(s){
   if(s.isFixedDaily&&s.dailyRate)return'1日 ¥'+Number(s.dailyRate).toLocaleString();
-  const r=Number(s.rate)||2014;
+  const r=Number(s.rate)||(s.jobType==='SNS'?2000:2014);
   if(s.jobType==='SNS')return'1投稿 ¥'+r.toLocaleString();
   return'1時間 ¥'+r.toLocaleString();
 }
@@ -2797,7 +2834,7 @@ function submitSign(){
     signData:'text:'+name,
     signedAt:signedAt,
     contracts:[sgJobTitle(signStaff.jobType)],
-    contractRate:(signStaff.isFixedDaily&&signStaff.dailyRate)?Number(signStaff.dailyRate):(Number(signStaff.rate)||2014),
+    contractRate:(signStaff.isFixedDaily&&signStaff.dailyRate)?Number(signStaff.dailyRate):(Number(signStaff.rate)||(signStaff.jobType==='SNS'?2000:2014)),
     contractRateType:(signStaff.isFixedDaily&&signStaff.dailyRate)?'day':(signStaff.jobType==='SNS'?'post':'hour'),
     signedVia:'url'
   };
@@ -3808,7 +3845,7 @@ function resetApp(){
 // ── Contract HTML ──────────────────────────────────
 function buildContract(name, jobType, rate, opts){
   const today=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
-  const staffRate = rate || 2014;
+  const staffRate = rate || (jobType==='SNS'?2000:2014);
   const o = opts || {};
 
   // jobTypeに応じた業務名と報酬を設定
