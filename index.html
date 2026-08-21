@@ -590,6 +590,12 @@ window.__auth = _auth;
           <span style="font-size:11px;font-weight:700;color:#b08090;min-width:50px">🏢 部門</span>
           <select id="mDept" class="inp" style="flex:1;padding:6px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7" onchange="saveStaffDept()"></select>
         </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;font-weight:700;color:#b08090;min-width:50px">💰 時給</span>
+          <input type="number" id="mRate" placeholder="2014" style="flex:1;padding:6px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;box-sizing:border-box">
+          <span style="font-size:11px;color:#b08090">円/時</span>
+          <button onclick="saveStaffRate()" style="padding:6px 10px;background:#d4537a;color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">保存</button>
+        </div>
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
           <span id="mApproveWrap"></span>
           <label style="font-size:12px;color:#b08090;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" id="mInvoice" onchange="saveStaffInvoice()">📄 インボイス登録</label>
@@ -1146,7 +1152,8 @@ async function ensureStaffExist(){
         contracts: [], signedAt: null, approved: false,
         snsOnly: false, invoice: false, workData: {},
         isFixedDaily: req.isFixedDaily || false,
-        dailyRate: req.dailyRate || 0
+        dailyRate: req.dailyRate || 0,
+        rate: 2014
       };
 
       staffList.push(newStaff);
@@ -1275,7 +1282,8 @@ function createNewStaff(){
     snsOnly,invoice,
     addr:'',station:'',
     bank:'',branch:'',accType:'普通',accNum:'',accName:'',
-    contracts:[],signedAt:null,approved:false,workData:{}
+    contracts:[],signedAt:null,approved:false,workData:{},
+    rate:2014
   };
 
   allStaff.push(newStaff);
@@ -1533,6 +1541,16 @@ function saveStaffDept(){
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({department:currentStaff.department},{merge:true}).catch(e=>console.error(e));
   renderStaffList();refreshStatusBadges();toast('🏢 部門を変更しました');
 }
+function saveStaffRate(){
+  if(!currentStaff)return;
+  const rate=parseInt(document.getElementById('mRate').value)||2014;
+  currentStaff.rate=rate;
+  const idx=allStaff.findIndex(s=>s.id===currentStaff.id);
+  if(idx>=0)allStaff[idx].rate=rate;
+  localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
+  if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({rate},{merge:true}).catch(e=>console.error(e));
+  toast(`✅ 時給を¥${rate.toLocaleString()}/時に更新しました`);
+}
 function addDept(){
   const name=prompt('新しい部門名を入力');
   if(!name||!name.trim())return;
@@ -1713,6 +1731,11 @@ function openStaff(i){
   const deptSel=document.getElementById('mDept');
   if(deptSel){
     deptSel.innerHTML=`<option value="">未分類</option>`+departments.map(d=>`<option value="${d}"${currentStaff.department===d?' selected':''}>${d}</option>`).join('');
+  }
+  // Rate (時給)
+  const rateSel=document.getElementById('mRate');
+  if(rateSel){
+    rateSel.value=currentStaff.rate||2014;
   }
   // Invoice checkbox
   const inv=document.getElementById('mInvoice');
@@ -2425,8 +2448,8 @@ function boot(){
             const data=doc.data();
             const u={...data, id:decoded.staffId};
             save(UK, u);
-            // 契約書署名画面を表示（jobType を反映）
-            document.getElementById('contractBox').innerHTML = buildContract(u.name, u.jobType);
+            // 契約書署名画面を表示（jobType と rate を反映）
+            document.getElementById('contractBox').innerHTML = buildContract(u.name, u.jobType, u.rate);
             show('screenOB');
           } else {
             show('screenOB');
@@ -3453,19 +3476,20 @@ function resetApp(){
 }
 
 // ── Contract HTML ──────────────────────────────────
-function buildContract(name, jobType){
+function buildContract(name, jobType, rate){
   const today=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
+  const staffRate = rate || 2014;
 
   // jobTypeに応じた業務名と報酬を設定
   let jobTitle = '歯科衛生士業務';
-  let jobDesc = '甲が運営する各店舗における歯科衛生士業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金2,014円（税込）とする。';
+  let jobDesc = `甲が運営する各店舗における歯科衛生士業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金${staffRate.toLocaleString()}円（税込）とする。`;
 
   if(jobType === '歯科助手業務'){
     jobTitle = '歯科助手業務';
-    jobDesc = '甲が運営する各店舗における歯科助手業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金2,014円（税込）とする。';
+    jobDesc = `甲が運営する各店舗における歯科助手業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金${staffRate.toLocaleString()}円（税込）とする。`;
   } else if(jobType === 'SNS'){
     jobTitle = 'SNS業務';
-    jobDesc = '甲の指定する媒体・内容に基づくSNS業務。委託料は稼働時間に応じ、1時間あたり金2,014円（税込）とする。';
+    jobDesc = `甲の指定する媒体・内容に基づくSNS業務。委託料は稼働時間に応じ、1時間あたり金${staffRate.toLocaleString()}円（税込）とする。`;
   }
 
   return`<h3>業務委託基本契約書</h3>
@@ -3502,7 +3526,7 @@ function viewContract(){
   .sb{flex:1;border:1px solid #f9c8d5;border-radius:8px;padding:10px;min-height:90px}
   .sl{font-size:10px;color:#888;margin-bottom:4px}
   @media print{body{padding:12px}}</style></head>
-  <body>${buildContract(u.name, u.jobType)}
+  <body>${buildContract(u.name, u.jobType, u.rate)}
   <div class="sa">
     <div class="sb"><div class="sl">甲（委託者）</div><b style="color:#d4537a">${CO.name}</b><div style="font-size:11px;color:#888;margin-top:4px">${CO.rep}</div></div>
     <div class="sb"><div class="sl">乙（受託者）／ ${u.name}</div>${si}<div style="font-size:11px;color:#888">署名日：${new Date(u.signedAt).toLocaleDateString('ja-JP')}</div></div>
