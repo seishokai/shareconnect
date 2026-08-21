@@ -2709,8 +2709,8 @@ function buildCards(){
     const dt=new Date(yr,mo-1,d),wd=dt.getDay();
     const sat=wd===6,sun=wd===0;
     const wm=has?calcWork(r):null;
-    // 日当固定スタッフの場合
-    const pay=currentStaff?.isFixedDaily?((has||r.in)?currentStaff.dailyRate||17000:0):(wm?calcPay(wm):0);
+    // 日当固定スタッフの場合（確定済みデータのみ対象）
+    const pay=currentStaff?.isFixedDaily?(has?currentStaff.dailyRate||17000:0):(wm?calcPay(wm):0);
     const fare=calcFare(r);
     const wa=parseInt(r.weekendAllow)||0,ta=parseInt(r.tripAllow)||0;
     const total=pay+fare+wa+ta;
@@ -2731,11 +2731,18 @@ function buildCards(){
         ${has?`<button onclick="copyDayToOthers(${d})" style="width:100%;padding:8px;background:#fff;border:1.5px dashed #4a90d9;color:#4a90d9;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;margin-bottom:10px">📋 この日を他の日にコピー</button>`:''}
 
         <!-- 業務先 -->
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
-          ${STORES.map(s=>`<button onclick="document.getElementById('inp_store_${d}').value='${s}';document.querySelectorAll('#stb_${d} .stbtn').forEach(b=>{b.style.background='#fff';b.style.color='#d4537a';b.classList.remove('on')});event.target.style.background='#d4537a';event.target.style.color='#fff';event.target.classList.add('on')" class="stbtn${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #f9c8d5;background:${r.store===s?'#d4537a':'#fff'};color:${r.store===s?'#fff':'#d4537a'};border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">${s}</button>`).join('')}
-        </div>
-        <div id="stb_${d}" style="display:none"></div>
-        <input id="inp_store_${d}" type="text" value="${r.store||''}" placeholder="🏪 業務先（直接入力もOK）" style="width:100%;padding:12px;border:2px solid #f9c8d5;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif;margin-bottom:12px">
+        ${currentStaff?.isFixedDaily?`
+          <div style="padding:12px;background:#f5f5f5;border-radius:10px;margin-bottom:12px;text-align:center;font-size:13px;color:#888">
+            固定日当（業務先入力不要）
+          </div>
+          <input id="inp_store_${d}" type="hidden" value="固定日当">
+        `:`
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+            ${STORES.map(s=>\`<button onclick="document.getElementById('inp_store_\${d}').value='\${s}';document.querySelectorAll('#stb_\${d} .stbtn').forEach(b=>{b.style.background='#fff';b.style.color='#d4537a';b.classList.remove('on')});event.target.style.background='#d4537a';event.target.style.color='#fff';event.target.classList.add('on')" class="stbtn\${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #f9c8d5;background:\${r.store===s?'#d4537a':'#fff'};color:\${r.store===s?'#fff':'#d4537a'};border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">\${s}</button>\`).join('')}
+          </div>
+          <div id="stb_${d}" style="display:none"></div>
+          <input id="inp_store_${d}" type="text" value="${r.store||''}" placeholder="🏪 業務先（直接入力もOK）" style="width:100%;padding:12px;border:2px solid #f9c8d5;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif;margin-bottom:12px">
+        `}
 
         <!-- 時間 -->
         ${currentStaff?.isFixedDaily?`
