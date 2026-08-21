@@ -619,6 +619,7 @@ window.__auth = _auth;
   </div>
   <div class="m-foot">
     <button class="ghost-btn" onclick="closeModal()">閉じる</button>
+    <button class="pink-btn" id="mContractUrlBtn" onclick="generateStaffContractUrl()" style="padding:10px 16px;background:linear-gradient(135deg,#d4537a,#c4456b);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;display:none">🔗 契約書署名URL</button>
     <button class="pink-btn" id="mNoticeBtn" onclick="openStaffNotice()">📄 支払通知書</button>
     <button id="mLockBtn" onclick="lockMonth()" style="padding:10px 16px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">💰 月締め確定</button>
   </div>
@@ -2195,6 +2196,38 @@ function copyInvite(){
   });
 }
 
+function generateStaffContractUrl(){
+  if(!currentStaff)return;
+
+  // スタッフ向け署名用URLを生成（スタッフIDを含む）
+  const base = 'https://seishokai.github.io/shareconnect/';
+  const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
+    v:2,
+    staffId: currentStaff.id,
+    staffName: currentStaff.name,
+    mode: 'sign_only'
+  }))));
+  const url = base + '?staff&s=' + payload;
+
+  // URLを表示
+  const resultDiv = document.createElement('div');
+  resultDiv.style.cssText = 'margin-top:14px;padding:14px;background:#f0fbf5;border:1.5px solid #88d4a8;border-radius:12px';
+  resultDiv.innerHTML = `
+    <div style="font-size:12px;font-weight:700;color:#3d9a6a;margin-bottom:8px">✅ ${currentStaff.name}さんの契約書署名用URL</div>
+    <div style="background:#fff;border:1.5px solid #88d4a8;border-radius:10px;padding:10px 12px;font-size:12px;word-break:break-all;color:#3d9a6a;font-family:monospace;margin-bottom:8px;cursor:pointer" onclick="navigator.clipboard.writeText('${url}');toast('📋 URLをコピーしました')">${url}</div>
+    <div style="font-size:11px;color:#888">⬆ タップでコピー</div>
+  `;
+
+  const mBody = document.querySelector('.m-body');
+  const existing = mBody.querySelector('[data-contract-url]');
+  if(existing)existing.remove();
+
+  resultDiv.setAttribute('data-contract-url', '1');
+  mBody.appendChild(resultDiv);
+
+  toast(`✅ ${currentStaff.name}さんの契約書署名URLを生成しました`);
+}
+
 // ── Modal ──────────────────────────────────────────
 // ── Pending approval ──────────────────────────────────
 function renderPendingList(){
@@ -2376,6 +2409,36 @@ function boot(){
       else { show('screenOB'); document.getElementById('contractBox').innerHTML=buildContract(''); }
     });
     return;
+  }
+
+  // ?s= パラメータがある場合は既存スタッフの署名用URL
+  const signParam = params.get('s');
+  if(signParam){
+    show('screenLoading');
+    try{
+      const decoded = JSON.parse(decodeURIComponent(escape(atob(signParam))));
+      if(decoded.v===2 && decoded.staffId){
+        // 既存スタッフの署名用URL
+        if(!window.__db){const u=JSON.parse(ls(UK)||'null');if(u)startApp(u);else show('screenOB');return}
+        window.__db.collection('staff').doc(decoded.staffId).get().then(doc=>{
+          if(doc.exists){
+            const data=doc.data();
+            const u={...data, id:decoded.staffId};
+            save(UK, u);
+            // 契約書署名画面を表示
+            document.getElementById('contractBox').innerHTML = buildContract('');
+            show('screenOB');
+          } else {
+            show('screenOB');
+            document.getElementById('contractBox').innerHTML = buildContract('');
+          }
+        }).catch(()=>{
+          show('screenOB');
+          document.getElementById('contractBox').innerHTML = buildContract('');
+        });
+        return;
+      }
+    }catch(e){}
   }
 
   // ?i= パラメータがある場合は常に新規登録（別のスタッフ用の招待URL）
