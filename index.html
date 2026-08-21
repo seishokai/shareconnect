@@ -2425,8 +2425,8 @@ function boot(){
             const data=doc.data();
             const u={...data, id:decoded.staffId};
             save(UK, u);
-            // 契約書署名画面を表示
-            document.getElementById('contractBox').innerHTML = buildContract('');
+            // 契約書署名画面を表示（jobType を反映）
+            document.getElementById('contractBox').innerHTML = buildContract(u.name, u.jobType);
             show('screenOB');
           } else {
             show('screenOB');
@@ -3453,8 +3453,21 @@ function resetApp(){
 }
 
 // ── Contract HTML ──────────────────────────────────
-function buildContract(name){
+function buildContract(name, jobType){
   const today=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
+
+  // jobTypeに応じた業務名と報酬を設定
+  let jobTitle = '歯科衛生士業務';
+  let jobDesc = '甲が運営する各店舗における歯科衛生士業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金2,014円（税込）とする。';
+
+  if(jobType === '歯科助手業務'){
+    jobTitle = '歯科助手業務';
+    jobDesc = '甲が運営する各店舗における歯科助手業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金2,014円（税込）とする。';
+  } else if(jobType === 'SNS'){
+    jobTitle = 'SNS業務';
+    jobDesc = '甲の指定する媒体・内容に基づくSNS業務。委託料は稼働時間に応じ、1時間あたり金2,014円（税込）とする。';
+  }
+
   return`<h3>業務委託基本契約書</h3>
     <p style="font-size:11px;color:#888;text-align:center;margin-bottom:6px">締結日：${today}</p>
     <p><b>甲（委託者）</b>：${CO.name}<br>代表：${CO.rep}<br>住所：${CO.addr}<br>${CO.phone}</p>
@@ -3462,7 +3475,7 @@ function buildContract(name){
     <p>甲と乙は、以下のとおり業務委託基本契約を締結する。</p>
     <h4>第1条（契約の目的）</h4><p>甲は乙に対し、以下の業務を委託し、乙はこれを受託する。</p>
     <h4>第2条（委託業務の内容）</h4>
-    <p><b>① 歯科衛生士業務</b><br>甲が運営する各店舗における歯科衛生士業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金2,014円（税込）とする。</p>
+    <p><b>① ${jobTitle}</b><br>${jobDesc}</p>
     <p><b>② 動画撮影業務</b><br>甲の指定する媒体・内容に基づく動画撮影業務。委託料は1本あたりの単価を都度協議のうえ決定し、書面またはメッセージにて確認する。</p>
     <h4>第3条（業務の遂行）</h4><p>乙は善良な管理者の注意をもって委託業務を遂行する。乙は甲の事前承認なく第三者に業務を再委託してはならない。</p>
     <h4>第4条（報酬の支払い）</h4><p>甲は、乙から月末締めで請求を受けた翌月末日までに、乙の指定する銀行口座に振込にて支払う。振込手数料は甲の負担とする。</p>
@@ -3489,7 +3502,7 @@ function viewContract(){
   .sb{flex:1;border:1px solid #f9c8d5;border-radius:8px;padding:10px;min-height:90px}
   .sl{font-size:10px;color:#888;margin-bottom:4px}
   @media print{body{padding:12px}}</style></head>
-  <body>${buildContract(u.name)}
+  <body>${buildContract(u.name, u.jobType)}
   <div class="sa">
     <div class="sb"><div class="sl">甲（委託者）</div><b style="color:#d4537a">${CO.name}</b><div style="font-size:11px;color:#888;margin-top:4px">${CO.rep}</div></div>
     <div class="sb"><div class="sl">乙（受託者）／ ${u.name}</div>${si}<div style="font-size:11px;color:#888">署名日：${new Date(u.signedAt).toLocaleDateString('ja-JP')}</div></div>
