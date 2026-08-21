@@ -1131,7 +1131,7 @@ async function ensureStaffExist(){
   const requiredStaff = [
     { name: '上野望', dept: '清翔会', jobType: '歯科医療業務' },
     { name: 'ルーカス', dept: '清翔会', jobType: 'SNS' },
-    { name: '飯田しおん', dept: '清翔会', jobType: '歯科医療業務' }
+    { name: '飯田しおん', dept: '清翔会', jobType: '歯科医療業務', isFixedDaily: true, dailyRate: 17000 }
   ];
 
   for(const req of requiredStaff){
@@ -1143,7 +1143,9 @@ async function ensureStaffExist(){
         email: '', phone: '', addr: '', station: '',
         bank: '', branch: '', accType: '普通', accNum: '', accName: '',
         contracts: [], signedAt: null, approved: false,
-        snsOnly: false, invoice: false, workData: {}
+        snsOnly: false, invoice: false, workData: {},
+        isFixedDaily: req.isFixedDaily || false,
+        dailyRate: req.dailyRate || 0
       };
 
       staffList.push(newStaff);
@@ -2707,7 +2709,8 @@ function buildCards(){
     const dt=new Date(yr,mo-1,d),wd=dt.getDay();
     const sat=wd===6,sun=wd===0;
     const wm=has?calcWork(r):null;
-    const pay=wm?calcPay(wm):0;
+    // 日当固定スタッフの場合
+    const pay=currentStaff?.isFixedDaily?((has||r.in)?currentStaff.dailyRate||17000:0):(wm?calcPay(wm):0);
     const fare=calcFare(r);
     const wa=parseInt(r.weekendAllow)||0,ta=parseInt(r.tripAllow)||0;
     const total=pay+fare+wa+ta;
@@ -2735,11 +2738,21 @@ function buildCards(){
         <input id="inp_store_${d}" type="text" value="${r.store||''}" placeholder="🏪 業務先（直接入力もOK）" style="width:100%;padding:12px;border:2px solid #f9c8d5;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif;margin-bottom:12px">
 
         <!-- 時間 -->
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
-          <input id="inp_in_${d}" type="time" value="${r.in||DEF_IN}" style="flex:1;padding:14px;border:2px solid #f9c8d5;border-radius:12px;font-size:20px;font-weight:700;text-align:center;font-family:'Zen Maru Gothic',sans-serif;background:#fff5f7">
-          <span style="font-size:16px;color:#b08090;font-weight:700">〜</span>
-          <input id="inp_out_${d}" type="time" value="${r.out||DEF_OUT}" style="flex:1;padding:14px;border:2px solid #f9c8d5;border-radius:12px;font-size:20px;font-weight:700;text-align:center;font-family:'Zen Maru Gothic',sans-serif;background:#fff5f7">
-        </div>
+        ${currentStaff?.isFixedDaily?`
+          <div style="padding:16px;background:linear-gradient(135deg,#e8f5e9,#f1f8f6);border-radius:10px;margin-bottom:12px;text-align:center">
+            <div style="font-size:11px;color:#888;margin-bottom:4px">日当固定</div>
+            <div style="font-size:24px;font-weight:700;color:#4caf7d">¥${(currentStaff.dailyRate||17000).toLocaleString()}</div>
+          </div>
+          <input id="inp_in_${d}" type="hidden" value="09:00">
+          <input id="inp_out_${d}" type="hidden" value="18:00">
+          <input id="inp_store_${d}" type="hidden" value="固定日当">
+        `:`
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+            <input id="inp_in_${d}" type="time" value="${r.in||DEF_IN}" style="flex:1;padding:14px;border:2px solid #f9c8d5;border-radius:12px;font-size:20px;font-weight:700;text-align:center;font-family:'Zen Maru Gothic',sans-serif;background:#fff5f7">
+            <span style="font-size:16px;color:#b08090;font-weight:700">〜</span>
+            <input id="inp_out_${d}" type="time" value="${r.out||DEF_OUT}" style="flex:1;padding:14px;border:2px solid #f9c8d5;border-radius:12px;font-size:20px;font-weight:700;text-align:center;font-family:'Zen Maru Gothic',sans-serif;background:#fff5f7">
+          </div>
+        `}
 
         <!-- 詳細（折りたたみ・必要な時だけ） -->
         <details style="margin-bottom:12px">
