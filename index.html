@@ -1131,7 +1131,7 @@ async function ensureStaffExist(){
   const requiredStaff = [
     { name: '上野望', dept: '清翔会', jobType: '歯科医療業務' },
     { name: 'ルーカス', dept: '清翔会', jobType: 'SNS' },
-    { name: '飯田しおん', dept: '清翔会', jobType: '歯科医療業務', isFixedDaily: true, dailyRate: 17000 }
+    { name: '飯田しおん', dept: '清翔会', jobType: '歯科助手業務', isFixedDaily: true, dailyRate: 17000 }
   ];
 
   for(const req of requiredStaff){
@@ -1193,7 +1193,7 @@ let staffList=[];     // Firestore共有スタッフリスト
 let templates=[];
 let currentStaff=null;
 let departments=JSON.parse(localStorage.getItem('sc_departments')||'null')||['本部','仙豆','太田川','清翔会'];
-let jobTypes=['歯科医療業務','SNS'];
+let jobTypes=['歯科医療業務','歯科助手業務','SNS'];
 let _tt;
 
 function ls(k){return localStorage.getItem(k)}
