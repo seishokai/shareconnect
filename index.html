@@ -576,6 +576,29 @@ window.__auth = _auth;
       </div>
     </div>
   </div>
+  <div class="card" style="border-color:#88d4a8">
+    <div class="ch" style="background:#edfaf3;color:#3d9a6a">✍️ 契約書 署名URL発行</div>
+    <div class="cb">
+      <div style="font-size:12px;color:#3d9a6a;line-height:1.7;background:#edfaf3;border-radius:10px;padding:10px 12px;border:1px solid #88d4a8">
+        登録済みスタッフ向けの【契約書に署名するだけ】のURLです。<br>
+        ① スタッフを選ぶ　② 発行する　③ LINEで送る
+      </div>
+      <div class="field">
+        <div class="lbl">👤 スタッフを選択</div>
+        <select class="inp" id="signStaffSel" style="font-family:'Zen Maru Gothic',sans-serif" onchange="renderSignUrl()"></select>
+      </div>
+      <button class="sbtn" style="background:linear-gradient(135deg,#4caf7d,#3d9a6a)" onclick="renderSignUrl(true)">✍️ 署名URLを発行する</button>
+      <div id="signUrlResult" style="display:none;margin-top:14px">
+        <div style="background:#edfaf3;border:1.5px solid #88d4a8;border-radius:12px;padding:12px 14px;margin-bottom:10px">
+          <div style="font-size:13px;font-weight:700;color:#3d9a6a;margin-bottom:4px">✅ 署名URLを発行しました</div>
+          <div style="font-size:12px;color:#3d9a6a;line-height:1.6" id="signUrlNote"></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:#b08090;margin-bottom:4px">署名URL（タップでコピー）</div>
+        <div class="invite-url" id="signUrlBox" onclick="copySignUrl()">—</div>
+        <button class="sbtn" style="margin-top:10px;background:linear-gradient(135deg,#4caf7d,#3d9a6a)" onclick="copySignUrl()">📋 URLをコピーしてLINEで送る</button>
+      </div>
+    </div>
+  </div>
   <div class="card" id="pendingCard" style="border-color:#f9c8d5">
     <div class="ch" style="background:#fde8ee">⏳ 承認待ちスタッフ <span id="pendingCount" style="background:#d4537a;color:#fff;border-radius:20px;padding:1px 8px;font-size:11px;margin-left:6px">0</span></div>
     <div class="cb" id="pendingList">
@@ -812,6 +835,73 @@ window.__auth = _auth;
   <button class="ob-back" id="obBackBtn" style="display:none" onclick="obBack()">← 戻る</button>
   <button class="pink-btn ob-next" id="obNextBtn" onclick="obNext()">次へ →</button>
 </div>
+</div>
+
+<!-- ══ SCREEN: 契約書署名（?s= 署名URL専用） ══ -->
+<div class="screen" id="screenSign">
+  <div class="ob-hero">
+    <div class="ico">✍️</div>
+    <h1>業務委託契約書<br>電子署名</h1>
+    <p>内容をご確認のうえ、<br>お名前でサインしてください</p>
+  </div>
+  <div class="ob-body">
+    <div class="summary-box" id="sgInfo" style="margin-top:0"></div>
+
+    <div style="font-size:16px;font-weight:700;color:var(--acc);margin:18px 0 4px">📋 契約書本文</div>
+    <div style="font-size:12px;color:#b08090;margin-bottom:10px">スクロールして最後までご確認ください。</div>
+    <div class="contract-scroll" id="sgContract" style="max-height:320px"></div>
+
+    <div class="sign-hint">✍️ 上記に同意のうえ、フルネームを入力してサインしてください</div>
+
+    <div class="field">
+      <div class="lbl">お名前（フルネーム）</div>
+      <input class="inp" id="sgName" type="text" placeholder="例：山田 花子" oninput="sgPreview()" autocomplete="name" style="font-size:16px">
+      <div class="err-msg" id="sgErrName">お名前を入力してください</div>
+    </div>
+    <div id="sgPreviewBox" class="sign-preview-box" style="display:none">
+      <div id="sgPreviewText" class="sign-preview-text"></div>
+    </div>
+
+    <label style="display:flex;align-items:center;gap:8px;margin-top:14px;padding:12px 14px;background:#fff;border:1.5px solid #f9c8d5;border-radius:12px;font-size:13px;color:#3a2030;cursor:pointer;font-weight:700">
+      <input type="checkbox" id="sgAgree" style="width:18px;height:18px;accent-color:#d4537a">
+      上記契約書の内容に同意します
+    </label>
+    <div class="err-msg" id="sgErrAgree" style="margin-top:4px">同意にチェックを入れてください</div>
+
+    <div id="sgErrBox" style="display:none;margin-top:12px;background:#fff0f0;border:1.5px solid #e05050;border-radius:12px;padding:12px 14px;font-size:12px;color:#c03030;line-height:1.7"></div>
+  </div>
+  <div class="ob-foot">
+    <button class="pink-btn" id="sgSubmitBtn" onclick="submitSign()">✓ 同意して署名する</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: 署名完了 ══ -->
+<div class="screen" id="screenSignDone">
+  <div class="ob-hero">
+    <div class="ico">🎉</div>
+    <h1 id="sgDoneMsg">署名が完了しました！</h1>
+    <p>ご協力ありがとうございました</p>
+  </div>
+  <div class="ob-body">
+    <div class="summary-box" id="sgDoneBox" style="margin-top:0"></div>
+    <div style="margin-top:16px;background:#edfaf3;border:1.5px solid #88d4a8;border-radius:12px;padding:14px;font-size:13px;color:#3d9a6a;line-height:1.8">
+      契約書の締結が完了しました。<br>
+      この後、管理者から「打刻URL」をお送りしますので、そちらから稼働記録をご利用ください。
+    </div>
+    <div style="margin-top:12px;font-size:11px;color:#b08090;text-align:center;line-height:1.8">この画面は閉じていただいて結構です。</div>
+  </div>
+</div>
+
+<!-- ══ SCREEN: 署名URLエラー ══ -->
+<div class="screen" id="screenSignErr">
+  <div class="ob-hero" style="background:linear-gradient(135deg,#e08080,#c05050)">
+    <div class="ico">⚠️</div>
+    <h1>契約書を開けませんでした</h1>
+  </div>
+  <div class="ob-body">
+    <div style="background:#fff;border:1.5px solid #f9c8d5;border-radius:14px;padding:18px;font-size:13px;color:#3a2030;line-height:1.9" id="sgErrMsg"></div>
+    <div style="margin-top:12px;font-size:12px;color:#b08090;line-height:1.8">お手数ですが、担当者にご連絡のうえ、署名URLを再発行してもらってください。</div>
+  </div>
 </div>
 
 <!-- ══ SCREEN: PENDING ══ -->
@@ -1201,7 +1291,9 @@ async function ensureStaffExist(){
 <!-- Router -->
 <script>
 (function(){
-  var isStaff = location.search.indexOf('staff') > -1;
+  var _p = new URLSearchParams(location.search);
+  // ?staff / ?id=打刻 / ?i=招待 / ?s=契約書署名  はすべてスタッフ画面
+  var isStaff = _p.has('staff') || _p.has('id') || _p.has('i') || _p.has('s');
   window.__SC_MODE = isStaff ? 'staff' : 'admin';
   if(isStaff){
     document.getElementById('staffApp').className = 'show';
@@ -1263,6 +1355,7 @@ function refreshAll(){
   renderStaffList();
   renderContractList();
   updateInviteDropdown();
+  updateSignStaffDropdown();
   renderPendingList();
 }
 
@@ -1722,6 +1815,7 @@ function renderStaffList(){
             ${s.department?`<span style="font-size:9px;color:#fff;background:#d4537a;padding:2px 7px;border-radius:8px;font-weight:700">${s.department}</span>`:''}
             ${s.snsOnly?'<span style="font-size:9px;color:#fff;background:#e07b3a;padding:2px 7px;border-radius:8px;font-weight:700">📸SNS</span>':''}
             ${!s.approved?'<span style="font-size:9px;color:#fff;background:#e0963a;padding:2px 7px;border-radius:8px;font-weight:700">⏳登録待</span>':''}
+            ${s.signedAt?'<span style="font-size:9px;color:#fff;background:#4caf7d;padding:2px 7px;border-radius:8px;font-weight:700">✍️署名済</span>':'<span style="font-size:9px;color:#fff;background:#b0a0a8;padding:2px 7px;border-radius:8px;font-weight:700">✍️未署名</span>'}
           </div>
           <div style="font-size:10px;color:#b08090;margin-top:2px">${now.getMonth()+1}月：${s.snsOnly?`SNS ${mSnsCount}件`:`${td}日 ${total>0?`(${total}件中)`:''}`}</div>
         </div>
@@ -1733,7 +1827,8 @@ function renderStaffList(){
       <div style="display:flex;border-top:1px solid #fde8ee;background:#fffafb">
         ${!s.approved?`<button onclick="event.stopPropagation();quickApprove(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4caf7d;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">✓ 登録承認</button>`:''}
         ${grandTotal>0?`<button onclick="event.stopPropagation();quickNotice(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#d4537a;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">📄 通知書</button>${!isLocked?`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#3d9a6a;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">💰 月締め</button>`:`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#888;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">🔓 解除</button>`}`:''}
-        <button onclick="event.stopPropagation();quickCopyURL(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4a90d9;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">🔗 URL</button>
+        ${!s.signedAt?`<button onclick="event.stopPropagation();quickSignURL(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#3d9a6a;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;border-right:1px solid #fde8ee">✍️ 署名URL</button>`:''}
+        <button onclick="event.stopPropagation();quickCopyURL(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4a90d9;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">🔗 打刻URL</button>
       </div>
     </div>`;
   }).join('');
@@ -2253,18 +2348,80 @@ function copyInvite(){
   });
 }
 
+// ══════════════════════════════════════════════
+// 契約書 署名URL 発行
+//   標準Base64の '+' はURLクエリで半角スペースに化けて atob が失敗するため、
+//   必ず base64url（+ → - 、/ → _ 、= 削除）で発行すること。
+// ══════════════════════════════════════════════
+const SC_BASE_URL='https://seishokai.github.io/shareconnect/';
+
+function b64uEnc(s){return btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+
+function buildSignUrl(s){
+  return SC_BASE_URL+'?staff&s='+b64uEnc(JSON.stringify({v:2,staffId:s.id,mode:'sign_only'}));
+}
+
+function scCopy(text,msg){
+  navigator.clipboard.writeText(text).then(()=>toast(msg)).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast(msg);
+  });
+}
+
+// スタッフの単価ラベル（表示用）
+function staffRateLabel(s){
+  if(s.isFixedDaily&&s.dailyRate)return'1日 ¥'+Number(s.dailyRate).toLocaleString();
+  const r=Number(s.rate)||DEF_RATE;
+  if(s.jobType==='SNS')return'1投稿 ¥'+r.toLocaleString();
+  return'1時間 ¥'+r.toLocaleString();
+}
+
+// スタッフ一覧の「✍️署名URL」ボタン
+function quickSignURL(i){
+  const s=allStaff[i];
+  if(!s)return;
+  scCopy(buildSignUrl(s),'✍️ '+s.name+' さんの署名URLをコピーしました');
+}
+
+// 招待URLタブのプルダウン
+function updateSignStaffDropdown(){
+  const sel=document.getElementById('signStaffSel');
+  if(!sel)return;
+  const keep=sel.value;
+  const sorted=[...allStaff].sort((a,b)=>(a.signedAt?1:0)-(b.signedAt?1:0));
+  sel.innerHTML='<option value="">選択してください</option>'+
+    sorted.map(s=>`<option value="${s.id}">${s.signedAt?'✅':'⏳'} ${s.name}${(s.department||s.dept)?'（'+(s.department||s.dept)+'）':''}</option>`).join('');
+  if(keep&&allStaff.some(s=>s.id===keep))sel.value=keep;
+}
+
+function renderSignUrl(force){
+  const box=document.getElementById('signUrlResult');
+  const id=document.getElementById('signStaffSel').value;
+  if(!id){
+    if(force)toast('スタッフを選んでください');
+    box.style.display='none';
+    return;
+  }
+  if(!force&&box.style.display==='none')return;
+  const s=allStaff.find(x=>x.id===id);
+  if(!s){toast('スタッフが見つかりません');return}
+  document.getElementById('signUrlBox').textContent=buildSignUrl(s);
+  document.getElementById('signUrlNote').innerHTML=
+    `${s.name} さん｜${s.jobType||'業務区分なし'}｜${staffRateLabel(s)}`+
+    (s.signedAt?`<br><b style="color:#e0963a">⚠️ この方は${new Date(s.signedAt).toLocaleDateString('ja-JP')}に署名済みです（開くと署名済み画面が表示されます）</b>`:'');
+  box.style.display='block';
+  if(force)toast('✅ 署名URLを発行しました！');
+}
+
+function copySignUrl(){
+  const url=document.getElementById('signUrlBox').textContent;
+  if(!url||url==='\u2014'){toast('先にURLを発行してください');return}
+  scCopy(url,'📋 署名URLをコピーしました');
+}
+
 function generateStaffContractUrl(){
   if(!currentStaff)return;
 
-  // スタッフ向け署名用URLを生成（スタッフIDを含む）
-  const base = 'https://seishokai.github.io/shareconnect/';
-  const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
-    v:2,
-    staffId: currentStaff.id,
-    staffName: currentStaff.name,
-    mode: 'sign_only'
-  }))));
-  const url = base + '?staff&s=' + payload;
+  const url = buildSignUrl(currentStaff);
 
   // URLを表示
   const resultDiv = document.createElement('div');
@@ -2413,6 +2570,9 @@ let presets  = JSON.parse(ls(PK)  || '{}');
 let settings = JSON.parse(ls(SETK)|| '{"rate":2014}');
 let yr, mo, staff, editing = null;
 let obStep = 0, signing = false, sX=0, sY=0;
+// ログイン中のスタッフ本人。buildCards() が currentStaff?.isFixedDaily を見るため
+// スタッフスコープにも定義が必要（未宣言だと ?. でも ReferenceError になる）
+let currentStaff = null;
 
 function ls(k){return localStorage.getItem(k)}
 function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
@@ -2468,42 +2628,9 @@ function boot(){
     return;
   }
 
-  // ?s= パラメータがある場合は既存スタッフの署名用URL
+  // ?s= 契約書署名URL → 専用画面へ（登録ウィザードとは別経路）
   const signParam = params.get('s');
-  if(signParam){
-    show('screenLoading');
-    try{
-      // Base64デコード→JSON解析
-      const decodedStr = atob(signParam);
-      const decoded = JSON.parse(decodedStr);
-      if(decoded.v===2 && decoded.staffId){
-        // 既存スタッフの署名用URL
-        if(!window.__db){const u=JSON.parse(ls(UK)||'null');if(u)startApp(u);else show('screenOB');return}
-        window.__db.collection('staff').doc(decoded.staffId).get().then(doc=>{
-          if(doc.exists){
-            const data=doc.data();
-            const u={...data, id:decoded.staffId};
-            save(UK, u);
-            // 契約書署名画面を表示（jobType と rate を反映）
-            document.getElementById('contractBox').innerHTML = buildContract(u.name, u.jobType, u.rate);
-            show('screenOB');
-          } else {
-            show('screenOB');
-            document.getElementById('contractBox').innerHTML = buildContract('');
-          }
-        }).catch(err=>{
-          console.error('Firebase error:', err);
-          show('screenOB');
-          document.getElementById('contractBox').innerHTML = buildContract('');
-        });
-        return;
-      }
-    }catch(e){
-      console.error('Signature URL decode error:', e, 'param:', signParam);
-      show('screenOB');
-      document.getElementById('contractBox').innerHTML = buildContract('');
-    }
-  }
+  if(signParam){ startSignFlow(signParam); return; }
 
   // ?i= パラメータがある場合は常に新規登録（別のスタッフ用の招待URL）
   const inviteParam = params.get('i');
@@ -2534,6 +2661,150 @@ function boot(){
   } else {
     startApp(u);
   }
+}
+
+// ══════════════════════════════════════════════
+// 契約書署名フロー（?s= 署名URL専用）
+//   URL     : https://.../shareconnect/?staff&s=<base64url(JSON)>
+//   payload : {v:2, staffId, mode:'sign_only'}
+//   氏名・jobType・単価はFirestoreの staff/<id> から毎回取得（URLに埋め込まない）
+// ══════════════════════════════════════════════
+let signStaff=null;      // Firestoreから取得したスタッフ
+let signStaffId=null;
+
+function sgEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+// base64url をデコード。旧形式（標準Base64）も受け付ける。
+//   URLSearchParams は '+' を半角スペースに変換するので、既発行の旧URL対策としてここで戻す。
+function sgDecode(raw){
+  let s=String(raw).replace(/ /g,'+').replace(/-/g,'+').replace(/_/g,'/');
+  while(s.length%4)s+='=';
+  return JSON.parse(decodeURIComponent(escape(atob(s))));
+}
+
+function sgFatal(msg){
+  document.getElementById('sgErrMsg').textContent=msg;
+  show('screenSignErr');
+}
+
+// 単価の表示ラベル
+function sgRateLabel(s){
+  if(s.isFixedDaily&&s.dailyRate)return'1日 ¥'+Number(s.dailyRate).toLocaleString();
+  const r=Number(s.rate)||2014;
+  if(s.jobType==='SNS')return'1投稿 ¥'+r.toLocaleString();
+  return'1時間 ¥'+r.toLocaleString();
+}
+
+// ① 署名URLを解析し、Firestoreからスタッフを引いて契約書を表示
+function startSignFlow(raw){
+  show('screenLoading');
+  let p=null;
+  try{ p=sgDecode(raw); }
+  catch(e){
+    console.error('署名URLの解析に失敗:',e);
+    sgFatal('この署名URLは形式が正しくありません。URLが途中で切れていないかご確認ください。');
+    return;
+  }
+  if(!p||!p.staffId){
+    sgFatal('この署名URLにはスタッフ情報が含まれていません。');
+    return;
+  }
+  signStaffId=p.staffId;
+
+  if(!window.__db){
+    sgFatal('サーバーに接続できませんでした。電波の良い場所でもう一度お試しください。');
+    return;
+  }
+  window.__db.collection('staff').doc(p.staffId).get().then(doc=>{
+    if(!doc.exists){
+      sgFatal('スタッフ情報が見つかりませんでした。署名URLが古い可能性があります。');
+      return;
+    }
+    signStaff={...doc.data(), id:p.staffId};
+    renderSignScreen();
+  }).catch(err=>{
+    console.error('スタッフ取得に失敗:',err);
+    sgFatal('情報の取得に失敗しました。電波状況をご確認のうえ、ページを再読み込みしてください。');
+  });
+}
+
+// ② 画面描画
+function renderSignScreen(){
+  const s=signStaff;
+
+  // すでに署名済みなら完了画面（二重署名防止）
+  if(s.signedAt){
+    showSignDone(s.signName||s.name||'', s.signedAt, true);
+    return;
+  }
+
+  document.getElementById('sgInfo').innerHTML=
+    '<div>👤 <b>'+sgEsc(s.name)+'</b> 様</div>'+
+    ((s.department||s.dept)?'<div>🏢 '+sgEsc(s.department||s.dept)+'</div>':'')+
+    (s.jobType?'<div>📋 '+sgEsc(s.jobType)+'</div>':'')+
+    '<div>💴 '+sgRateLabel(s)+'</div>';
+
+  // 契約書本文は既存の buildContract() をそのまま使う（文面の二重管理を避ける）
+  document.getElementById('sgContract').innerHTML=
+    buildContract(s.name, s.jobType, s.rate, {isFixedDaily:s.isFixedDaily, dailyRate:s.dailyRate});
+
+  document.getElementById('sgName').value=s.name||'';
+  sgPreview();
+  show('screenSign');
+}
+
+// ③ サインプレビュー
+function sgPreview(){
+  const v=(document.getElementById('sgName').value||'').trim();
+  document.getElementById('sgPreviewBox').style.display=v?'flex':'none';
+  document.getElementById('sgPreviewText').textContent=v;
+}
+
+// ④ 署名を確定し Firestore の既存スタッフに merge 保存
+function submitSign(){
+  if(!signStaff||!signStaffId)return;
+  const name=(document.getElementById('sgName').value||'').trim();
+  const agree=document.getElementById('sgAgree').checked;
+  tog('sgErrName',!name);
+  tog('sgErrAgree',!agree);
+  if(!name||!agree)return;
+
+  const btn=document.getElementById('sgSubmitBtn');
+  btn.disabled=true;
+  btn.textContent='送信中...';
+  document.getElementById('sgErrBox').style.display='none';
+
+  const signedAt=new Date().toISOString();
+  const rec={
+    signName:name,
+    signData:'text:'+name,
+    signedAt:signedAt,
+    contracts:[signStaff.jobType||'歯科医療業務'],
+    contractRate:(signStaff.isFixedDaily&&signStaff.dailyRate)?Number(signStaff.dailyRate):(Number(signStaff.rate)||2014),
+    contractRateType:(signStaff.isFixedDaily&&signStaff.dailyRate)?'day':(signStaff.jobType==='SNS'?'post':'hour'),
+    signedVia:'url'
+  };
+  window.__db.collection('staff').doc(signStaffId).set(rec,{merge:true})
+    .then(()=>showSignDone(name,signedAt,false))
+    .catch(e=>{
+      console.error('署名の保存に失敗:',e);
+      btn.disabled=false;
+      btn.textContent='✓ 同意して署名する';
+      const eb=document.getElementById('sgErrBox');
+      eb.textContent='署名の保存に失敗しました。電波状況をご確認のうえ、もう一度「同意して署名する」を押してください。';
+      eb.style.display='block';
+    });
+}
+
+// ⑤ 完了画面
+function showSignDone(name,signedAt,already){
+  document.getElementById('sgDoneMsg').textContent=already?'すでに署名済みです':'署名が完了しました！';
+  const d=new Date(signedAt);
+  document.getElementById('sgDoneBox').innerHTML=
+    '<div>👤 <b>'+sgEsc(name)+'</b> 様</div>'+
+    ((signStaff&&signStaff.jobType)?'<div>📋 '+sgEsc(signStaff.jobType)+'</div>':'')+
+    '<div>✍️ 署名日：'+(isNaN(d.getTime())?'-':d.toLocaleDateString('ja-JP'))+'</div>';
+  show('screenSignDone');
 }
 
 function isApproved(u){
@@ -2706,6 +2977,7 @@ const SIMPLE_DEPTS=['太田川']; // シンプル入力の部門
 function isSimpleDept(){return SIMPLE_DEPTS.includes(staffDept)}
 
 function startApp(u){
+  currentStaff = u;   // 日当固定スタッフの判定などで参照される
   show('screenApp');
   staffDept=u.department||ls('sc_department')||'';
   // SNSのみスタッフはカレンダー・サマリーを非表示
@@ -2860,12 +3132,12 @@ function buildCards(){
         <!-- 業務先 -->
         ${currentStaff?.isFixedDaily?`
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-            ${['大森','銀座'].map(s=>\`<button onclick="document.getElementById('inp_store_\${d}').value='\${s}';document.querySelectorAll('#stb_\${d} .stbtn').forEach(b=>{b.style.background='#fff';b.style.color='#d4537a';b.classList.remove('on')});event.target.style.background='#d4537a';event.target.style.color='#fff';event.target.classList.add('on')" class="stbtn\${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #f9c8d5;background:\${r.store===s?'#d4537a':'#fff'};color:\${r.store===s?'#fff':'#d4537a'};border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">\${s}</button>\`).join('')}
+            ${['大森','銀座'].map(s=>`<button onclick="document.getElementById('inp_store_${d}').value='${s}';document.querySelectorAll('#stb_${d} .stbtn').forEach(b=>{b.style.background='#fff';b.style.color='#d4537a';b.classList.remove('on')});event.target.style.background='#d4537a';event.target.style.color='#fff';event.target.classList.add('on')" class="stbtn${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #f9c8d5;background:${r.store===s?'#d4537a':'#fff'};color:${r.store===s?'#fff':'#d4537a'};border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">${s}</button>`).join('')}
           </div>
           <input id="inp_store_${d}" type="hidden" value="${r.store||''}">
         `:`
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
-            ${STORES.map(s=>\`<button onclick="document.getElementById('inp_store_\${d}').value='\${s}';document.querySelectorAll('#stb_\${d} .stbtn').forEach(b=>{b.style.background='#fff';b.style.color='#d4537a';b.classList.remove('on')});event.target.style.background='#d4537a';event.target.style.color='#fff';event.target.classList.add('on')" class="stbtn\${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #f9c8d5;background:\${r.store===s?'#d4537a':'#fff'};color:\${r.store===s?'#fff':'#d4537a'};border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">\${s}</button>\`).join('')}
+            ${STORES.map(s=>`<button onclick="document.getElementById('inp_store_${d}').value='${s}';document.querySelectorAll('#stb_${d} .stbtn').forEach(b=>{b.style.background='#fff';b.style.color='#d4537a';b.classList.remove('on')});event.target.style.background='#d4537a';event.target.style.color='#fff';event.target.classList.add('on')" class="stbtn${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #f9c8d5;background:${r.store===s?'#d4537a':'#fff'};color:${r.store===s?'#fff':'#d4537a'};border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">${s}</button>`).join('')}
           </div>
           <div id="stb_${d}" style="display:none"></div>
           <input id="inp_store_${d}" type="text" value="${r.store||''}" placeholder="🏪 業務先（直接入力もOK）" style="width:100%;padding:12px;border:2px solid #f9c8d5;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif;margin-bottom:12px">
@@ -3517,9 +3789,10 @@ function resetApp(){
 }
 
 // ── Contract HTML ──────────────────────────────────
-function buildContract(name, jobType, rate){
+function buildContract(name, jobType, rate, opts){
   const today=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
   const staffRate = rate || 2014;
+  const o = opts || {};
 
   // jobTypeに応じた業務名と報酬を設定
   let jobTitle = '歯科衛生士業務';
@@ -3531,6 +3804,11 @@ function buildContract(name, jobType, rate){
   } else if(jobType === 'SNS'){
     jobTitle = 'SNS業務';
     jobDesc = `甲の指定する媒体・内容に基づくSNS投稿業務。委託料は1投稿あたり金${staffRate.toLocaleString()}円（税込）とする。`;
+  }
+
+  // 日額固定のスタッフ（例：1日 ¥17,000）は時給表記を日額に差し替える
+  if(o.isFixedDaily && o.dailyRate){
+    jobDesc = `甲が運営する各店舗における${jobTitle}およびその付随業務。委託料は稼働日数に応じ、1日あたり金${Number(o.dailyRate).toLocaleString()}円（税込）とする。`;
   }
 
   return`<h3>業務委託基本契約書</h3>
