@@ -2473,7 +2473,9 @@ function boot(){
   if(signParam){
     show('screenLoading');
     try{
-      const decoded = JSON.parse(decodeURIComponent(escape(atob(signParam))));
+      // Base64デコード→JSON解析
+      const decodedStr = atob(signParam);
+      const decoded = JSON.parse(decodedStr);
       if(decoded.v===2 && decoded.staffId){
         // 既存スタッフの署名用URL
         if(!window.__db){const u=JSON.parse(ls(UK)||'null');if(u)startApp(u);else show('screenOB');return}
@@ -2489,13 +2491,18 @@ function boot(){
             show('screenOB');
             document.getElementById('contractBox').innerHTML = buildContract('');
           }
-        }).catch(()=>{
+        }).catch(err=>{
+          console.error('Firebase error:', err);
           show('screenOB');
           document.getElementById('contractBox').innerHTML = buildContract('');
         });
         return;
       }
-    }catch(e){}
+    }catch(e){
+      console.error('Signature URL decode error:', e, 'param:', signParam);
+      show('screenOB');
+      document.getElementById('contractBox').innerHTML = buildContract('');
+    }
   }
 
   // ?i= パラメータがある場合は常に新規登録（別のスタッフ用の招待URL）
