@@ -418,6 +418,31 @@ html,body{min-height:100svh;background:#fff5f7;color:#3a2030;font-family:'Zen Ma
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script>
+// バージョン管理
+const APP_VERSION = "v1.1.0";
+window.APP_VERSION = APP_VERSION;
+
+// ページ読み込み時にバージョンをチェック
+window.addEventListener('load', () => {
+  const lastVersion = localStorage.getItem('sc_app_version');
+  if(lastVersion && lastVersion !== APP_VERSION) {
+    // 新しいバージョンが利用可能
+    const banner = document.createElement('div');
+    banner.innerHTML = `
+      <div style="position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#d4537a,#c4456b);color:#fff;padding:12px;text-align:center;z-index:10000;font-weight:700">
+        🔄 新しいバージョンが利用可能です。<a href="javascript:location.reload()" style="color:#fff;text-decoration:underline;margin-left:8px">更新してください</a>
+      </div>`;
+    document.body.insertBefore(banner, document.body.firstChild);
+    document.body.style.paddingTop = '48px';
+  }
+  localStorage.setItem('sc_app_version', APP_VERSION);
+
+  // ページ下部にバージョンを表示
+  const footer = document.createElement('div');
+  footer.innerHTML = `<div style="text-align:center;font-size:10px;color:#b08090;padding:12px;margin-top:20px">シェアコネクト ${APP_VERSION}</div>`;
+  document.body.appendChild(footer);
+});
+
 const firebaseConfig = {
   apiKey: "AIzaSyApt0DIeMvelIlwTTXeTPz67yL1vdWoFnI",
   authDomain: "shareconnect-71706.firebaseapp.com",
