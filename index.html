@@ -2732,10 +2732,10 @@ function buildCards(){
 
         <!-- 業務先 -->
         ${currentStaff?.isFixedDaily?`
-          <div style="padding:12px;background:#f5f5f5;border-radius:10px;margin-bottom:12px;text-align:center;font-size:13px;color:#888">
-            固定日当（業務先入力不要）
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+            ${['大森','銀座'].map(s=>\`<button onclick="document.getElementById('inp_store_\${d}').value='\${s}';document.querySelectorAll('#stb_\${d} .stbtn').forEach(b=>{b.style.background='#fff';b.style.color='#d4537a';b.classList.remove('on')});event.target.style.background='#d4537a';event.target.style.color='#fff';event.target.classList.add('on')" class="stbtn\${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #f9c8d5;background:\${r.store===s?'#d4537a':'#fff'};color:\${r.store===s?'#fff':'#d4537a'};border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">\${s}</button>\`).join('')}
           </div>
-          <input id="inp_store_${d}" type="hidden" value="固定日当">
+          <input id="inp_store_${d}" type="hidden" value="${r.store||''}">
         `:`
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
             ${STORES.map(s=>\`<button onclick="document.getElementById('inp_store_\${d}').value='\${s}';document.querySelectorAll('#stb_\${d} .stbtn').forEach(b=>{b.style.background='#fff';b.style.color='#d4537a';b.classList.remove('on')});event.target.style.background='#d4537a';event.target.style.color='#fff';event.target.classList.add('on')" class="stbtn\${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #f9c8d5;background:\${r.store===s?'#d4537a':'#fff'};color:\${r.store===s?'#fff':'#d4537a'};border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">\${s}</button>\`).join('')}
