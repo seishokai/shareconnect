@@ -677,6 +677,42 @@ window.__auth = _auth;
         <div id="mContractInfo"></div>
       </div>
     </details>
+
+    <!-- 代理入力（折りたたみ） -->
+    <details style="margin-top:8px">
+      <summary style="font-size:12px;font-weight:700;color:#3d9a6a;cursor:pointer;padding:8px 12px;background:#edfaf3;border-radius:10px;list-style:none">✏️ 基本情報・振込先・暗証番号を編集</summary>
+      <div style="padding:10px 2px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:11px;color:#b08090;line-height:1.7;background:#fff5f7;border:1px solid #f9c8d5;border-radius:8px;padding:8px 10px">
+          通常は署名URLから本人に入力してもらってください。ここは代理入力用です。<br>
+          ※ 氏名は変更できません（過去の稼働記録が氏名で紐づいているため）
+        </div>
+        <div class="m-sec-ttl" style="margin-bottom:2px">👤 基本情報</div>
+        <input type="date" id="mEditBirth" placeholder="生年月日" style="padding:7px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;box-sizing:border-box;width:100%">
+        <input type="tel" id="mEditPhone" placeholder="電話番号" style="padding:7px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;box-sizing:border-box;width:100%">
+        <input type="email" id="mEditEmail" placeholder="メールアドレス" style="padding:7px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;box-sizing:border-box;width:100%">
+        <input type="text" id="mEditAddr" placeholder="住所" style="padding:7px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;box-sizing:border-box;width:100%">
+        <input type="text" id="mEditStation" placeholder="最寄駅" style="padding:7px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;box-sizing:border-box;width:100%">
+        <input type="text" id="mEditInvoiceNum" placeholder="インボイス登録番号（任意）" style="padding:7px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;box-sizing:border-box;width:100%">
+
+        <div class="m-sec-ttl" style="margin:6px 0 2px">🏦 振込先口座</div>
+        <input type="text" id="mEditBank" placeholder="銀行名" style="padding:7px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;box-sizing:border-box;width:100%">
+        <div style="display:flex;gap:6px">
+          <input type="text" id="mEditBranch" placeholder="支店名" style="padding:7px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;box-sizing:border-box;width:100%">
+          <select id="mEditAccType" style="padding:7px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;box-sizing:border-box;width:100%;flex:0 0 90px"><option value="普通">普通</option><option value="当座">当座</option></select>
+        </div>
+        <div style="display:flex;gap:6px">
+          <input type="text" id="mEditAccNum" placeholder="口座番号" style="padding:7px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;box-sizing:border-box;width:100%">
+          <input type="text" id="mEditAccName" placeholder="口座名義（カナ）" style="padding:7px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;box-sizing:border-box;width:100%">
+        </div>
+
+        <div class="m-sec-ttl" style="margin:6px 0 2px">🔒 暗証番号</div>
+        <input type="text" id="mEditPin" placeholder="4桁以上（空欄で保存すると未設定のまま）" style="padding:7px 10px;border:1.5px solid #f9c8d5;border-radius:8px;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7;box-sizing:border-box;width:100%">
+        <div style="font-size:11px;color:#e0963a;line-height:1.6">未設定の間は、打刻URLを知っていれば誰でも開けてしまいます。</div>
+
+        <button onclick="saveStaffProfile()" style="margin-top:6px;padding:10px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">💾 保存する</button>
+      </div>
+    </details>
+
   </div>
   <div class="m-foot">
     <button class="ghost-btn" onclick="closeModal()">閉じる</button>
@@ -848,12 +884,45 @@ window.__auth = _auth;
 <div class="screen" id="screenSign">
   <div class="ob-hero">
     <div class="ico">✍️</div>
-    <h1>業務委託契約書<br>電子署名</h1>
-    <p>内容をご確認のうえ、<br>お名前でサインしてください</p>
+    <h1>業務委託契約書<br>初期登録・電子署名</h1>
+    <p id="sgHeroSub">お支払いに必要な情報をご入力のうえ、<br>契約書にご署名ください</p>
+    <div class="ob-steps">
+      <div class="ob-dot on" id="sgD0"></div><div class="ob-dot" id="sgD1"></div><div class="ob-dot" id="sgD2"></div>
+    </div>
   </div>
   <div class="ob-body">
     <div class="summary-box" id="sgInfo" style="margin-top:0"></div>
 
+    <!-- Step 0: 基本情報 -->
+    <div id="sgStep0">
+      <div style="font-size:16px;font-weight:700;color:var(--acc);margin:18px 0 4px">👤 基本情報</div>
+      <div style="font-size:12px;color:#b08090;margin-bottom:16px">契約書・支払通知書に使用します。正確にご入力ください。</div>
+      <div class="field"><div class="lbl">生年月日</div><input class="inp" id="sgBirth" type="date"></div>
+      <div class="field"><div class="lbl">電話番号</div><input class="inp" id="sgPhone" type="tel" inputmode="tel" placeholder="090-0000-0000"></div>
+      <div class="field"><div class="lbl">メールアドレス</div><input class="inp" id="sgEmail" type="email" inputmode="email" placeholder="hanako@example.com"></div>
+      <div class="field"><div class="lbl">住所 <span style="color:#d4537a;font-size:10px">※必須</span></div><input class="inp" id="sgAddr" type="text" placeholder="愛知県名古屋市〇〇区〇〇1-2-3"><div class="err-msg" id="sgErrAddr">住所を入力してください</div></div>
+      <div class="field"><div class="lbl">最寄駅</div><input class="inp" id="sgStation" type="text" placeholder="例：金山駅"></div>
+      <div class="field"><div class="lbl">🔒 暗証番号（4桁以上）<span style="color:#d4537a;font-size:10px">※必須</span></div><input class="inp" id="sgPin" type="password" inputmode="numeric" placeholder="打刻画面のログインに使います"><div class="err-msg" id="sgErrPin">暗証番号を入力してください（4桁以上）</div></div>
+      <div class="field"><div class="lbl">📄 インボイス登録番号（任意）</div><input class="inp" id="sgInvoiceNum" type="text" placeholder="T1234567890123（未登録の場合は空欄）"></div>
+    </div>
+
+    <!-- Step 1: 振込先口座 -->
+    <div id="sgStep1" class="hidden">
+      <div style="font-size:16px;font-weight:700;color:var(--acc);margin:18px 0 4px">🏦 振込先口座</div>
+      <div style="font-size:12px;color:#b08090;margin-bottom:16px">報酬のお振込先をご入力ください。</div>
+      <div class="field"><div class="lbl">銀行名 <span style="color:#d4537a;font-size:10px">※必須</span></div><input class="inp" id="sgBank" type="text" placeholder="〇〇銀行"><div class="err-msg" id="sgErrBank">銀行名を入力してください</div></div>
+      <div class="grid2">
+        <div class="field" style="margin:0"><div class="lbl">支店名</div><input class="inp" id="sgBranch" type="text" placeholder="〇〇支店"></div>
+        <div class="field" style="margin:0"><div class="lbl">種別</div><select class="inp" id="sgAccType"><option value="普通">普通</option><option value="当座">当座</option></select></div>
+      </div>
+      <div class="grid2" style="margin-top:12px">
+        <div class="field" style="margin:0"><div class="lbl">口座番号 <span style="color:#d4537a;font-size:10px">※必須</span></div><input class="inp" id="sgAccNum" type="text" inputmode="numeric" placeholder="1234567"><div class="err-msg" id="sgErrAccNum">口座番号を入力してください</div></div>
+        <div class="field" style="margin:0"><div class="lbl">口座名義（カナ）</div><input class="inp" id="sgAccName" type="text" placeholder="ササキ ハナコ"></div>
+      </div>
+    </div>
+
+    <!-- Step 2: 契約書・署名 -->
+    <div id="sgStep2" class="hidden">
     <div style="font-size:16px;font-weight:700;color:var(--acc);margin:18px 0 4px">📋 契約書本文</div>
     <div style="font-size:12px;color:#b08090;margin-bottom:10px">スクロールして最後までご確認ください。</div>
     <div class="contract-scroll" id="sgContract" style="max-height:320px"></div>
@@ -875,10 +944,13 @@ window.__auth = _auth;
     </label>
     <div class="err-msg" id="sgErrAgree" style="margin-top:4px">同意にチェックを入れてください</div>
 
+    </div><!-- /sgStep2 -->
+
     <div id="sgErrBox" style="display:none;margin-top:12px;background:#fff0f0;border:1.5px solid #e05050;border-radius:12px;padding:12px 14px;font-size:12px;color:#c03030;line-height:1.7"></div>
   </div>
   <div class="ob-foot">
-    <button class="pink-btn" id="sgSubmitBtn" onclick="submitSign()">✓ 同意して署名する</button>
+    <button class="ob-back" id="sgBackBtn" style="display:none" onclick="sgBack()">← 戻る</button>
+    <button class="pink-btn" id="sgSubmitBtn" onclick="sgNext()">次へ →</button>
   </div>
 </div>
 
@@ -1694,6 +1766,32 @@ function toggleDailyRow(){
   if(h)h.style.display=(fd&&fd.checked)?'block':'none';
 }
 
+function saveStaffProfile(){
+  if(!currentStaff)return;
+  const v=id=>{const el=document.getElementById(id);return el?(el.value||'').trim():''};
+  const pin=v('mEditPin');
+  if(pin && pin.length<4){toast('暗証番号は4桁以上にしてください');return}
+
+  const patch={
+    birth:v('mEditBirth'), phone:v('mEditPhone'), email:v('mEditEmail'),
+    addr:v('mEditAddr'), station:v('mEditStation'), invoiceNum:v('mEditInvoiceNum'),
+    bank:v('mEditBank'), branch:v('mEditBranch'),
+    accType:(document.getElementById('mEditAccType')||{}).value||'普通',
+    accNum:v('mEditAccNum'), accName:v('mEditAccName')
+  };
+  // 空欄のときは既存の暗証番号を消さない
+  if(pin)patch.pin=pin;
+
+  Object.assign(currentStaff,patch);
+  const idx=allStaff.findIndex(s=>s.id===currentStaff.id);
+  if(idx>=0)Object.assign(allStaff[idx],patch);
+  localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
+  if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set(patch,{merge:true}).catch(e=>console.error(e));
+  openStaff(allStaff.findIndex(s=>s.id===currentStaff.id));
+  renderStaffList();
+  toast('💾 保存しました');
+}
+
 function saveStaffDaily(){
   if(!currentStaff)return;
   const on=document.getElementById('mFixedDaily').checked;
@@ -1859,6 +1957,7 @@ function renderStaffList(){
             ${!s.approved?'<span style="font-size:9px;color:#fff;background:#e0963a;padding:2px 7px;border-radius:8px;font-weight:700">⏳登録待</span>':''}
             ${s.signedAt?'<span style="font-size:9px;color:#fff;background:#4caf7d;padding:2px 7px;border-radius:8px;font-weight:700">✍️署名済</span>':'<span style="font-size:9px;color:#fff;background:#b0a0a8;padding:2px 7px;border-radius:8px;font-weight:700">✍️未署名</span>'}
             ${s.isFixedDaily&&s.dailyRate?`<span style="font-size:9px;color:#fff;background:#3d9a6a;padding:2px 7px;border-radius:8px;font-weight:700">📅日当 ¥${Number(s.dailyRate).toLocaleString()}</span>`:''}
+            ${(!s.bank||!s.pin)?`<span title="振込先または暗証番号が未登録" style="font-size:9px;color:#fff;background:#e0603a;padding:2px 7px;border-radius:8px;font-weight:700">⚠️${!s.bank&&!s.pin?'口座・暗証番号':(!s.bank?'口座':'暗証番号')}未登録</span>`:''}
           </div>
           <div style="font-size:10px;color:#b08090;margin-top:2px">${now.getMonth()+1}月：${s.snsOnly?`SNS ${mSnsCount}件`:`${td}日 ${total>0?`(${total}件中)`:''}`}</div>
         </div>
@@ -1954,6 +2053,16 @@ function openStaff(i){
     ${signImg}
     <button style="margin-top:8px;font-size:11px;padding:5px 12px;background:none;border:1px solid #f9c8d5;border-radius:8px;cursor:pointer;color:#d4537a;font-family:'Zen Maru Gothic',sans-serif" onclick="viewStaffContract()">📋 契約書を印刷</button>
     <button style="margin-top:8px;margin-left:6px;font-size:11px;padding:5px 12px;background:#d4537a;border:none;border-radius:8px;cursor:pointer;color:#fff;font-family:'Zen Maru Gothic',sans-serif" onclick="copyStaffURL()">🔗 打刻URLをコピー</button>`;
+  // 代理入力フォーム
+  const ev=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||''};
+  ev('mEditBirth',currentStaff.birth); ev('mEditPhone',currentStaff.phone);
+  ev('mEditEmail',currentStaff.email); ev('mEditAddr',currentStaff.addr);
+  ev('mEditStation',currentStaff.station); ev('mEditInvoiceNum',currentStaff.invoiceNum);
+  ev('mEditBank',currentStaff.bank); ev('mEditBranch',currentStaff.branch);
+  ev('mEditAccNum',currentStaff.accNum); ev('mEditAccName',currentStaff.accName);
+  ev('mEditPin',currentStaff.pin);
+  const eat=document.getElementById('mEditAccType'); if(eat)eat.value=currentStaff.accType||'普通';
+
   // Work table + Year summary
   renderYearSummary();
   loadWorkData();
@@ -2733,6 +2842,7 @@ function boot(){
 // ══════════════════════════════════════════════
 let signStaff=null;      // Firestoreから取得したスタッフ
 let signStaffId=null;
+let sgStep=0;            // 0:基本情報 1:口座 2:契約書・署名
 
 // 契約書上の業務名（jobTypeのスタッフ区分とは別。歯科系はすべて「歯科医療業務」）
 function sgJobTitle(jobType){return jobType==='SNS'?'SNS業務':'歯科医療業務'}
@@ -2813,9 +2923,55 @@ function renderSignScreen(){
   document.getElementById('sgContract').innerHTML=
     buildContract(s.name, s.jobType, s.rate, {isFixedDaily:s.isFixedDaily, dailyRate:s.dailyRate});
 
+  // 既に登録済みの内容をプリフィル（本人が修正できる）
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||''};
+  set('sgBirth',s.birth); set('sgPhone',s.phone); set('sgEmail',s.email);
+  set('sgAddr',s.addr); set('sgStation',s.station); set('sgPin',s.pin);
+  set('sgInvoiceNum',s.invoiceNum);
+  set('sgBank',s.bank); set('sgBranch',s.branch); set('sgAccNum',s.accNum); set('sgAccName',s.accName);
+  const at=document.getElementById('sgAccType'); if(at)at.value=s.accType||'普通';
+
   document.getElementById('sgName').value=s.name||'';
   sgPreview();
+  sgStep=0;
+  sgUpdateUI();
   show('screenSign');
+}
+
+// ── ステップ遷移 ─────────────────────────────
+function sgVal(id){const el=document.getElementById(id);return el?(el.value||'').trim():''}
+
+function sgUpdateUI(){
+  [0,1,2].forEach(i=>{
+    document.getElementById('sgStep'+i).classList.toggle('hidden',i!==sgStep);
+    document.getElementById('sgD'+i).classList.toggle('on',i===sgStep);
+  });
+  document.getElementById('sgBackBtn').style.display=sgStep===0?'none':'';
+  document.getElementById('sgSubmitBtn').textContent=sgStep===2?'✓ 同意して署名する':'次へ →';
+  document.getElementById('sgErrBox').style.display='none';
+  const body=document.querySelector('#screenSign .ob-body');
+  if(body)body.scrollTop=0;
+  window.scrollTo(0,0);
+}
+
+function sgBack(){ if(sgStep===0)return; sgStep--; sgUpdateUI(); }
+
+function sgNext(){
+  if(sgStep===0){
+    const addr=sgVal('sgAddr'), pin=sgVal('sgPin');
+    tog('sgErrAddr',!addr);
+    tog('sgErrPin',pin.length<4);
+    if(!addr||pin.length<4)return;
+  }
+  if(sgStep===1){
+    const bank=sgVal('sgBank'), acc=sgVal('sgAccNum');
+    tog('sgErrBank',!bank);
+    tog('sgErrAccNum',!acc);
+    if(!bank||!acc)return;
+  }
+  if(sgStep===2){ submitSign(); return; }
+  sgStep++;
+  sgUpdateUI();
 }
 
 // ③ サインプレビュー
@@ -2841,6 +2997,14 @@ function submitSign(){
 
   const signedAt=new Date().toISOString();
   const rec={
+    // ① 本人入力分（name は打刻データのキーなので上書きしない）
+    birth:sgVal('sgBirth'), phone:sgVal('sgPhone'), email:sgVal('sgEmail'),
+    addr:sgVal('sgAddr'), station:sgVal('sgStation'),
+    pin:sgVal('sgPin'), invoiceNum:sgVal('sgInvoiceNum'),
+    bank:sgVal('sgBank'), branch:sgVal('sgBranch'),
+    accType:(document.getElementById('sgAccType')||{}).value||'普通',
+    accNum:sgVal('sgAccNum'), accName:sgVal('sgAccName'),
+    // ② 署名
     signName:name,
     signData:'text:'+name,
     signedAt:signedAt,
