@@ -1081,10 +1081,10 @@ window.__auth = _auth;
       <div class="sc-body">
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:13px;color:#b08090">時給</span>
-          <input type="number" id="hourlyRate" value="2014" style="width:90px;padding:8px 10px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:15px;text-align:right;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7">
+          <input type="number" id="hourlyRate" value="2014" readonly style="width:90px;padding:8px 10px;border:1.5px solid #f9c8d5;border-radius:10px;font-size:15px;text-align:right;font-family:'Zen Maru Gothic',sans-serif;color:#3a2030;background:#fff5f7">
           <span style="font-size:13px;color:#b08090">円／時</span>
         </div>
-        <button class="sbtn" onclick="saveSettings()">💾 保存</button>
+        <div style="font-size:11px;color:#b08090;margin-top:6px;line-height:1.6">※ 契約で定められた単価です。変更が必要な場合は管理者にご連絡ください。</div>
       </div>
     </div>
     <div class="card">
@@ -1343,7 +1343,7 @@ async function approveStaffCloud(staffId){
 // Auto-add staff members if they don't exist
 async function ensureStaffExist(){
   const requiredStaff = [
-    { name: '上野望', dept: '清翔会', jobType: '歯科医療業務' },
+    { name: '上野望', dept: '清翔会', jobType: '歯科医療業務', rate: 2200 },
     { name: 'ルーカス', dept: '清翔会', jobType: 'SNS' },
     { name: '飯田しおん', dept: '清翔会', jobType: '歯科助手業務', isFixedDaily: true, dailyRate: 17000,
       // 片道運賃。業務先を選ぶと往復（×2）で交通費に自動入力される
@@ -1391,6 +1391,9 @@ async function ensureStaffExist(){
       }
       if(req.farePresets && exists.farePresets === undefined){
         patch.farePresets = req.farePresets;
+      }
+      if(req.rate && !exists.rate){
+        patch.rate = req.rate;
       }
       if(Object.keys(patch).length){
         Object.assign(exists, patch);
@@ -1616,7 +1619,7 @@ function sendApprovalEmail(yr,mo,key){
   if(!currentStaff)return;
   const workData=currentStaff.workData||{};
   const md=workData[key]||{};
-  const mRate=md.rate||DEF_RATE;
+  const mRate=rateFor(currentStaff,md);
   const mSnsCount=md.snsCount||0;const mSnsRate=md.snsRate||2000;
   const keys2=Object.keys(md).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
   let tw=0,tf=0,twa=0,tta=0;
@@ -1730,7 +1733,7 @@ function renderYearSummary(){
   for(let m=1;m<=12;m++){
     const key=`${yr}-${pad(m)}_${currentStaff.name}`;
     const md=workData[key]||{};
-    const mRate=md.rate||DEF_RATE;
+    const mRate=rateFor(currentStaff,md);
     let tw=0,td=0,tf=0,twa=0,tta=0;
     Object.entries(md).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0){td++;tw+=wm}tf+=calcFare(r);twa+=weekendAllowOf(currentStaff,r);tta+=(r.tripAllow||0)});
     const pay=monthPayOf(currentStaff,md,mRate);
@@ -1807,6 +1810,9 @@ function saveStaffDept(){
 }
 // 単価未設定のスタッフの既定値（SNSは1投稿¥2,000、それ以外は時給¥2,014）
 function defaultRateFor(s){return (s&&s.jobType==='SNS')||(s&&s.snsOnly)?2000:DEF_RATE}
+// その月の単価: 月別設定 > スタッフの時給 > 職種別デフォルト
+// （月別設定を保存していない月を DEF_RATE で計算してしまわないように）
+function rateFor(s, md){return (md&&parseInt(md.rate))||(s&&parseInt(s.rate))||defaultRateFor(s)}
 
 function toggleDailyRow(){
   const fd=document.getElementById('mFixedDaily'),h=document.getElementById('mDailyHint');
@@ -1946,7 +1952,7 @@ function renderDashboard(){
     const mk=Object.keys(wd).find(kk=>kk.startsWith(k));
     if(!mk)return;
     const md=wd[mk];
-    const mRate=md.rate||DEF_RATE;
+    const mRate=rateFor(s,md);
     let tw=0,tf=0,twa=0,tta=0;
     Object.entries(md).forEach(([kk,r])=>{if(!kk.startsWith('d'))return;const wm=calcWork(r);if(wm)tw+=wm;tf+=calcFare(r);twa+=weekendAllowOf(s,r);tta+=(r.tripAllow||0)});
     const pay=s.snsOnly?0:monthPayOf(s,md,mRate);
@@ -1990,7 +1996,7 @@ function exportPaymentCSV(){
     if(!mk)return;
     const md=wd[mk];
     if(!md.locked)return; // 月締め確定済みのみ
-    const mRate=md.rate||DEF_RATE;
+    const mRate=rateFor(s,md);
     let tw=0,tf=0,twa=0,tta=0;
     Object.entries(md).forEach(([kk,r])=>{if(!kk.startsWith('d'))return;const wm=calcWork(r);if(wm)tw+=wm;tf+=calcFare(r);twa+=weekendAllowOf(s,r);tta+=(r.tripAllow||0)});
     const pay=s.snsOnly?0:monthPayOf(s,md,mRate);
@@ -2039,7 +2045,7 @@ function renderStaffList(){
     const workData=s.workData||JSON.parse(ls('sc_admin_work_'+s.id)||'{}');
     const curKey=`${_listYear}-${pad(_listMonth)}_${s.name}`;
     const curMonth=workData[curKey]||{};
-    const mRate=curMonth.rate||DEF_RATE;
+    const mRate=rateFor(s,curMonth);
     const mSnsCount=curMonth.snsCount||0;
     const mSnsRate=curMonth.snsRate||2000;
     let tw=0,td=0,tf=0,twa=0,tta=0;
@@ -2196,7 +2202,7 @@ function loadWorkData(){
   const workData=currentStaff.workData||JSON.parse(ls('sc_admin_work_'+currentStaff.id)||'{}');
   const key=`${yr}-${pad(mo)}_${currentStaff.name}`;
   const md=workData[key]||{};
-  const curRate=md.rate||DEF_RATE;
+  const curRate=rateFor(currentStaff,md);
   const curSnsCount=md.snsCount||0;
   const curSnsRate=md.snsRate||2000;
   const keys=Object.keys(md).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
@@ -2353,7 +2359,7 @@ function openStaffNotice(){
   const workData=currentStaff.workData||JSON.parse(ls('sc_admin_work_'+currentStaff.id)||'{}');
   const key=`${yr}-${pad(mo)}_${currentStaff.name}`;
   const md=workData[key]||{};
-  const mRate=md.rate||DEF_RATE;
+  const mRate=rateFor(currentStaff,md);
   const mSnsCount=md.snsCount||0;
   const mSnsRate=md.snsRate||2000;
   const keys=Object.keys(md).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
@@ -2402,7 +2408,7 @@ function printNotice(){
   const workData=currentStaff.workData||JSON.parse(ls('sc_admin_work_'+currentStaff.id)||'{}');
   const key=`${yr}-${pad(mo)}_${currentStaff.name}`;
   const md=workData[key]||{};
-  const mRate=md.rate||DEF_RATE;
+  const mRate=rateFor(currentStaff,md);
   const mSnsCount=md.snsCount||0;
   const mSnsRate=md.snsRate||2000;
   const keys=Object.keys(md).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
@@ -3346,6 +3352,8 @@ function startApp(u){
   const ss=document.getElementById('selStaff');
   ss.innerHTML=`<option value="${u.name}" selected>${u.name}</option>`;
   ss.onchange=e=>{staff=e.target.value;render()};
+  // 時給は管理画面の設定（staff.rate）が正。端末の localStorage は参照しない。
+  if(u.rate){settings.rate=parseInt(u.rate)||settings.rate;save(SETK,settings)}
   if(document.getElementById('hourlyRate'))document.getElementById('hourlyRate').value=settings.rate||2014;
   renderPresetList();
   loadUserInfo();
