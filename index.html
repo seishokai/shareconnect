@@ -2201,8 +2201,8 @@ function buildContractHTML(name, jobType, rate, opts){
   const o = opts || {};
 
   // スタッフ側 buildContract() と同じロジックに揃える
-  let jobTitle = '歯科医療業務';
-  let jobDesc = `甲が運営する各店舗における歯科医療業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金${staffRate.toLocaleString()}円（税込）とする。`;
+  let jobTitle = '歯科医療・運営業務';
+  let jobDesc = `甲が運営する各店舗における歯科医療・運営業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金${staffRate.toLocaleString()}円（税込）とする。`;
   if(jobType === 'SNS'){
     jobTitle = 'SNS業務';
     jobDesc = `甲の指定する媒体・内容に基づくSNS投稿業務。委託料は1投稿あたり金${staffRate.toLocaleString()}円（税込）とする。`;
@@ -2682,7 +2682,7 @@ function seedDemoData(){
       bank:banks[idx%banks.length],branch:branches[idx%branches.length],
       accType:'普通',accNum:String(1000000+idx*111111),accName:name.split(' ').join(' '),
       signedAt:new Date(now.getFullYear(),now.getMonth()-1,10+idx).toISOString(),
-      signData:'',contracts:['歯科医療業務','動画撮影業務']
+      signData:'',contracts:['歯科医療・運営業務','動画撮影業務']
     };
     existing.push(s);
     // Generate work data for current month
@@ -2844,8 +2844,8 @@ let signStaff=null;      // Firestoreから取得したスタッフ
 let signStaffId=null;
 let sgStep=0;            // 0:基本情報 1:口座 2:契約書・署名
 
-// 契約書上の業務名（jobTypeのスタッフ区分とは別。歯科系はすべて「歯科医療業務」）
-function sgJobTitle(jobType){return jobType==='SNS'?'SNS業務':'歯科医療業務'}
+// 契約書上の業務名（jobTypeのスタッフ区分とは別。歯科系はすべて「歯科医療・運営業務」）
+function sgJobTitle(jobType){return jobType==='SNS'?'SNS業務':'歯科医療・運営業務'}
 
 function sgEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
@@ -3050,7 +3050,7 @@ function showPending(u){
   const el=document.getElementById('pendingUserInfo');
   if(el) el.innerHTML=
     '<div>👤 '+u.name+'</div>'+
-    '<div>📄 締結済み：'+((u.contracts&&u.contracts.length)?u.contracts.join(' ／ '):'歯科医療業務 ／ 動画撮影業務')+'</div>'+
+    '<div>📄 締結済み：'+((u.contracts&&u.contracts.length)?u.contracts.join(' ／ '):'歯科医療・運営業務 ／ 動画撮影業務')+'</div>'+
     '<div>✍️ 署名日：'+new Date(u.signedAt).toLocaleDateString('ja-JP')+'</div>';
   
   // Firestoreリアルタイム監視（承認されたら即座に遷移）
@@ -3163,7 +3163,7 @@ function buildSummary(){
     `<div>🏠 ${a}</div>`+
     (st?`<div>🚉 ${st}</div>`:'')+
     `<div>🏦 ${bk} ${br} ${at} ${an}</div>`+
-    `<div>📄 歯科医療業務 ／ 動画撮影業務</div>`+
+    `<div>📄 歯科医療・運営業務 ／ 動画撮影業務</div>`+
     `<div style="font-size:11px;color:#b08090;margin-top:4px">署名日：${new Date().toLocaleDateString('ja-JP')}</div>`;
 }
 function finishOB(){
@@ -3173,7 +3173,7 @@ function finishOB(){
     name:vv('obName'),birth:vv('obBirth'),phone:vv('obPhone'),email:vv('obEmail'),
     addr:vv('obAddr'),station:vv('obStation'),bank:vv('obBank'),branch:vv('obBranch'),
     accType:document.getElementById('obAccType').value,accNum:vv('obAccNum'),accName:vv('obAccName'),
-    signData,signedAt:ls('sc_signDate')?new Date(ls('sc_signDate')).toISOString():new Date().toISOString(),contracts:['歯科医療業務','動画撮影業務'],
+    signData,signedAt:ls('sc_signDate')?new Date(ls('sc_signDate')).toISOString():new Date().toISOString(),contracts:['歯科医療・運営業務','動画撮影業務'],
     pin:vv('obPin'),
     invoiceNum:vv('obInvoiceNum')||'',
     id:'u_'+Date.now()
@@ -4024,9 +4024,9 @@ function buildContract(name, jobType, rate, opts){
   const o = opts || {};
 
   // jobTypeに応じた業務名と報酬を設定
-  // 歯科系（衛生士・助手）は契約書上「歯科医療業務」に統一。SNSのみ別建て（単価が1投稿あたりのため）
-  let jobTitle = '歯科医療業務';
-  let jobDesc = `甲が運営する各店舗における歯科医療業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金${staffRate.toLocaleString()}円（税込）とする。`;
+  // 歯科系（衛生士・助手）は契約書上「歯科医療・運営業務」に統一。SNSのみ別建て（単価が1投稿あたりのため）
+  let jobTitle = '歯科医療・運営業務';
+  let jobDesc = `甲が運営する各店舗における歯科医療・運営業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金${staffRate.toLocaleString()}円（税込）とする。`;
 
   if(jobType === 'SNS'){
     jobTitle = 'SNS業務';
