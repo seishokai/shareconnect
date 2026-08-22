@@ -713,6 +713,19 @@ window.__auth = _auth;
       </div>
     </details>
 
+    <!-- 交通費プリセット -->
+    <details style="margin-top:8px">
+      <summary style="font-size:12px;font-weight:700;color:#4a90d9;cursor:pointer;padding:8px 12px;background:#eaf3fd;border-radius:10px;list-style:none">🚃 交通費プリセット（業務先ごとの片道運賃）</summary>
+      <div style="padding:10px 2px">
+        <div style="font-size:11px;color:#4a90d9;line-height:1.7;background:#eaf3fd;border:1px solid #a8cdf0;border-radius:8px;padding:8px 10px;margin-bottom:8px">
+          片道の運賃を登録しておくと、本人が勤怠でその業務先を選んだときに<b>往復（×2）</b>で自動入力されます。
+        </div>
+        <div id="mFareList"></div>
+        <button onclick="addFarePresetRow()" style="width:100%;margin-top:6px;padding:8px;background:#fff;border:1.5px dashed #4a90d9;color:#4a90d9;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">＋ 行を追加</button>
+        <button onclick="saveFarePresets()" style="width:100%;margin-top:6px;padding:10px;background:linear-gradient(135deg,#4a90d9,#3a7ec9);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">💾 交通費プリセットを保存</button>
+      </div>
+    </details>
+
   </div>
   <div class="m-foot">
     <button class="ghost-btn" onclick="closeModal()">閉じる</button>
@@ -1332,7 +1345,12 @@ async function ensureStaffExist(){
   const requiredStaff = [
     { name: '上野望', dept: '清翔会', jobType: '歯科医療業務' },
     { name: 'ルーカス', dept: '清翔会', jobType: 'SNS' },
-    { name: '飯田しおん', dept: '清翔会', jobType: '歯科助手業務', isFixedDaily: true, dailyRate: 17000 }
+    { name: '飯田しおん', dept: '清翔会', jobType: '歯科助手業務', isFixedDaily: true, dailyRate: 17000,
+      // 片道運賃。業務先を選ぶと往復（×2）で交通費に自動入力される
+      farePresets: [
+        { store: '銀座', from: '末広町', to: '銀座', fare: 178 },
+        { store: '大森', from: '御徒町', to: '大森', fare: 253 }
+      ] }
   ];
 
   for(const req of requiredStaff){
@@ -1362,17 +1380,26 @@ async function ensureStaffExist(){
         await fbSave('staff', id, newStaff).catch(e => console.error('Save error:', e));
       }
       console.log(`✅ ${req.name} を追加しました`);
-    } else if(req.isFixedDaily && req.dailyRate && exists.isFixedDaily === undefined){
-      // 日当制の設定が入っていない既存スタッフに後から補完する。
-      // （この機能より前に登録された人はフィールド自体が無く、契約書が時給になってしまう）
-      // 明示的に false や別の値が入っている場合は運用側の判断とみなして上書きしない。
-      const patch = { isFixedDaily: true, dailyRate: req.dailyRate };
-      Object.assign(exists, patch);
-      localStorage.setItem('sc_admin_staff', JSON.stringify(staffList));
-      if(window.__db){
-        await fbSave('staff', exists.id, patch).catch(e => console.error('Backfill error:', e));
+    } else {
+      // 既存スタッフへの補完。この機能より前に登録された人は
+      // フィールド自体が無いため、未設定のときだけ埋める。
+      // 明示的に値が入っている場合は運用側の判断とみなして上書きしない。
+      const patch = {};
+      if(req.isFixedDaily && req.dailyRate && exists.isFixedDaily === undefined){
+        patch.isFixedDaily = true;
+        patch.dailyRate = req.dailyRate;
       }
-      console.log(`✅ ${req.name} に日当制（¥${req.dailyRate}/日）を補完しました`);
+      if(req.farePresets && exists.farePresets === undefined){
+        patch.farePresets = req.farePresets;
+      }
+      if(Object.keys(patch).length){
+        Object.assign(exists, patch);
+        localStorage.setItem('sc_admin_staff', JSON.stringify(staffList));
+        if(window.__db){
+          await fbSave('staff', exists.id, patch).catch(e => console.error('Backfill error:', e));
+        }
+        console.log(`✅ ${req.name} の設定を補完しました`, patch);
+      }
     }
   }
 }
@@ -1766,6 +1793,69 @@ function toggleDailyRow(){
   if(h)h.style.display=(fd&&fd.checked)?'block':'none';
 }
 
+// ── 交通費プリセット（業務先ごとの片道運賃）─────────
+let _fareDraft=[];
+
+function renderFarePresets(){
+  const el=document.getElementById('mFareList');
+  if(!el)return;
+  if(!_fareDraft.length){
+    el.innerHTML='<div style="font-size:11px;color:#b08090;text-align:center;padding:8px">未登録です。「＋ 行を追加」から登録してください。</div>';
+    return;
+  }
+  const IN='padding:6px 8px;border:1.5px solid #a8cdf0;border-radius:8px;font-size:12px;font-family:\'Zen Maru Gothic\',sans-serif;color:#3a2030;background:#f7fbff;box-sizing:border-box;min-width:0';
+  el.innerHTML=_fareDraft.map((p,i)=>
+    '<div style="display:flex;gap:4px;align-items:center;margin-bottom:5px">'+
+      '<input type="text" value="'+(p.store||'')+'" oninput="setFarePresetField('+i+',\'store\',this.value)" placeholder="業務先" style="'+IN+';flex:1.1">'+
+      '<input type="text" value="'+(p.from||'')+'" oninput="setFarePresetField('+i+',\'from\',this.value)" placeholder="出発駅" style="'+IN+';flex:1">'+
+      '<span style="font-size:11px;color:#b08090">→</span>'+
+      '<input type="text" value="'+(p.to||'')+'" oninput="setFarePresetField('+i+',\'to\',this.value)" placeholder="到着駅" style="'+IN+';flex:1">'+
+      '<input type="number" min="0" value="'+(p.fare||'')+'" oninput="setFarePresetField('+i+',\'fare\',this.value)" placeholder="片道" style="'+IN+';width:64px;text-align:right">'+
+      '<button onclick="removeFarePresetRow('+i+')" title="削除" style="padding:6px 8px;background:none;border:none;color:#e05050;font-size:14px;cursor:pointer;line-height:1">×</button>'+
+    '</div>'+
+    (Number(p.fare)>0?'<div style="font-size:10px;color:#3d9a6a;margin:-2px 0 8px 4px">往復 ¥'+(Number(p.fare)*2).toLocaleString()+'</div>':'')
+  ).join('');
+}
+
+// インラインのoninputはグローバルスコープで評価されるため、
+// ブロックスコープの _fareDraft にはこの関数経由でないと届かない
+function setFarePresetField(i, key, val){
+  if(!_fareDraft[i])return;
+  _fareDraft[i][key]=val;
+}
+
+function addFarePresetRow(){
+  _fareDraft.push({store:'',from:'',to:'',fare:''});
+  renderFarePresets();
+}
+
+function removeFarePresetRow(i){
+  _fareDraft.splice(i,1);
+  renderFarePresets();
+}
+
+function saveFarePresets(){
+  if(!currentStaff)return;
+  const cleaned=[];
+  for(const p of _fareDraft){
+    const store=(p.store||'').trim();
+    const fare=parseInt(p.fare)||0;
+    if(!store&&!fare)continue;                       // 空行は無視
+    if(!store){toast('業務先を入力してください');return}
+    if(fare<=0){toast(store+' の片道運賃を入力してください');return}
+    cleaned.push({store, from:(p.from||'').trim(), to:(p.to||'').trim(), fare});
+  }
+  const patch={farePresets:cleaned};
+  Object.assign(currentStaff,patch);
+  const idx=allStaff.findIndex(s=>s.id===currentStaff.id);
+  if(idx>=0)Object.assign(allStaff[idx],patch);
+  localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
+  if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set(patch,{merge:true}).catch(e=>console.error(e));
+  _fareDraft=cleaned.map(p=>({...p}));
+  renderFarePresets();
+  toast('🚃 交通費プリセットを保存しました（'+cleaned.length+'件）');
+}
+
 function saveStaffProfile(){
   if(!currentStaff)return;
   const v=id=>{const el=document.getElementById(id);return el?(el.value||'').trim():''};
@@ -2062,6 +2152,10 @@ function openStaff(i){
   ev('mEditAccNum',currentStaff.accNum); ev('mEditAccName',currentStaff.accName);
   ev('mEditPin',currentStaff.pin);
   const eat=document.getElementById('mEditAccType'); if(eat)eat.value=currentStaff.accType||'普通';
+
+  // 交通費プリセット
+  _fareDraft=(currentStaff.farePresets||[]).map(p=>({...p}));
+  renderFarePresets();
 
   // Work table + Year summary
   renderYearSummary();
@@ -3361,15 +3455,17 @@ function buildCards(){
         <!-- 業務先 -->
         ${currentStaff?.isFixedDaily?`
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-            ${['大森','銀座'].map(s=>`<button onclick="document.getElementById('inp_store_${d}').value='${s}';document.querySelectorAll('#stb_${d} .stbtn').forEach(b=>{b.style.background='#fff';b.style.color='#d4537a';b.classList.remove('on')});event.target.style.background='#d4537a';event.target.style.color='#fff';event.target.classList.add('on')" class="stbtn${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #f9c8d5;background:${r.store===s?'#d4537a':'#fff'};color:${r.store===s?'#fff':'#d4537a'};border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">${s}</button>`).join('')}
+            ${['大森','銀座'].map(s=>`<button onclick="pickStoreForDay(${d},'${s}',this)" class="stbtn${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #f9c8d5;background:${r.store===s?'#d4537a':'#fff'};color:${r.store===s?'#fff':'#d4537a'};border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">${s}</button>`).join('')}
           </div>
           <input id="inp_store_${d}" type="hidden" value="${r.store||''}">
+          ${fareNoteHTML(d, r.store)}
         `:`
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
-            ${STORES.map(s=>`<button onclick="document.getElementById('inp_store_${d}').value='${s}';document.querySelectorAll('#stb_${d} .stbtn').forEach(b=>{b.style.background='#fff';b.style.color='#d4537a';b.classList.remove('on')});event.target.style.background='#d4537a';event.target.style.color='#fff';event.target.classList.add('on')" class="stbtn${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #f9c8d5;background:${r.store===s?'#d4537a':'#fff'};color:${r.store===s?'#fff':'#d4537a'};border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">${s}</button>`).join('')}
+            ${STORES.map(s=>`<button onclick="pickStoreForDay(${d},'${s}',this)" class="stbtn${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #f9c8d5;background:${r.store===s?'#d4537a':'#fff'};color:${r.store===s?'#fff':'#d4537a'};border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">${s}</button>`).join('')}
           </div>
           <div id="stb_${d}" style="display:none"></div>
           <input id="inp_store_${d}" type="text" value="${r.store||''}" placeholder="🏪 業務先（直接入力もOK）" style="width:100%;padding:12px;border:2px solid #f9c8d5;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Zen Maru Gothic',sans-serif;margin-bottom:12px">
+          ${fareNoteHTML(d, r.store)}
         `}
 
         <!-- 時間 -->
@@ -3380,7 +3476,6 @@ function buildCards(){
           </div>
           <input id="inp_in_${d}" type="hidden" value="09:00">
           <input id="inp_out_${d}" type="hidden" value="18:00">
-          <input id="inp_store_${d}" type="hidden" value="固定日当">
         `:`
           <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
             <input id="inp_in_${d}" type="time" value="${r.in||DEF_IN}" style="flex:1;padding:14px;border:2px solid #f9c8d5;border-radius:12px;font-size:20px;font-weight:700;text-align:center;font-family:'Zen Maru Gothic',sans-serif;background:#fff5f7">
@@ -3774,6 +3869,61 @@ function executeCopyDays(srcDay){
   render();
   toast(`📋 ${targets.length}日分にコピーしました`);
 }
+// ══════════════════════════════════════════════
+// 交通費の自動入力（業務先ごとの片道運賃プリセット）
+//   farePresets: [{store, from, to, fare}]  fare = 片道
+//   往(f1a)と復(f1b)の両方に入れるので、calcFare() で往復分が計上される
+// ══════════════════════════════════════════════
+function farePresetFor(store){
+  if(!store)return null;
+  const list=(currentStaff&&currentStaff.farePresets)||[];
+  return list.find(p=>p&&p.store===store&&Number(p.fare)>0)||null;
+}
+
+// ※ ここは外側のテンプレートリテラルの中から呼ばれるので、
+//    入れ子を避けて文字列連結で組む（過去にここの入れ子で本番が止まった）
+function fareNoteHTML(d, store){
+  const p=farePresetFor(store);
+  if(!p)return '<div id="fareNote_'+d+'" style="display:none"></div>';
+  return '<div id="fareNote_'+d+'" style="font-size:11px;color:#3d9a6a;background:#edfaf3;border:1px solid #88d4a8;border-radius:8px;padding:7px 10px;margin-bottom:10px;line-height:1.6">'+
+    '🚃 '+p.from+' ⇄ '+p.to+'　往復 <b>¥'+(Number(p.fare)*2).toLocaleString()+'</b> を自動入力（片道 ¥'+Number(p.fare).toLocaleString()+'）</div>';
+}
+
+// 交通費欄が空かどうか
+function _fareEmpty(d){
+  const g=id=>document.getElementById(id);
+  const v=id=>{const el=g(id);return el?(parseInt(el.value)||0):0};
+  return v('inp_f1a_'+d)===0 && v('inp_f1b_'+d)===0;
+}
+
+// 往復分を入力欄に反映
+function applyFarePreset(d, store){
+  const p=farePresetFor(store);
+  const note=document.getElementById('fareNote_'+d);
+  if(note)note.outerHTML=fareNoteHTML(d, store);
+  if(!p)return false;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v};
+  const f=Number(p.fare)||0;
+  set('inp_r1a_'+d, p.from+'→'+p.to);
+  set('inp_f1a_'+d, f);
+  set('inp_r1b_'+d, p.to+'→'+p.from);
+  set('inp_f1b_'+d, f);
+  return true;
+}
+
+// 業務先ボタン（選択＋ハイライト＋交通費自動入力）
+function pickStoreForDay(d, store, btn){
+  const el=document.getElementById('inp_store_'+d);
+  if(el)el.value=store;
+  if(btn&&btn.parentElement){
+    btn.parentElement.querySelectorAll('.stbtn').forEach(b=>{
+      b.style.background='#fff';b.style.color='#d4537a';b.classList.remove('on');
+    });
+    btn.style.background='#d4537a';btn.style.color='#fff';btn.classList.add('on');
+  }
+  applyFarePreset(d, store);
+}
+
 function toggleDayInput(d){
   if(window._openedDay===d)window._openedDay=null;
   else window._openedDay=d;
@@ -3782,6 +3932,11 @@ function toggleDayInput(d){
   setTimeout(()=>{
     const el=document.getElementById('dayCard_'+d);
     if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+    // 既に業務先が選ばれていて交通費が未入力なら自動入力
+    if(window._openedDay===d){
+      const sv=(document.getElementById('inp_store_'+d)||{}).value||'';
+      if(sv&&_fareEmpty(d))applyFarePreset(d, sv);
+    }
   },50);
 }
 // 入力フォームから値を取得（共通）
