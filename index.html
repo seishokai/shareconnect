@@ -1290,6 +1290,17 @@ async function ensureStaffExist(){
         await fbSave('staff', id, newStaff).catch(e => console.error('Save error:', e));
       }
       console.log(`✅ ${req.name} を追加しました`);
+    } else if(req.isFixedDaily && req.dailyRate && exists.isFixedDaily === undefined){
+      // 日当制の設定が入っていない既存スタッフに後から補完する。
+      // （この機能より前に登録された人はフィールド自体が無く、契約書が時給になってしまう）
+      // 明示的に false や別の値が入っている場合は運用側の判断とみなして上書きしない。
+      const patch = { isFixedDaily: true, dailyRate: req.dailyRate };
+      Object.assign(exists, patch);
+      localStorage.setItem('sc_admin_staff', JSON.stringify(staffList));
+      if(window.__db){
+        await fbSave('staff', exists.id, patch).catch(e => console.error('Backfill error:', e));
+      }
+      console.log(`✅ ${req.name} に日当制（¥${req.dailyRate}/日）を補完しました`);
     }
   }
 }
