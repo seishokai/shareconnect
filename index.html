@@ -1343,7 +1343,9 @@ async function approveStaffCloud(staffId){
 // Auto-add staff members if they don't exist
 async function ensureStaffExist(){
   const requiredStaff = [
-    { name: '上野望', dept: '清翔会', jobType: '歯科医療業務', rate: 2200 },
+    // aliases = 旧名。改名しても既存レコードと照合できるようにしておく
+    // （名前だけで探すので、alias が無いと新規レコードが作られて二重登録になる）
+    { name: '上野希', aliases: ['上野望'], dept: '清翔会', jobType: '歯科医療業務', rate: 2200 },
     { name: 'ルーカス', dept: '清翔会', jobType: 'SNS' },
     { name: '飯田しおん', dept: '清翔会', jobType: '歯科助手業務', isFixedDaily: true, dailyRate: 17000,
       // 片道運賃。業務先を選ぶと往復（×2）で交通費に自動入力される
@@ -1354,7 +1356,7 @@ async function ensureStaffExist(){
   ];
 
   for(const req of requiredStaff){
-    const exists = staffList.find(s => s.name === req.name);
+    const exists = staffList.find(s => s.name === req.name || (req.aliases||[]).includes(s.name));
     if(!exists){
       const id = 'u_' + Date.now() + Math.random().toString(36).substr(2, 5);
       // jobType に応じたデフォルト rate を設定
@@ -1385,6 +1387,16 @@ async function ensureStaffExist(){
       // フィールド自体が無いため、未設定のときだけ埋める。
       // 明示的に値が入っている場合は運用側の判断とみなして上書きしない。
       const patch = {};
+      // 旧名で一致した場合は新しい氏名に直す。
+      // ※ 打刻データは `${年}-${月}_${氏名}` キーなので、稼働記録がある人は改名しない
+      if(exists.name !== req.name){
+        const hasWork = Object.keys(exists.workData||{}).length > 0;
+        if(hasWork){
+          console.warn(`⚠️ ${exists.name} は稼働記録があるため改名を見送りました（手動で対応してください）`);
+        } else {
+          patch.name = req.name;
+        }
+      }
       if(req.isFixedDaily && req.dailyRate && exists.isFixedDaily === undefined){
         patch.isFixedDaily = true;
         patch.dailyRate = req.dailyRate;
