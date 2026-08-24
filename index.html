@@ -1271,12 +1271,14 @@ async function fbBoot(){
   if(tmplDoc && tmplDoc.list){ templates = tmplDoc.list; }
   
   // Load staff list from Firestore
+  let staffLoadOk = false;
   try {
     const staffSnap = await _db.collection('staff').get();
     staffList = [];
     staffSnap.forEach(doc => {
       staffList.push({...doc.data(), id: doc.id});
     });
+    staffLoadOk = true;
     // localStorageにもバックアップ
     localStorage.setItem('sc_admin_staff', JSON.stringify(staffList));
   } catch(e) {
@@ -1285,7 +1287,14 @@ async function fbBoot(){
   }
 
   // Auto-add required staff members
-  await ensureStaffExist();
+  // ※ 一覧の取得に失敗したときは絶対に走らせない。
+  //    localStorage が空の端末だと「誰も登録されていない」と誤判定し、
+  //    既存スタッフの空レコードを二重に作ってしまう（実際に本番で3件発生）。
+  if(staffLoadOk){
+    await ensureStaffExist();
+  } else {
+    console.warn('⚠️ スタッフ一覧を読めなかったため、自動登録（ensureStaffExist）をスキップしました');
+  }
 
   // Admin JSブロックのbootが定義されるまで待つ
   const _waitBoot = setInterval(()=>{
