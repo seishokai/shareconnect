@@ -977,10 +977,24 @@ window.__auth = _auth;
   <div class="ob-body">
     <div class="summary-box" id="sgDoneBox" style="margin-top:0"></div>
     <div style="margin-top:16px;background:#edfaf3;border:1.5px solid #88d4a8;border-radius:12px;padding:14px;font-size:13px;color:#3d9a6a;line-height:1.8">
-      契約書の締結が完了しました。<br>
-      この後、管理者から「打刻URL」をお送りしますので、そちらから稼働記録をご利用ください。
+      契約書の締結が完了しました。これより稼働記録（打刻）をご利用いただけます。
     </div>
-    <div style="margin-top:12px;font-size:11px;color:#b08090;text-align:center;line-height:1.8">この画面は閉じていただいて結構です。</div>
+
+    <!-- 打刻URL（署名した本人にその場で渡す） -->
+    <div style="margin-top:16px;background:#fff;border:2px solid #d4537a;border-radius:14px;padding:16px">
+      <div style="font-size:15px;font-weight:700;color:var(--acc);margin-bottom:4px">🔗 あなたの打刻ページ</div>
+      <div style="font-size:12px;color:#b08090;line-height:1.7;margin-bottom:10px">
+        毎回ここから稼働を入力します。<b>ブックマーク（ホーム画面に追加）しておいてください。</b>
+      </div>
+      <a id="sgPunchOpen" href="#" style="display:block;text-align:center;background:linear-gradient(135deg,#e0607e,#d4537a);color:#fff;text-decoration:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;box-shadow:0 3px 12px rgba(212,83,122,.3)">⏰ 打刻ページをひらく</a>
+      <div id="sgPunchUrl" style="margin-top:10px;background:#fff5f7;border:1px solid #f9c8d5;border-radius:10px;padding:9px 11px;font-size:11px;color:#b08090;word-break:break-all;line-height:1.5"></div>
+      <button onclick="sgCopyPunchUrl()" style="width:100%;margin-top:8px;padding:11px;background:#fff;border:1.5px solid #d4537a;color:#d4537a;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif">📋 リンクをコピー</button>
+      <div style="margin-top:10px;font-size:11px;color:#b08090;line-height:1.7">
+        🔒 ログインには、先ほどご登録いただいた<b>暗証番号</b>を使います。
+      </div>
+    </div>
+
+    <div style="margin-top:12px;font-size:11px;color:#b08090;text-align:center;line-height:1.8">このリンクは、この署名URLを開き直せばいつでも確認できます。</div>
   </div>
 </div>
 
@@ -3168,6 +3182,22 @@ function submitSign(){
     });
 }
 
+// 本人の打刻URL。ホストは現在地を使うので本番／ローカルどちらでも正しくなる
+function punchUrlFor(id){return location.origin+location.pathname+'?staff&id='+id}
+
+function sgCopyPunchUrl(){
+  const url=(document.getElementById('sgPunchUrl')||{}).textContent||'';
+  if(!url)return;
+  const done=()=>toast('📋 リンクをコピーしました');
+  const fallback=()=>{
+    const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);
+    ta.select();document.execCommand('copy');document.body.removeChild(ta);done();
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(done).catch(fallback);
+  } else fallback();
+}
+
 // ⑤ 完了画面
 function showSignDone(name,signedAt,already){
   document.getElementById('sgDoneMsg').textContent=already?'すでに署名済みです':'署名が完了しました！';
@@ -3176,6 +3206,14 @@ function showSignDone(name,signedAt,already){
     '<div>👤 <b>'+sgEsc(name)+'</b> 様</div>'+
     (signStaff?'<div>📋 '+sgJobTitle(signStaff.jobType)+'</div>':'')+
     '<div>✍️ 署名日：'+(isNaN(d.getTime())?'-':d.toLocaleDateString('ja-JP'))+'</div>';
+
+  // 打刻URLをその場で本人に渡す（管理者の送信待ちをなくす）
+  const purl = signStaffId ? punchUrlFor(signStaffId) : '';
+  const pu = document.getElementById('sgPunchUrl');
+  const po = document.getElementById('sgPunchOpen');
+  if(pu) pu.textContent = purl;
+  if(po) po.href = purl || '#';
+
   show('screenSignDone');
 }
 
