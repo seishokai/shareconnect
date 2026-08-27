@@ -1478,7 +1478,9 @@ let staffList=[];     // Firestore共有スタッフリスト
 let templates=[];
 let currentStaff=null;
 let departments=JSON.parse(localStorage.getItem('sc_departments')||'null')||['本部','仙豆','太田川','清翔会'];
-let jobTypes=['歯科医療業務','歯科助手業務','SNS'];
+// 新しい部門は、既にlocalStorageを持っている端末にも入れる
+['TC教育'].forEach(d=>{if(!departments.includes(d))departments.push(d)});
+let jobTypes=['歯科医療業務','歯科助手業務','SNS','TC教育'];
 let _tt;
 
 function ls(k){return localStorage.getItem(k)}
@@ -1577,7 +1579,7 @@ function createNewStaff(){
   const id='u_'+Date.now();
   // jobType に応じたデフォルト rate を設定
   let defaultRate = 2014; // デフォルト時給
-  if(jobType === 'SNS') defaultRate = 2000; // SNS投稿単価
+  defaultRate = jobUnit(jobType).defaultRate;
 
   const newStaff={
     id,name,email,phone,dept,jobType,
@@ -1844,7 +1846,29 @@ function saveStaffDept(){
   renderStaffList();refreshStatusBadges();toast('🏢 部門を変更しました');
 }
 // 単価未設定のスタッフの既定値（SNSは1投稿¥2,000、それ以外は時給¥2,014）
-function defaultRateFor(s){return (s&&s.jobType==='SNS')||(s&&s.snsOnly)?2000:DEF_RATE}
+// ── 職種ごとの報酬単位・既定単価・契約書の文言 ─────────────
+// ※ 職種を追加するときはこの表に1行足すだけ。
+//    単価表示・契約書本文・保存値がすべてここを見るので、直し忘れでズレない。
+const JOB_UNITS = {
+  'SNS': {
+    label:'1投稿', defaultRate:2000, type:'post', title:'SNS業務',
+    desc:r=>`甲の指定する媒体・内容に基づくSNS投稿業務。委託料は1投稿あたり金${r}円（税込）とする。`
+  },
+  'TC教育': {
+    label:'1回', defaultRate:50000, type:'session', title:'TC教育業務',
+    desc:r=>`甲が指定する店舗・医院におけるトリートメントコーディネーター（TC）の教育・研修業務およびその付随業務。委託料は実施1回あたり金${r}円（税込）とする。`
+  }
+};
+const JOB_DEFAULT = {
+  label:'1時間', defaultRate:DEF_RATE, type:'hour', title:'歯科医療・運営業務',
+  desc:r=>`甲が運営する各店舗における歯科医療・運営業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金${r}円（税込）とする。`
+};
+function jobUnit(jobType){return JOB_UNITS[jobType]||JOB_DEFAULT}
+
+function defaultRateFor(s){
+  if(s&&s.snsOnly)return 2000;
+  return jobUnit(s&&s.jobType).defaultRate;
+}
 // その月の単価: 月別設定 > スタッフの時給 > 職種別デフォルト
 // （月別設定を保存していない月を DEF_RATE で計算してしまわないように）
 function rateFor(s, md){return (md&&parseInt(md.rate))||(s&&parseInt(s.rate))||defaultRateFor(s)}
@@ -2352,16 +2376,13 @@ function viewStaffContract(){
 
 function buildContractHTML(name, jobType, rate, opts){
   const today=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
-  const staffRate = rate || (jobType==='SNS'?2000:DEF_RATE);
+  const u = jobUnit(jobType);
+  const staffRate = rate || u.defaultRate;
   const o = opts || {};
 
-  // スタッフ側 buildContract() と同じロジックに揃える
-  let jobTitle = '歯科医療・運営業務';
-  let jobDesc = `甲が運営する各店舗における歯科医療・運営業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金${staffRate.toLocaleString()}円（税込）とする。`;
-  if(jobType === 'SNS'){
-    jobTitle = 'SNS業務';
-    jobDesc = `甲の指定する媒体・内容に基づくSNS投稿業務。委託料は1投稿あたり金${staffRate.toLocaleString()}円（税込）とする。`;
-  }
+  // スタッフ側 buildContract() と同じ JOB_UNITS を見る
+  let jobTitle = u.title;
+  let jobDesc = u.desc(staffRate.toLocaleString());
   if(o.isFixedDaily && o.dailyRate){
     jobDesc = `甲が運営する各店舗における${jobTitle}およびその付随業務。委託料は稼働日数に応じ、1日あたり金${Number(o.dailyRate).toLocaleString()}円（税込）とする。`;
   }
@@ -2697,8 +2718,7 @@ function scCopy(text,msg){
 function staffRateLabel(s){
   if(s.isFixedDaily&&s.dailyRate)return'1日 ¥'+Number(s.dailyRate).toLocaleString();
   const r=Number(s.rate)||defaultRateFor(s);
-  if(s.jobType==='SNS')return'1投稿 ¥'+r.toLocaleString();
-  return'1時間 ¥'+r.toLocaleString();
+  return jobUnit(s.jobType).label+' ¥'+r.toLocaleString();
 }
 
 // スタッフ一覧の「✍️署名URL」ボタン
@@ -3001,8 +3021,27 @@ let signStaff=null;      // Firestoreから取得したスタッフ
 let signStaffId=null;
 let sgStep=0;            // 0:基本情報 1:口座 2:契約書・署名
 
+// ── 職種ごとの報酬単位・既定単価・契約書の文言 ─────────────
+// ※ 職種を追加するときはこの表に1行足すだけ。
+//    単価表示・契約書本文・保存値がすべてここを見るので、直し忘れでズレない。
+const JOB_UNITS = {
+  'SNS': {
+    label:'1投稿', defaultRate:2000, type:'post', title:'SNS業務',
+    desc:r=>`甲の指定する媒体・内容に基づくSNS投稿業務。委託料は1投稿あたり金${r}円（税込）とする。`
+  },
+  'TC教育': {
+    label:'1回', defaultRate:50000, type:'session', title:'TC教育業務',
+    desc:r=>`甲が指定する店舗・医院におけるトリートメントコーディネーター（TC）の教育・研修業務およびその付随業務。委託料は実施1回あたり金${r}円（税込）とする。`
+  }
+};
+const JOB_DEFAULT = {
+  label:'1時間', defaultRate:2014, type:'hour', title:'歯科医療・運営業務',
+  desc:r=>`甲が運営する各店舗における歯科医療・運営業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金${r}円（税込）とする。`
+};
+function jobUnit(jobType){return JOB_UNITS[jobType]||JOB_DEFAULT}
+
 // 契約書上の業務名（jobTypeのスタッフ区分とは別。歯科系はすべて「歯科医療・運営業務」）
-function sgJobTitle(jobType){return jobType==='SNS'?'SNS業務':'歯科医療・運営業務'}
+function sgJobTitle(jobType){return jobUnit(jobType).title}
 
 function sgEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
@@ -3022,9 +3061,9 @@ function sgFatal(msg){
 // 単価の表示ラベル
 function sgRateLabel(s){
   if(s.isFixedDaily&&s.dailyRate)return'1日 ¥'+Number(s.dailyRate).toLocaleString();
-  const r=Number(s.rate)||(s.jobType==='SNS'?2000:2014);
-  if(s.jobType==='SNS')return'1投稿 ¥'+r.toLocaleString();
-  return'1時間 ¥'+r.toLocaleString();
+  const u=jobUnit(s.jobType);
+  const r=Number(s.rate)||u.defaultRate;
+  return u.label+' ¥'+r.toLocaleString();
 }
 
 // ① 署名URLを解析し、Firestoreからスタッフを引いて契約書を表示
@@ -3166,8 +3205,8 @@ function submitSign(){
     signData:'text:'+name,
     signedAt:signedAt,
     contracts:[sgJobTitle(signStaff.jobType)],
-    contractRate:(signStaff.isFixedDaily&&signStaff.dailyRate)?Number(signStaff.dailyRate):(Number(signStaff.rate)||(signStaff.jobType==='SNS'?2000:2014)),
-    contractRateType:(signStaff.isFixedDaily&&signStaff.dailyRate)?'day':(signStaff.jobType==='SNS'?'post':'hour'),
+    contractRate:(signStaff.isFixedDaily&&signStaff.dailyRate)?Number(signStaff.dailyRate):(Number(signStaff.rate)||jobUnit(signStaff.jobType).defaultRate),
+    contractRateType:(signStaff.isFixedDaily&&signStaff.dailyRate)?'day':jobUnit(signStaff.jobType).type,
     signedVia:'url'
   };
   window.__db.collection('staff').doc(signStaffId).set(rec,{merge:true})
@@ -4295,18 +4334,13 @@ function resetApp(){
 // ── Contract HTML ──────────────────────────────────
 function buildContract(name, jobType, rate, opts){
   const today=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
-  const staffRate = rate || (jobType==='SNS'?2000:2014);
+  const u = jobUnit(jobType);
+  const staffRate = rate || u.defaultRate;
   const o = opts || {};
 
-  // jobTypeに応じた業務名と報酬を設定
-  // 歯科系（衛生士・助手）は契約書上「歯科医療・運営業務」に統一。SNSのみ別建て（単価が1投稿あたりのため）
-  let jobTitle = '歯科医療・運営業務';
-  let jobDesc = `甲が運営する各店舗における歯科医療・運営業務およびその付随業務。委託料は稼働時間に応じ、1時間あたり金${staffRate.toLocaleString()}円（税込）とする。`;
-
-  if(jobType === 'SNS'){
-    jobTitle = 'SNS業務';
-    jobDesc = `甲の指定する媒体・内容に基づくSNS投稿業務。委託料は1投稿あたり金${staffRate.toLocaleString()}円（税込）とする。`;
-  }
+  // 業務名・文言は JOB_UNITS に一本化（管理側 buildContractHTML() と同じ）
+  let jobTitle = u.title;
+  let jobDesc = u.desc(staffRate.toLocaleString());
 
   // 日額固定のスタッフ（例：1日 ¥17,000）は時給表記を日額に差し替える
   if(o.isFixedDaily && o.dailyRate){
