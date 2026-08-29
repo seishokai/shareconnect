@@ -4,8 +4,8 @@
   "description": "業務委託 稼働記録",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#fff5f7",
-  "theme_color": "#d4537a",
+  "background_color": "#f4f4f5",
+  "theme_color": "#1a1a1a",
   "orientation": "portrait",
   "icons": [
     {
