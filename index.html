@@ -224,6 +224,7 @@ input, select, textarea {
 .pill{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap}
 .pill.blue{background:#e8f1fd;color:#2f6fc4}.pill.orange{background:#fdf0dd;color:#c07a1e}.pill.gray{background:#eceef0;color:#666}
 .pill.green{background:#e3f4ea;color:#2e8b57}.pill.red{background:#fbe9e7;color:#c0503a}.pill.dim{background:#f3f4f6;color:#9aa0a8}
+.pill.purple{background:#efeafd;color:#6d4fc9}
 .mini{padding:5px 10px;border:1px solid #d7dade;background:#fff;color:#444;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:border-color .12s}
 .mini:hover{border-color:#9aa0a8}
 .mini.green{color:#2e8b57;border-color:#bfe3cf}.mini.blue{color:#2f6fc4;border-color:#c3d9f2}
@@ -2240,8 +2241,9 @@ function renderStaffList(){
         <div class="avatar">${initials}</div>
         <div style="min-width:0;display:flex;align-items:center;gap:5px;flex-wrap:wrap">
           <span style="font-size:13.5px;font-weight:700;color:#16181b">${s.name}</span>
-          ${s.department?`<span class="pill dim">${s.department}</span>`:''}
-          ${s.snsOnly?'<span class="pill red">SNS</span>':''}
+          ${(s.department||s.dept)?`<span class="pill dim">${s.department||s.dept}</span>`:''}
+          ${s.jobType?`<span class="pill purple">${s.jobType}</span>`:''}
+          ${s.snsOnly&&s.jobType!=='SNS'?'<span class="pill red">SNS</span>':''}
           ${!s.approved?'<span class="pill orange">登録待</span>':''}
           ${s.signedAt?'<span class="pill green">署名済</span>':'<span class="pill dim">未署名</span>'}
           ${s.isFixedDaily&&s.dailyRate?`<span class="pill green">日当 ¥${Number(s.dailyRate).toLocaleString()}</span>`:''}
@@ -2276,6 +2278,7 @@ function openStaff(i){
   if(sb){
     const badges=[];
     if(currentStaff.department)badges.push(`<span style="font-size:11px;color:#fff;background:#1a1a1a;padding:3px 10px;border-radius:5px;font-weight:700">${currentStaff.department}</span>`);
+    if(currentStaff.jobType)badges.push(`<span style="font-size:11px;color:#6d4fc9;background:#efeafd;padding:3px 10px;border-radius:5px;font-weight:700">${currentStaff.jobType}</span>`);
     badges.push(currentStaff.approved
       ?'<span style="font-size:11px;color:#fff;background:#4caf7d;padding:3px 10px;border-radius:5px;font-weight:700">登録承認済</span>'
       :'<span style="font-size:11px;color:#fff;background:#e0963a;padding:3px 10px;border-radius:5px;font-weight:700">登録待ち</span>');
