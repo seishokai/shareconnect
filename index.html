@@ -11,11 +11,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="シェアコネクト">
 <title>シェアコネクト</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
 <style>
 /* Base */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{background:#f4f4f5;color:#17171a;font-family:'Noto Sans JP',sans-serif;color-scheme:light;min-height:100svh}
+html,body{background:#f4f4f5;color:#17171a;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color-scheme:light;min-height:100svh}
 #adminApp,#staffApp{display:none}
 #adminApp.show,#staffApp.show{display:block}
 </style>
@@ -29,15 +29,15 @@ html,body{background:#f4f4f5;color:#17171a;font-family:'Noto Sans JP',sans-serif
   --text:#17171a;--muted:#8b8b92;--ok:#4caf7d;--warn:#e0963a;
   --sh:0 4px 20px rgba(0,0,0,.07);--shS:0 2px 8px rgba(0,0,0,.05);
 }
-html,body{min-height:100svh;background:#f4f4f5;color:#17171a;font-family:'Noto Sans JP',sans-serif;-webkit-font-smoothing:antialiased;color-scheme:light}
+html,body{min-height:100svh;background:#f4f4f5;color:#17171a;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;-webkit-font-smoothing:antialiased;color-scheme:light}
 
 .hdr{background:linear-gradient(135deg,#333333,#1a1a1a,#000000);padding:14px 18px 10px;position:sticky;top:0;z-index:60;box-shadow:0 2px 16px rgba(0,0,0,.18)}
-.hdr h1{font-size:16px;font-weight:700;color:#fff}
+.hdr h1{font-size:16px;font-weight:900;letter-spacing:.04em;color:#fff}
 .hdr p{font-size:10px;color:rgba(255,255,255,.7);margin-top:1px}
 
 /* Tab nav */
 .tab-nav{display:flex;background:#ffffff;border-bottom:1.5px solid #e2e2e5;overflow-x:auto}
-.tab-btn{flex-shrink:0;padding:11px 14px;font-family:'Noto Sans JP',sans-serif;font-size:12px;font-weight:700;border:none;background:none;cursor:pointer;color:#8b8b92;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all .2s}
+.tab-btn{flex-shrink:0;padding:11px 14px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:12px;font-weight:700;border:none;background:none;cursor:pointer;color:#8b8b92;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all .2s}
 .tab-btn.on{color:#1a1a1a;border-bottom-color:#1a1a1a}
 
 /* Panels */
@@ -84,7 +84,7 @@ html,body{min-height:100svh;background:#f4f4f5;color:#17171a;font-family:'Noto S
 .ig-l{font-size:9px;color:#8b8b92;font-weight:700;letter-spacing:.05em}
 .ig-v{font-size:13px;font-weight:600}
 .month-sel{display:flex;gap:6px;align-items:center;margin-bottom:6px}
-.month-sel select{background:#f4f4f5;border:1.5px solid #e2e2e5;border-radius:20px;font-family:'Noto Sans JP',sans-serif;font-size:13px;color:#17171a;padding:6px 10px;cursor:pointer}
+.month-sel select{background:#f4f4f5;border:1.5px solid #e2e2e5;border-radius:20px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:13px;color:#17171a;padding:6px 10px;cursor:pointer}
 .work-table{width:100%;border-collapse:collapse;font-size:11px}
 .work-table th{background:#ededef;color:#1a1a1a;padding:5px 6px;text-align:left;font-weight:700;border:1px solid #e2e2e5}
 .work-table td{padding:5px 6px;border:1px solid #e2e2e5}
@@ -94,14 +94,14 @@ html,body{min-height:100svh;background:#f4f4f5;color:#17171a;font-family:'Noto S
 .tot-v{font-size:15px;font-weight:700;color:#1a1a1a}
 .tot-l{font-size:9px;color:#8b8b92;margin-top:1px}
 .m-foot{display:flex;gap:8px;padding:12px 18px 16px;border-top:1.5px solid #e2e2e5;position:sticky;bottom:0;background:linear-gradient(180deg,transparent,var(--surface) 30%)}
-.pink-btn{background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:12px;padding:11px;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;cursor:pointer;flex:1;box-shadow:0 2px 10px rgba(0,0,0,.18)}
-.ghost-btn{background:#ededef;border:1.5px solid #e2e2e5;border-radius:12px;padding:11px;font-family:'Noto Sans JP',sans-serif;font-size:13px;cursor:pointer;color:#8b8b92;flex:1}
+.pink-btn{background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:12px;padding:11px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:13px;font-weight:700;cursor:pointer;flex:1;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.ghost-btn{background:#ededef;border:1.5px solid #e2e2e5;border-radius:12px;padding:11px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:13px;cursor:pointer;color:#8b8b92;flex:1}
 
 /* Contracts */
 .contract-item{background:#ffffff;border:1.5px solid #e2e2e5;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px}
 .ct-name{flex:1;font-size:14px;font-weight:600}
 .ct-btns{display:flex;gap:6px;flex-shrink:0}
-.ct-btn{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;border:1.5px solid #e2e2e5;background:#f4f4f5;color:#8b8b92;transition:all .15s}
+.ct-btn{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border:1.5px solid #e2e2e5;background:#f4f4f5;color:#8b8b92;transition:all .15s}
 .ct-btn:hover,.ct-btn.on{background:var(--acc);color:#fff;border-color:#1a1a1a}
 .ct-btn.danger{border-color:#e3bcbc;color:#b5443c}
 .ct-btn.danger:hover{background:var(--acc2);color:#fff;border-color:#b5443c}
@@ -110,13 +110,13 @@ html,body{min-height:100svh;background:#f4f4f5;color:#17171a;font-family:'Noto S
 .invite-url{background:#f4f4f5;border:1.5px solid #e2e2e5;border-radius:10px;padding:10px 12px;font-size:12px;word-break:break-all;color:#1a1a1a;font-family:monospace;margin-top:4px;cursor:pointer}
 
 /* Template editor */
-.tmpl-textarea{width:100%;padding:10px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-size:12px;line-height:1.7;color:#17171a;background:#ffffff;resize:vertical;min-height:200px}
+.tmpl-textarea{width:100%;padding:10px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:12px;line-height:1.7;color:#17171a;background:#ffffff;resize:vertical;min-height:200px}
 .tmpl-textarea:focus{outline:none;border-color:#1a1a1a}
-.inp{padding:10px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-size:14px;color:#17171a !important;background:#ffffff !important;width:100%;-webkit-appearance:none;appearance:none}
+.inp{padding:10px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:14px;color:#17171a !important;background:#ffffff !important;width:100%;-webkit-appearance:none;appearance:none}
 .inp:focus{outline:none;border-color:#1a1a1a}
 .lbl{font-size:11px;font-weight:700;color:#8b8b92;margin-bottom:4px}
 .field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
-.sbtn{background:var(--acc);color:#fff;border:none;border-radius:10px;padding:10px;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;cursor:pointer;width:100%}
+.sbtn{background:var(--acc);color:#fff;border:none;border-radius:10px;padding:10px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:13px;font-weight:700;cursor:pointer;width:100%}
 
 /* Notice */
 .n-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
@@ -136,7 +136,7 @@ html,body{min-height:100svh;background:#f4f4f5;color:#17171a;font-family:'Noto S
 
 /* App footer */
 .app-foot{position:fixed;bottom:0;left:0;right:0;background:#ffffff;border-top:1.5px solid #e2e2e5;padding:10px 14px;display:flex;justify-content:flex-end;gap:8px;z-index:40;box-shadow:0 -4px 20px rgba(0,0,0,.06)}
-.af{background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:12px;padding:10px 20px;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.af{background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:12px;padding:10px 20px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.18)}
 
 /* Toast */
 .toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(10px);background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;padding:10px 22px;border-radius:40px;font-size:13px;font-weight:700;opacity:0;transition:all .25s;pointer-events:none;z-index:300;white-space:nowrap}
@@ -200,18 +200,18 @@ input, select, textarea {
   --sat:#55698a;--satB:#eef1f6;--sun:#b5556a;--sunB:#f8eff1;
   --sh:0 4px 20px rgba(0,0,0,.07);--shS:0 2px 8px rgba(0,0,0,.05);
 }
-html,body{min-height:100svh;background:#f4f4f5;color:#17171a;font-family:'Noto Sans JP',sans-serif;-webkit-font-smoothing:antialiased;color-scheme:light}
+html,body{min-height:100svh;background:#f4f4f5;color:#17171a;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;-webkit-font-smoothing:antialiased;color-scheme:light}
 
 /* ─ Util ─ */
 .hidden{display:none!important}
-.pink-btn{background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:12px;padding:12px;font-family:'Noto Sans JP',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%;box-shadow:0 3px 12px rgba(0,0,0,.18);transition:opacity .2s}
+.pink-btn{background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:12px;padding:12px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%;box-shadow:0 3px 12px rgba(0,0,0,.18);transition:opacity .2s}
 .pink-btn:active{opacity:.85}
-.ghost-btn{background:none;border:1.5px solid #e2e2e5;border-radius:12px;padding:11px;font-family:'Noto Sans JP',sans-serif;font-size:13px;cursor:pointer;color:#8b8b92;width:100%;transition:all .15s}
+.ghost-btn{background:none;border:1.5px solid #e2e2e5;border-radius:12px;padding:11px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:13px;cursor:pointer;color:#8b8b92;width:100%;transition:all .15s}
 .ghost-btn:hover{border-color:var(--acc);color:var(--acc)}
-.danger-btn{background:none;border:1.5px solid #e3bcbc;border-radius:12px;padding:9px;font-family:'Noto Sans JP',sans-serif;font-size:12px;cursor:pointer;color:var(--acc2);width:100%;margin-top:4px}
+.danger-btn{background:none;border:1.5px solid #e3bcbc;border-radius:12px;padding:9px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:12px;cursor:pointer;color:var(--acc2);width:100%;margin-top:4px}
 .field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
 .lbl{font-size:11px;font-weight:700;color:#8b8b92;letter-spacing:.05em}
-.inp{padding:12px 14px;border:1.5px solid #e2e2e5;border-radius:12px;font-family:'Noto Sans JP',sans-serif;font-size:15px;color:#17171a;background:#fff;width:100%;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none}
+.inp{padding:12px 14px;border:1.5px solid #e2e2e5;border-radius:12px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:15px;color:#17171a;background:#fff;width:100%;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none}
 .inp:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(0,0,0,.06)}
 .inp.err{border-color:#e05050}
 .err-msg{font-size:11px;color:#e05050;display:none}.err-msg.on{display:block}
@@ -225,14 +225,14 @@ html,body{min-height:100svh;background:#f4f4f5;color:#17171a;font-family:'Noto S
 /* ─ Onboarding hero ─ */
 .ob-hero{background:linear-gradient(135deg,#333333,#1a1a1a,#000000);padding:32px 24px 16px;text-align:center}
 .ob-hero .ico{font-size:44px;margin-bottom:8px}
-.ob-hero h1{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.4}
+.ob-hero h1{font-size:20px;font-weight:900;letter-spacing:.03em;color:#fff;margin-bottom:4px;line-height:1.4}
 .ob-hero p{font-size:12px;color:rgba(255,255,255,.8);line-height:1.6}
 .ob-steps{display:flex;justify-content:center;gap:6px;padding:12px 0 0}
 .ob-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);transition:all .3s}
 .ob-dot.on{background:#fff;width:24px;border-radius:4px}
 .ob-body{flex:1;padding:16px 18px 90px;overflow-y:auto;background:#f4f4f5}
 .ob-foot{position:fixed;bottom:0;left:0;right:0;padding:10px 18px;background:#ffffff;border-top:1.5px solid var(--border);display:flex;gap:8px;box-shadow:0 -4px 16px rgba(0,0,0,.06);z-index:50}
-.ob-back{flex:1;background:#ededef;border:1.5px solid #e2e2e5;border-radius:12px;padding:12px;font-family:'Noto Sans JP',sans-serif;font-size:14px;cursor:pointer;color:#8b8b92}
+.ob-back{flex:1;background:#ededef;border:1.5px solid #e2e2e5;border-radius:12px;padding:12px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:14px;cursor:pointer;color:#8b8b92}
 .ob-next{flex:2}
 
 /* ─ Contract ─ */
@@ -252,14 +252,14 @@ html,body{min-height:100svh;background:#f4f4f5;color:#17171a;font-family:'Noto S
 
 /* ─ Main app ─ */
 .app-hdr{background:linear-gradient(135deg,#333333,#1a1a1a,#000000);padding:13px 18px 10px;position:sticky;top:0;z-index:60;box-shadow:0 2px 16px rgba(0,0,0,.18)}
-.app-hdr h1{font-size:16px;font-weight:700;color:#fff}
+.app-hdr h1{font-size:16px;font-weight:900;letter-spacing:.04em;color:#fff}
 .app-hdr p{font-size:10px;color:rgba(255,255,255,.7);margin-top:1px}
 .top-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:8px 14px;background:#ffffff;border-bottom:1.5px solid var(--border);position:sticky;top:50px;z-index:50;box-shadow:var(--shS)}
-.top-sel{background:#f4f4f5;border:1.5px solid #e2e2e5;border-radius:20px;font-family:'Noto Sans JP',sans-serif;font-size:13px;color:#17171a;padding:6px 12px;cursor:pointer}
+.top-sel{background:#f4f4f5;border:1.5px solid #e2e2e5;border-radius:20px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:13px;color:#17171a;padding:6px 12px;cursor:pointer}
 .top-sel:focus{outline:none;border-color:var(--acc)}
 .sy{width:88px}.sm{width:70px}.ss{flex:1;min-width:100px}
 .tab-nav{display:flex;background:#ffffff;border-bottom:1.5px solid var(--border)}
-.tab-btn{flex:1;padding:10px 4px;font-family:'Noto Sans JP',sans-serif;font-size:12px;font-weight:700;border:none;background:none;cursor:pointer;color:#8b8b92;border-bottom:2.5px solid transparent;transition:all .2s}
+.tab-btn{flex:1;padding:10px 4px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:12px;font-weight:700;border:none;background:none;cursor:pointer;color:#8b8b92;border-bottom:2.5px solid transparent;transition:all .2s}
 .tab-btn.on{color:var(--acc);border-bottom-color:var(--acc)}
 .summary-bar{display:flex;background:#ffffff;border-bottom:1.5px solid var(--border)}
 .si{flex:1;padding:8px 2px;text-align:center;border-right:1px solid var(--border)}
@@ -280,9 +280,9 @@ html,body{min-height:100svh;background:#f4f4f5;color:#17171a;font-family:'Noto S
 .day-chip.today .dn{color:#4a90d9}
 #sOverlay.open{opacity:1;pointer-events:all}
 #snOverlay.open{opacity:1;pointer-events:all}
-.detail-tab{flex:1;padding:8px;font-size:12px;font-weight:700;border:none;background:none;cursor:pointer;color:#8b8b92;border-bottom:2.5px solid transparent;font-family:'Noto Sans JP',sans-serif;transition:all .15s}
+.detail-tab{flex:1;padding:8px;font-size:12px;font-weight:700;border:none;background:none;cursor:pointer;color:#8b8b92;border-bottom:2.5px solid transparent;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;transition:all .15s}
 .detail-tab.on{color:#1a1a1a;border-bottom-color:#1a1a1a}
-.dept-btn{padding:8px 16px;border:none;border-radius:24px;background:#ededef;font-size:12px;font-weight:700;color:#1a1a1a;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.dept-btn{padding:8px 16px;border:none;border-radius:24px;background:#ededef;font-size:12px;font-weight:700;color:#1a1a1a;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.05)}
 .dept-btn.on{background:linear-gradient(135deg,#333333,#1a1a1a);color:#fff;box-shadow:0 3px 12px rgba(0,0,0,.18)}
 .dept-btn:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.08)}
 .day-hdr{font-size:11px;font-weight:700;color:#8b8b92;text-align:center;padding:4px 0}
@@ -310,7 +310,7 @@ html,body{min-height:100svh;background:#f4f4f5;color:#17171a;font-family:'Noto S
 .wc-store{font-size:12px;font-weight:700;flex-shrink:0;min-width:28px}
 .wc-time{font-size:11px;color:#8b8b92;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .wc-pay{font-size:13px;font-weight:700;color:var(--acc);flex-shrink:0}
-.wc-edit{background:var(--accL);border:1.5px solid #e2e2e5;border-radius:20px;padding:3px 10px;font-size:11px;cursor:pointer;color:var(--acc);font-weight:700;font-family:'Noto Sans JP',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.wc-edit{background:var(--accL);border:1.5px solid #e2e2e5;border-radius:20px;padding:3px 10px;font-size:11px;cursor:pointer;color:var(--acc);font-weight:700;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0}
 .wc-edit:hover{background:var(--acc);color:#fff;border-color:var(--acc)}
 
 /* ─ Settings tab ─ */
@@ -318,18 +318,18 @@ html,body{min-height:100svh;background:#f4f4f5;color:#17171a;font-family:'Noto S
 .sc-head{padding:10px 14px;background:#ededef;border-bottom:1px solid var(--border);font-weight:700;font-size:13px;color:var(--acc)}
 .sc-body{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
 .s-info{font-size:12px;color:#8b8b92;line-height:1.6;background:#f4f4f5;border-radius:10px;padding:10px 12px;border:1px solid #e2e2e5}
-.s-inp{padding:8px 10px;border:1.5px solid #e2e2e5;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-size:13px;color:#17171a;background:#f4f4f5;width:100%}
+.s-inp{padding:8px 10px;border:1.5px solid #e2e2e5;border-radius:10px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:13px;color:#17171a;background:#f4f4f5;width:100%}
 .s-inp:focus{outline:none;border-color:var(--acc)}
 .s-lbl{font-size:10px;font-weight:700;color:#8b8b92;margin-bottom:3px}
 .sf{display:flex;flex-direction:column;gap:3px}
 .preset-row{display:flex;gap:6px;align-items:center;padding:6px 8px;background:#f4f4f5;border-radius:10px;border:1px solid #e2e2e5;margin-bottom:5px}
 .pr-lbl{font-size:10px;font-weight:700;color:#8b8b92;width:16px;flex-shrink:0}
-.pr-route{flex:1;padding:6px 8px;border:1.5px solid #e2e2e5;border-radius:8px;font-family:'Noto Sans JP',sans-serif;font-size:12px;color:#17171a;background:#ffffff}
+.pr-route{flex:1;padding:6px 8px;border:1.5px solid #e2e2e5;border-radius:8px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:12px;color:#17171a;background:#ffffff}
 .pr-route:focus{outline:none;border-color:var(--acc)}
 .pr-fare{width:60px;padding:6px 5px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;text-align:right;color:#17171a;background:#ffffff}
 .pr-fare:focus{outline:none;border-color:var(--acc)}
 .pr-yen{font-size:10px;color:#8b8b92;flex-shrink:0}
-.sbtn{background:var(--acc);color:#fff;border:none;border-radius:10px;padding:10px;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-top:4px}
+.sbtn{background:var(--acc);color:#fff;border:none;border-radius:10px;padding:10px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-top:4px}
 
 /* ─ Entry modal ─ */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s}
@@ -346,37 +346,37 @@ html,body{min-height:100svh;background:#f4f4f5;color:#17171a;font-family:'Noto S
 .m-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .mf{display:flex;flex-direction:column;gap:4px}
 .ml{font-size:10px;font-weight:700;color:#8b8b92}
-.mi{padding:10px 12px;border:1.5px solid #e2e2e5;border-radius:12px;font-family:'Noto Sans JP',sans-serif;font-size:15px;color:#17171a;background:#f4f4f5;width:100%;transition:border-color .2s,box-shadow .2s}
+.mi{padding:10px 12px;border:1.5px solid #e2e2e5;border-radius:12px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:15px;color:#17171a;background:#f4f4f5;width:100%;transition:border-color .2s,box-shadow .2s}
 .mi:focus{outline:none;border-color:var(--acc);background:#fff;box-shadow:0 0 0 3px rgba(0,0,0,.06)}
 .stepper{display:flex;align-items:center;gap:6px}
-.stepper input{flex:1;padding:10px 8px;border:1.5px solid #e2e2e5;border-radius:12px;font-family:'Noto Sans JP',sans-serif;font-size:15px;color:#17171a;background:#f4f4f5;text-align:center;transition:border-color .2s}
+.stepper input{flex:1;padding:10px 8px;border:1.5px solid #e2e2e5;border-radius:12px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:15px;color:#17171a;background:#f4f4f5;text-align:center;transition:border-color .2s}
 .stepper input:focus{outline:none;border-color:var(--acc);background:#fff}
 .step-btn{width:34px;height:34px;border-radius:50%;border:1.5px solid #e2e2e5;background:#ededef;color:var(--acc);font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
 .step-btn:hover{background:var(--acc);color:#fff;border-color:var(--acc)}
 .rest-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.rest-row input{width:76px;padding:9px 10px;border:1.5px solid #e2e2e5;border-radius:12px;font-family:'Noto Sans JP',sans-serif;font-size:15px;color:#17171a;background:#f4f4f5;text-align:center}
+.rest-row input{width:76px;padding:9px 10px;border:1.5px solid #e2e2e5;border-radius:12px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:15px;color:#17171a;background:#f4f4f5;text-align:center}
 .rest-row input:focus{outline:none;border-color:var(--acc);background:#fff}
-.rc{padding:6px 11px;border:1.5px solid #e2e2e5;border-radius:20px;background:#f4f4f5;font-family:'Noto Sans JP',sans-serif;font-size:12px;font-weight:700;cursor:pointer;color:#8b8b92;transition:all .15s;white-space:nowrap}
+.rc{padding:6px 11px;border:1.5px solid #e2e2e5;border-radius:20px;background:#f4f4f5;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:12px;font-weight:700;cursor:pointer;color:#8b8b92;transition:all .15s;white-space:nowrap}
 .rc.on{background:var(--acc);color:#fff;border-color:var(--acc)}
 .work-prev{background:linear-gradient(135deg,var(--accL),#f4f4f5);border:1.5px solid #e2e2e5;border-radius:12px;padding:10px 14px;text-align:center;font-size:13px;font-weight:700;color:var(--acc);line-height:1.6}
 .store-tags{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
-.store-tag{flex-shrink:0;padding:8px 20px;border:1.5px solid #e2e2e5;border-radius:20px;background:#f4f4f5;font-family:'Noto Sans JP',sans-serif;font-size:14px;cursor:pointer;transition:all .18s;white-space:nowrap}
+.store-tag{flex-shrink:0;padding:8px 20px;border:1.5px solid #e2e2e5;border-radius:20px;background:#f4f4f5;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:14px;cursor:pointer;transition:all .18s;white-space:nowrap}
 .store-tag.on{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 .t-block{background:#f4f4f5;border:1.5px solid #e2e2e5;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:7px}
 .t-blbl{font-size:9px;font-weight:700;color:var(--acc);letter-spacing:.06em;text-transform:uppercase}
 .t-row{display:flex;gap:6px;align-items:center}
 .t-badge{font-size:10px;font-weight:700;color:#8b8b92;width:14px;flex-shrink:0}
-.t-rt{flex:1;padding:8px 10px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:13px;color:#17171a;background:#ffffff;min-width:0;font-family:'Noto Sans JP',sans-serif}
+.t-rt{flex:1;padding:8px 10px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:13px;color:#17171a;background:#ffffff;min-width:0;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif}
 .t-rt:focus{outline:none;border-color:var(--acc)}
 .t-fr{width:64px;padding:8px 6px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:13px;text-align:right;color:#17171a;background:#ffffff}
 .t-fr:focus{outline:none;border-color:var(--acc)}
 .t-yen{font-size:11px;color:#8b8b92;flex-shrink:0}
 .m-foot{display:flex;gap:8px;padding:12px 18px 16px;border-top:1.5px solid var(--border);position:sticky;bottom:0;background:linear-gradient(180deg,transparent,var(--surface) 30%)}
-.m-cancel{flex:1;background:#ededef;border:1.5px solid #e2e2e5;border-radius:14px;padding:12px;font-family:'Noto Sans JP',sans-serif;font-size:14px;cursor:pointer;color:#8b8b92}
-.m-del{background:none;border:1.5px solid #e2e2e5;border-radius:14px;padding:12px 14px;font-size:13px;cursor:pointer;color:var(--acc);font-family:'Noto Sans JP',sans-serif}
-.m-ok{flex:2;background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:14px;padding:12px;font-family:'Noto Sans JP',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.22)}
+.m-cancel{flex:1;background:#ededef;border:1.5px solid #e2e2e5;border-radius:14px;padding:12px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:14px;cursor:pointer;color:#8b8b92}
+.m-del{background:none;border:1.5px solid #e2e2e5;border-radius:14px;padding:12px 14px;font-size:13px;cursor:pointer;color:var(--acc);font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif}
+.m-ok{flex:2;background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:14px;padding:12px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.22)}
 .m-ok:active{transform:scale(.98)}
-.wa-btn{flex:1;padding:10px 4px;border:2px solid #e2e2e5;border-radius:12px;background:#f4f4f5;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;cursor:pointer;color:#8b8b92;transition:all .15s;text-align:center}
+.wa-btn{flex:1;padding:10px 4px;border:2px solid #e2e2e5;border-radius:12px;background:#f4f4f5;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:13px;font-weight:700;cursor:pointer;color:#8b8b92;transition:all .15s;text-align:center}
 .wa-btn.on{background:#1a1a1a;color:#fff;border-color:#1a1a1a;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 
 /* ─ Notice modal ─ */
@@ -387,9 +387,9 @@ html,body{min-height:100svh;background:#f4f4f5;color:#17171a;font-family:'Noto S
 .n-head h2{font-size:16px;font-weight:700;color:var(--acc);flex:1}
 .n-body{padding:14px 18px}
 .n-actions{display:flex;gap:8px;padding:12px 18px 16px;border-top:1px solid var(--border)}
-.n-print{flex:1;background:#ededef;border:1.5px solid #e2e2e5;border-radius:12px;padding:11px;font-family:'Noto Sans JP',sans-serif;font-size:13px;cursor:pointer;color:#17171a}
-.n-close{flex:1;background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:12px;padding:11px;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
-#nContent{font-family:'Noto Sans JP',sans-serif;color:#333}
+.n-print{flex:1;background:#ededef;border:1.5px solid #e2e2e5;border-radius:12px;padding:11px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:13px;cursor:pointer;color:#17171a}
+.n-close{flex:1;background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:12px;padding:11px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+#nContent{font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#333}
 .nt{text-align:center;margin-bottom:12px}.nt h3{font-size:17px;font-weight:700;color:var(--acc)}.nt p{font-size:11px;color:#888;margin-top:3px}
 .n-to{font-size:14px;font-weight:700;margin-bottom:3px}.n-from{font-size:12px;color:#888;margin-bottom:10px}
 .n-tbl{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px}
@@ -403,7 +403,7 @@ html,body{min-height:100svh;background:#f4f4f5;color:#17171a;font-family:'Noto S
 
 /* ─ App footer ─ */
 .app-foot{position:fixed;bottom:0;left:0;right:0;background:#ffffff;border-top:1.5px solid var(--border);padding:8px 12px;display:flex;gap:6px;box-shadow:0 -4px 20px rgba(0,0,0,.06);z-index:40}
-.af-btn{flex:1;border-radius:12px;padding:9px;font-family:'Noto Sans JP',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:none}
+.af-btn{flex:1;border-radius:12px;padding:9px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:none}
 .af-ghost{background:#ededef;border:1.5px solid #e2e2e5!important;border-radius:12px;color:#8b8b92}
 .af-pink{background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;box-shadow:0 2px 10px rgba(0,0,0,.18)}
 .af-dark{background:linear-gradient(135deg,#000000,#1a1a1a);color:#fff;box-shadow:0 2px 10px rgba(0,0,0,.18)}
@@ -464,7 +464,8 @@ window.__auth = _auth;
   <div style="background:#fff;border-radius:24px;padding:32px 24px;width:100%;max-width:360px;box-shadow:0 8px 40px rgba(0,0,0,.2)">
     <div style="text-align:center;margin-bottom:24px">
       <div style="width:56px;height:56px;margin:0 auto 12px;background:#111;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:900;letter-spacing:.03em">SC</div>
-      <h2 style="font-size:22px;font-weight:700;color:#1a1a1a;margin-bottom:4px">シェアコネクト</h2>
+      <h2 style="font-size:24px;font-weight:900;color:#111;letter-spacing:.05em;margin-bottom:2px">シェアコネクト</h2>
+      <p style="font-size:10px;font-weight:600;color:#b0b0b6;letter-spacing:.38em;margin-bottom:10px">SHARE CONNECT</p>
       <p style="font-size:12px;color:#8b8b92">管理者ログイン</p>
     </div>
     <input id="loginEmail" type="hidden" value="admin@shareconnect.jp">
@@ -472,7 +473,7 @@ window.__auth = _auth;
       <div style="font-size:11px;font-weight:700;color:#8b8b92;margin-bottom:4px">パスワード</div>
       <input id="loginPassword" type="password" placeholder="パスワードを入力" style="width:100%;padding:12px 14px;border:1.5px solid #e2e2e5;border-radius:12px;font-size:14px;color:#17171a;background:#f4f4f5;box-sizing:border-box;-webkit-appearance:none" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <button onclick="doLogin()" style="width:100%;padding:14px;background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.25)">ログイン</button>
+    <button onclick="doLogin()" style="width:100%;padding:14px;background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.25)">ログイン</button>
     <div id="loginError" style="margin-top:12px;color:#e05050;font-size:12px;text-align:center;display:none"></div>
   </div>
 </div>
@@ -485,7 +486,7 @@ window.__auth = _auth;
 <style>@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}</style>
 <div id="adminApp">
 <header class="hdr">
-  <h1>シェアコネクト 管理画面</h1><button onclick="doLogout()" style="position:absolute;right:14px;top:14px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:20px;padding:4px 12px;font-size:11px;cursor:pointer;font-family:'Noto Sans JP',sans-serif">ログアウト</button>
+  <h1>シェアコネクト 管理画面</h1><button onclick="doLogout()" style="position:absolute;right:14px;top:14px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:20px;padding:4px 12px;font-size:11px;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">ログアウト</button>
   <p>スタッフ管理・契約書・支払い通知書</p>
 </header>
 
@@ -503,8 +504,8 @@ window.__auth = _auth;
   <div id="notifCenter" style="display:none;background:linear-gradient(135deg,#fff3e6,#fffaf0);border:1.5px solid #f0c060;border-radius:12px;padding:10px 14px;margin-bottom:10px;cursor:pointer" onclick="scrollToFirstSubmitted()"></div>
   <!-- 検索 -->
   <div style="display:flex;gap:6px;margin-bottom:8px">
-    <input type="text" id="staffSearch" placeholder="🔍 名前で検索" oninput="renderStaffList()" style="flex:1;padding:8px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:13px;font-family:'Noto Sans JP',sans-serif;background:#f4f4f5">
-    <select id="statusFilter" onchange="renderStaffList()" style="padding:8px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:12px;font-family:'Noto Sans JP',sans-serif;background:#f4f4f5">
+    <input type="text" id="staffSearch" placeholder="🔍 名前で検索" oninput="renderStaffList()" style="flex:1;padding:8px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;background:#f4f4f5">
+    <select id="statusFilter" onchange="renderStaffList()" style="padding:8px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:12px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;background:#f4f4f5">
       <option value="all">全状態</option>
       <option value="pending">承認待ち</option>
       <option value="submitted">申請中</option>
@@ -518,12 +519,12 @@ window.__auth = _auth;
   </div>
   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px" id="deptFilter"></div>
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:10px 12px;background:#fff;border:1.5px solid #e2e2e5;border-radius:12px">
-    <button onclick="changeListMonth(-1)" style="padding:6px 10px;border:none;background:#ededef;color:#1a1a1a;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">◀</button>
+    <button onclick="changeListMonth(-1)" style="padding:6px 10px;border:none;background:#ededef;color:#1a1a1a;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">◀</button>
     <div style="flex:1;text-align:center;font-size:15px;font-weight:700;color:#1a1a1a" id="listMonthLabel">2026年4月</div>
-    <button onclick="changeListMonth(1)" style="padding:6px 10px;border:none;background:#ededef;color:#1a1a1a;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">▶</button>
-    <button onclick="resetListMonth()" style="padding:6px 12px;border:none;background:#1a1a1a;color:#fff;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">今月</button>
-    <button onclick="exportPaymentCSV()" style="padding:6px 10px;border:1.5px solid #4a90d9;background:#fff;color:#4a90d9;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">📥 CSV</button>
-    <button onclick="openAddStaffModal()" style="padding:6px 12px;border:none;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">➕ スタッフ追加</button>
+    <button onclick="changeListMonth(1)" style="padding:6px 10px;border:none;background:#ededef;color:#1a1a1a;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">▶</button>
+    <button onclick="resetListMonth()" style="padding:6px 12px;border:none;background:#1a1a1a;color:#fff;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">今月</button>
+    <button onclick="exportPaymentCSV()" style="padding:6px 10px;border:1.5px solid #4a90d9;background:#fff;color:#4a90d9;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">📥 CSV</button>
+    <button onclick="openAddStaffModal()" style="padding:6px 12px;border:none;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">➕ スタッフ追加</button>
   </div>
   <div id="staffList"><div class="empty">登録スタッフがいません</div></div>
 </div>
@@ -554,15 +555,15 @@ window.__auth = _auth;
       </div>
       <div class="field">
         <div class="lbl">🏢 部門を選択</div>
-        <select class="inp" id="inviteDept" style="font-family:'Noto Sans JP',sans-serif"></select>
+        <select class="inp" id="inviteDept" style="font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif"></select>
       </div>
       <div class="field">
         <div class="lbl">📋 契約書テンプレートを選択</div>
-        <select class="inp" id="inviteContract" style="font-family:'Noto Sans JP',sans-serif"></select>
+        <select class="inp" id="inviteContract" style="font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif"></select>
       </div>
       <div class="field" style="margin:8px 0">
         <div class="lbl" style="font-size:11px;font-weight:700;color:#8b8b92;margin-bottom:4px">📅 契約締結日</div>
-        <input type="date" class="inp" id="inviteSignDate" style="font-family:'Noto Sans JP',sans-serif;padding:8px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:14px;color:#17171a;background:#f4f4f5">
+        <input type="date" class="inp" id="inviteSignDate" style="font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;padding:8px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:14px;color:#17171a;background:#f4f4f5">
       </div>
       <button class="sbtn" onclick="generateInvite()">🔗 招待URLを発行する</button>
       <div id="inviteResult" style="display:none;margin-top:14px">
@@ -585,7 +586,7 @@ window.__auth = _auth;
       </div>
       <div class="field">
         <div class="lbl">👤 スタッフを選択</div>
-        <select class="inp" id="signStaffSel" style="font-family:'Noto Sans JP',sans-serif" onchange="renderSignUrl()"></select>
+        <select class="inp" id="signStaffSel" style="font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onchange="renderSignUrl()"></select>
       </div>
       <button class="sbtn" style="background:linear-gradient(135deg,#4caf7d,#3d9a6a)" onclick="renderSignUrl(true)">✍️ 署名URLを発行する</button>
       <div id="signUrlResult" style="display:none;margin-top:14px">
@@ -623,9 +624,9 @@ window.__auth = _auth;
     <div style="background:#fff;border:2px solid #1a1a1a;border-radius:16px;padding:14px;margin-bottom:10px;box-shadow:0 4px 16px rgba(0,0,0,.05)">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
         <span style="font-size:15px;font-weight:700;color:#1a1a1a">📅</span>
-        <select id="mYear" style="padding:6px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-weight:700;font-family:'Noto Sans JP',sans-serif;color:#17171a"></select>
-        <select id="mMonth" style="padding:6px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-weight:700;font-family:'Noto Sans JP',sans-serif;color:#17171a"></select>
-        <button style="padding:6px 14px;background:var(--acc);color:#fff;border:none;border-radius:8px;font-family:'Noto Sans JP',sans-serif;font-size:12px;font-weight:700;cursor:pointer" onclick="loadWorkData()">表示</button>
+        <select id="mYear" style="padding:6px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-weight:700;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a"></select>
+        <select id="mMonth" style="padding:6px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-weight:700;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a"></select>
+        <button style="padding:6px 14px;background:var(--acc);color:#fff;border:none;border-radius:8px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:12px;font-weight:700;cursor:pointer" onclick="loadWorkData()">表示</button>
       </div>
       <div id="mWorkTable"></div>
     </div>
@@ -636,19 +637,19 @@ window.__auth = _auth;
       <div style="padding:12px 4px;display:flex;flex-direction:column;gap:10px">
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:11px;font-weight:700;color:#8b8b92;min-width:50px">🏢 部門</span>
-          <select id="mDept" class="inp" style="flex:1;padding:6px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5" onchange="saveStaffDept()"></select>
+          <select id="mDept" class="inp" style="flex:1;padding:6px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5" onchange="saveStaffDept()"></select>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:11px;font-weight:700;color:#8b8b92;min-width:50px">💰 時給</span>
-          <input type="number" id="mRate" placeholder="2014" style="flex:1;padding:6px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box">
+          <input type="number" id="mRate" placeholder="2014" style="flex:1;padding:6px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box">
           <span style="font-size:11px;color:#8b8b92">円/時</span>
-          <button onclick="saveStaffRate()" style="padding:6px 10px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">保存</button>
+          <button onclick="saveStaffRate()" style="padding:6px 10px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">保存</button>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           <label style="font-size:11px;font-weight:700;color:#3d9a6a;display:flex;align-items:center;gap:4px;cursor:pointer;min-width:76px"><input type="checkbox" id="mFixedDaily" onchange="toggleDailyRow()">📅 日当制</label>
-          <input type="number" id="mDailyRate" placeholder="17000" style="flex:1;min-width:90px;padding:6px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box">
+          <input type="number" id="mDailyRate" placeholder="17000" style="flex:1;min-width:90px;padding:6px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box">
           <span style="font-size:11px;color:#8b8b92">円/日</span>
-          <button onclick="saveStaffDaily()" style="padding:6px 10px;background:#3d9a6a;color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">保存</button>
+          <button onclick="saveStaffDaily()" style="padding:6px 10px;background:#3d9a6a;color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">保存</button>
         </div>
         <div id="mDailyHint" style="display:none;font-size:11px;color:#3d9a6a;background:#edfaf3;border:1px solid #88d4a8;border-radius:8px;padding:6px 10px;line-height:1.6">日当制のスタッフです。契約書・打刻画面とも時給ではなくこの日額が使われます。</div>
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
@@ -656,7 +657,7 @@ window.__auth = _auth;
           <label style="font-size:12px;color:#8b8b92;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" id="mInvoice" onchange="saveStaffInvoice()">📄 インボイス登録</label>
           <label style="font-size:12px;color:#b5443c;display:flex;align-items:center;gap:4px;cursor:pointer;font-weight:700"><input type="checkbox" id="mSnsOnly" onchange="saveStaffSnsOnly()">📸 SNSのみのスタッフ</label>
         </div>
-        <button style="font-size:12px;padding:8px 14px;background:#1a1a1a;border:none;border-radius:10px;cursor:pointer;color:#fff;font-family:'Noto Sans JP',sans-serif;font-weight:700" onclick="copyStaffURL()">🔗 打刻URLをコピー</button>
+        <button style="font-size:12px;padding:8px 14px;background:#1a1a1a;border:none;border-radius:10px;cursor:pointer;color:#fff;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-weight:700" onclick="copyStaffURL()">🔗 打刻URLをコピー</button>
       </div>
     </details>
 
@@ -687,29 +688,29 @@ window.__auth = _auth;
           ※ 氏名は変更できません（過去の稼働記録が氏名で紐づいているため）
         </div>
         <div class="m-sec-ttl" style="margin-bottom:2px">👤 基本情報</div>
-        <input type="date" id="mEditBirth" placeholder="生年月日" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
-        <input type="tel" id="mEditPhone" placeholder="電話番号" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
-        <input type="email" id="mEditEmail" placeholder="メールアドレス" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
-        <input type="text" id="mEditAddr" placeholder="住所" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
-        <input type="text" id="mEditStation" placeholder="最寄駅" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
-        <input type="text" id="mEditInvoiceNum" placeholder="インボイス登録番号（任意）" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
+        <input type="date" id="mEditBirth" placeholder="生年月日" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
+        <input type="tel" id="mEditPhone" placeholder="電話番号" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
+        <input type="email" id="mEditEmail" placeholder="メールアドレス" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
+        <input type="text" id="mEditAddr" placeholder="住所" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
+        <input type="text" id="mEditStation" placeholder="最寄駅" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
+        <input type="text" id="mEditInvoiceNum" placeholder="インボイス登録番号（任意）" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
 
         <div class="m-sec-ttl" style="margin:6px 0 2px">🏦 振込先口座</div>
-        <input type="text" id="mEditBank" placeholder="銀行名" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
+        <input type="text" id="mEditBank" placeholder="銀行名" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
         <div style="display:flex;gap:6px">
-          <input type="text" id="mEditBranch" placeholder="支店名" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
-          <select id="mEditAccType" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%;flex:0 0 90px"><option value="普通">普通</option><option value="当座">当座</option></select>
+          <input type="text" id="mEditBranch" placeholder="支店名" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
+          <select id="mEditAccType" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%;flex:0 0 90px"><option value="普通">普通</option><option value="当座">当座</option></select>
         </div>
         <div style="display:flex;gap:6px">
-          <input type="text" id="mEditAccNum" placeholder="口座番号" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
-          <input type="text" id="mEditAccName" placeholder="口座名義（カナ）" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
+          <input type="text" id="mEditAccNum" placeholder="口座番号" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
+          <input type="text" id="mEditAccName" placeholder="口座名義（カナ）" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
         </div>
 
         <div class="m-sec-ttl" style="margin:6px 0 2px">🔒 暗証番号</div>
-        <input type="text" id="mEditPin" placeholder="4桁以上（空欄で保存すると未設定のまま）" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
+        <input type="text" id="mEditPin" placeholder="4桁以上（空欄で保存すると未設定のまま）" style="padding:7px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box;width:100%">
         <div style="font-size:11px;color:#e0963a;line-height:1.6">未設定の間は、打刻URLを知っていれば誰でも開けてしまいます。</div>
 
-        <button onclick="saveStaffProfile()" style="margin-top:6px;padding:10px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">💾 保存する</button>
+        <button onclick="saveStaffProfile()" style="margin-top:6px;padding:10px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">💾 保存する</button>
       </div>
     </details>
 
@@ -721,17 +722,17 @@ window.__auth = _auth;
           片道の運賃を登録しておくと、本人が勤怠でその業務先を選んだときに<b>往復（×2）</b>で自動入力されます。
         </div>
         <div id="mFareList"></div>
-        <button onclick="addFarePresetRow()" style="width:100%;margin-top:6px;padding:8px;background:#fff;border:1.5px dashed #4a90d9;color:#4a90d9;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">＋ 行を追加</button>
-        <button onclick="saveFarePresets()" style="width:100%;margin-top:6px;padding:10px;background:linear-gradient(135deg,#4a90d9,#3a7ec9);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">💾 交通費プリセットを保存</button>
+        <button onclick="addFarePresetRow()" style="width:100%;margin-top:6px;padding:8px;background:#fff;border:1.5px dashed #4a90d9;color:#4a90d9;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">＋ 行を追加</button>
+        <button onclick="saveFarePresets()" style="width:100%;margin-top:6px;padding:10px;background:linear-gradient(135deg,#4a90d9,#3a7ec9);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">💾 交通費プリセットを保存</button>
       </div>
     </details>
 
   </div>
   <div class="m-foot">
     <button class="ghost-btn" onclick="closeModal()">閉じる</button>
-    <button class="pink-btn" id="mContractUrlBtn" onclick="generateStaffContractUrl()" style="padding:10px 16px;background:linear-gradient(135deg,#1a1a1a,#000000);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">🔗 契約書署名URL</button>
+    <button class="pink-btn" id="mContractUrlBtn" onclick="generateStaffContractUrl()" style="padding:10px 16px;background:linear-gradient(135deg,#1a1a1a,#000000);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">🔗 契約書署名URL</button>
     <button class="pink-btn" id="mNoticeBtn" onclick="openStaffNotice()">📄 支払通知書</button>
-    <button id="mLockBtn" onclick="lockMonth()" style="padding:10px 16px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">💰 月締め確定</button>
+    <button id="mLockBtn" onclick="lockMonth()" style="padding:10px 16px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">💰 月締め確定</button>
   </div>
 </div>
 </div>
@@ -760,27 +761,27 @@ window.__auth = _auth;
     <div style="display:flex;flex-direction:column;gap:12px">
       <div>
         <div style="font-size:12px;font-weight:700;color:#8b8b92;margin-bottom:4px">氏名 *</div>
-        <input type="text" id="addStaffName" placeholder="例：上野 望" style="width:100%;padding:10px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:13px;font-family:'Noto Sans JP',sans-serif;background:#f4f4f5;box-sizing:border-box">
+        <input type="text" id="addStaffName" placeholder="例：上野 望" style="width:100%;padding:10px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;background:#f4f4f5;box-sizing:border-box">
       </div>
       <div>
         <div style="font-size:12px;font-weight:700;color:#8b8b92;margin-bottom:4px">部門 *</div>
-        <select id="addStaffDept" style="width:100%;padding:10px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:13px;font-family:'Noto Sans JP',sans-serif;background:#f4f4f5;box-sizing:border-box">
+        <select id="addStaffDept" style="width:100%;padding:10px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;background:#f4f4f5;box-sizing:border-box">
           <option value="">選択してください</option>
         </select>
       </div>
       <div>
         <div style="font-size:12px;font-weight:700;color:#8b8b92;margin-bottom:4px">業務タイプ</div>
-        <select id="addStaffJobType" style="width:100%;padding:10px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:13px;font-family:'Noto Sans JP',sans-serif;background:#f4f4f5;box-sizing:border-box">
+        <select id="addStaffJobType" style="width:100%;padding:10px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;background:#f4f4f5;box-sizing:border-box">
           <option value="">選択（任意）</option>
         </select>
       </div>
       <div>
         <div style="font-size:12px;font-weight:700;color:#8b8b92;margin-bottom:4px">メール</div>
-        <input type="email" id="addStaffEmail" placeholder="例：nozo@example.com" style="width:100%;padding:10px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:13px;font-family:'Noto Sans JP',sans-serif;background:#f4f4f5;box-sizing:border-box">
+        <input type="email" id="addStaffEmail" placeholder="例：nozo@example.com" style="width:100%;padding:10px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;background:#f4f4f5;box-sizing:border-box">
       </div>
       <div>
         <div style="font-size:12px;font-weight:700;color:#8b8b92;margin-bottom:4px">電話</div>
-        <input type="tel" id="addStaffPhone" placeholder="090-0000-0000" style="width:100%;padding:10px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:13px;font-family:'Noto Sans JP',sans-serif;background:#f4f4f5;box-sizing:border-box">
+        <input type="tel" id="addStaffPhone" placeholder="090-0000-0000" style="width:100%;padding:10px 12px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;background:#f4f4f5;box-sizing:border-box">
       </div>
       <div style="display:flex;gap:6px">
         <label style="flex:1;display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px">
@@ -810,9 +811,9 @@ window.__auth = _auth;
       <div style="font-size:40px;margin-bottom:8px">🔒</div>
       <h2 style="font-size:18px;color:#1a1a1a;margin-bottom:4px" id="pinName"></h2>
       <p style="font-size:12px;color:#8b8b92;margin-bottom:20px">暗証番号を入力してください</p>
-      <input type="password" id="pinInput" placeholder="暗証番号" maxlength="20" style="width:100%;padding:14px;border:2px solid #e2e2e5;border-radius:14px;font-size:20px;text-align:center;letter-spacing:8px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box" onkeydown="if(event.key==='Enter')checkPin()">
+      <input type="password" id="pinInput" placeholder="暗証番号" maxlength="20" style="width:100%;padding:14px;border:2px solid #e2e2e5;border-radius:14px;font-size:20px;text-align:center;letter-spacing:8px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box" onkeydown="if(event.key==='Enter')checkPin()">
       <div id="pinError" style="color:#e05050;font-size:12px;margin-top:8px;display:none">暗証番号が違います</div>
-      <button onclick="checkPin()" style="width:100%;margin-top:16px;padding:14px;background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">ログイン</button>
+      <button onclick="checkPin()" style="width:100%;margin-top:16px;padding:14px;background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">ログイン</button>
     </div>
   </div>
 </div>
@@ -988,7 +989,7 @@ window.__auth = _auth;
       </div>
       <a id="sgPunchOpen" href="#" style="display:block;text-align:center;background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;text-decoration:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;box-shadow:0 3px 12px rgba(0,0,0,.18)">⏰ 打刻ページをひらく</a>
       <div id="sgPunchUrl" style="margin-top:10px;background:#f4f4f5;border:1px solid #e2e2e5;border-radius:10px;padding:9px 11px;font-size:11px;color:#8b8b92;word-break:break-all;line-height:1.5"></div>
-      <button onclick="sgCopyPunchUrl()" style="width:100%;margin-top:8px;padding:11px;background:#fff;border:1.5px solid #1a1a1a;color:#1a1a1a;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">📋 リンクをコピー</button>
+      <button onclick="sgCopyPunchUrl()" style="width:100%;margin-top:8px;padding:11px;background:#fff;border:1.5px solid #1a1a1a;color:#1a1a1a;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">📋 リンクをコピー</button>
       <div style="margin-top:10px;font-size:11px;color:#8b8b92;line-height:1.7">
         🔒 ログインには、先ほどご登録いただいた<b>暗証番号</b>を使います。
       </div>
@@ -1022,7 +1023,7 @@ window.__auth = _auth;
       <div style="font-size:13px;color:#8b8b92;line-height:1.8">管理者が承認すると<br>このページが自動で更新されます。<br>しばらくお待ちください。</div>
     </div>
     <div id="pendingUserInfo" style="background:#f4f4f5;border:1.5px solid #e2e2e5;border-radius:14px;padding:16px;font-size:13px;line-height:2;color:#17171a"></div>
-    <button onclick="checkApproval()" style="background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:12px;padding:14px;font-family:'Noto Sans JP',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.18)">🔄 承認状況を確認する</button>
+    <button onclick="checkApproval()" style="background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:12px;padding:14px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.18)">🔄 承認状況を確認する</button>
   </div>
 </div>
 
@@ -1058,19 +1059,19 @@ window.__auth = _auth;
       <!-- SNS投稿 -->
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed #f0c060">
         <span style="font-size:14px;font-weight:700;color:#b5443c;min-width:90px">📸 SNS投稿</span>
-        <input type="number" id="snsCountInput" value="0" min="0" style="width:56px;padding:8px;border:1.5px solid #f0c060;border-radius:8px;font-size:16px;font-weight:700;color:#b5443c;text-align:center;background:#fffaf0;font-family:'Noto Sans JP',sans-serif" onchange="saveSnsSettings()">
+        <input type="number" id="snsCountInput" value="0" min="0" style="width:56px;padding:8px;border:1.5px solid #f0c060;border-radius:8px;font-size:16px;font-weight:700;color:#b5443c;text-align:center;background:#fffaf0;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onchange="saveSnsSettings()">
         <span style="font-size:12px;color:#8b8b92;font-weight:700">件 ×</span>
-        <input type="number" id="snsRateInput" value="2000" min="0" style="width:74px;padding:8px;border:1.5px solid #f0c060;border-radius:8px;font-size:16px;font-weight:700;color:#b5443c;text-align:center;background:#fffaf0;font-family:'Noto Sans JP',sans-serif" onchange="saveSnsSettings()">
+        <input type="number" id="snsRateInput" value="2000" min="0" style="width:74px;padding:8px;border:1.5px solid #f0c060;border-radius:8px;font-size:16px;font-weight:700;color:#b5443c;text-align:center;background:#fffaf0;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onchange="saveSnsSettings()">
         <span style="font-size:12px;color:#8b8b92;font-weight:700">円</span>
         <span style="font-size:14px;color:#b5443c;font-weight:700;margin-left:auto" id="snsPayDisp"></span>
       </div>
       <!-- 広告出演料 -->
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
         <span style="font-size:14px;font-weight:700;color:#b5443c;min-width:90px">🎬 広告出演料</span>
-        <input type="number" id="snsAdFeeInput" value="0" min="0" placeholder="0" style="flex:1;min-width:120px;padding:8px;border:1.5px solid #f0c060;border-radius:8px;font-size:16px;font-weight:700;color:#b5443c;text-align:right;background:#fffaf0;font-family:'Noto Sans JP',sans-serif" onchange="saveSnsSettings()">
+        <input type="number" id="snsAdFeeInput" value="0" min="0" placeholder="0" style="flex:1;min-width:120px;padding:8px;border:1.5px solid #f0c060;border-radius:8px;font-size:16px;font-weight:700;color:#b5443c;text-align:right;background:#fffaf0;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onchange="saveSnsSettings()">
         <span style="font-size:12px;color:#8b8b92;font-weight:700">円</span>
       </div>
-      <input type="text" id="snsAdNoteInput" value="" placeholder="備考（案件名など）任意" style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;box-sizing:border-box;font-family:'Noto Sans JP',sans-serif" onchange="saveSnsSettings()">
+      <input type="text" id="snsAdNoteInput" value="" placeholder="備考（案件名など）任意" style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;box-sizing:border-box;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onchange="saveSnsSettings()">
     </div>
   </details>
   <div id="calDetails" style="display:none"><div id="calGrid"></div><span id="calLabel"></span></div>
@@ -1095,7 +1096,7 @@ window.__auth = _auth;
       <div class="sc-body">
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:13px;color:#8b8b92">時給</span>
-          <input type="number" id="hourlyRate" value="2014" readonly style="width:90px;padding:8px 10px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:15px;text-align:right;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5">
+          <input type="number" id="hourlyRate" value="2014" readonly style="width:90px;padding:8px 10px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:15px;text-align:right;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5">
           <span style="font-size:13px;color:#8b8b92">円／時</span>
         </div>
         <div style="font-size:11px;color:#8b8b92;margin-top:6px;line-height:1.6">※ 契約で定められた単価です。変更が必要な場合は管理者にご連絡ください。</div>
@@ -1106,7 +1107,7 @@ window.__auth = _auth;
       <div class="sc-body">
         <div style="font-size:12px;color:#8b8b92;margin-bottom:6px">インボイス登録番号（取得済みの場合）</div>
         <div style="display:flex;gap:8px;align-items:center">
-          <input type="text" id="staffInvoiceNum" placeholder="T1234567890123" style="flex:1;padding:8px 10px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:14px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5">
+          <input type="text" id="staffInvoiceNum" placeholder="T1234567890123" style="flex:1;padding:8px 10px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:14px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5">
           <button class="sbtn" onclick="saveStaffInvoiceNum()" style="white-space:nowrap">💾 保存</button>
         </div>
       </div>
@@ -1141,15 +1142,15 @@ window.__auth = _auth;
     <div style="margin-bottom:14px">
       <div style="font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:8px">🏪 業務先</div>
       <div class="store-tags" id="storeTags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px"></div>
-      <input type="text" id="mStore" placeholder="またはここに直接入力" style="width:100%;padding:12px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:15px;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box" oninput="document.querySelectorAll('.store-tag').forEach(b=>b.classList.remove('on'))">
+      <input type="text" id="mStore" placeholder="またはここに直接入力" style="width:100%;padding:12px;border:1.5px solid #e2e2e5;border-radius:10px;font-size:15px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5;box-sizing:border-box" oninput="document.querySelectorAll('.store-tag').forEach(b=>b.classList.remove('on'))">
     </div>
 
     <div style="margin-bottom:14px">
       <div style="font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:8px">⏰ 時間</div>
       <div style="display:flex;gap:8px;align-items:center">
-        <input type="time" id="mIn" oninput="prevWork()" style="flex:1;padding:14px;border:2px solid #e2e2e5;border-radius:12px;font-size:22px;font-weight:700;text-align:center;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5">
+        <input type="time" id="mIn" oninput="prevWork()" style="flex:1;padding:14px;border:2px solid #e2e2e5;border-radius:12px;font-size:22px;font-weight:700;text-align:center;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5">
         <span style="font-size:18px;color:#8b8b92;font-weight:700">〜</span>
-        <input type="time" id="mOut" oninput="prevWork()" style="flex:1;padding:14px;border:2px solid #e2e2e5;border-radius:12px;font-size:22px;font-weight:700;text-align:center;font-family:'Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5">
+        <input type="time" id="mOut" oninput="prevWork()" style="flex:1;padding:14px;border:2px solid #e2e2e5;border-radius:12px;font-size:22px;font-weight:700;text-align:center;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#17171a;background:#f4f4f5">
       </div>
     </div>
 
@@ -2175,10 +2176,10 @@ function renderStaffList(){
         </div>
       </div>
       <div style="display:flex;border-top:1px solid #ededef;background:#fbfbfb">
-        ${!s.approved?`<button onclick="event.stopPropagation();quickApprove(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4caf7d;cursor:pointer;font-family:'Noto Sans JP',sans-serif;border-right:1px solid #ededef">✓ 登録承認</button>`:''}
-        ${grandTotal>0?`<button onclick="event.stopPropagation();quickNotice(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#1a1a1a;cursor:pointer;font-family:'Noto Sans JP',sans-serif;border-right:1px solid #ededef">📄 通知書</button>${!isLocked?`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#3d9a6a;cursor:pointer;font-family:'Noto Sans JP',sans-serif;border-right:1px solid #ededef">💰 月締め</button>`:`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#888;cursor:pointer;font-family:'Noto Sans JP',sans-serif;border-right:1px solid #ededef">🔓 解除</button>`}`:''}
-        ${!s.signedAt?`<button onclick="event.stopPropagation();quickSignURL(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#3d9a6a;cursor:pointer;font-family:'Noto Sans JP',sans-serif;border-right:1px solid #ededef">✍️ 署名URL</button>`:''}
-        <button onclick="event.stopPropagation();quickCopyURL(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4a90d9;cursor:pointer;font-family:'Noto Sans JP',sans-serif">🔗 打刻URL</button>
+        ${!s.approved?`<button onclick="event.stopPropagation();quickApprove(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4caf7d;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ededef">✓ 登録承認</button>`:''}
+        ${grandTotal>0?`<button onclick="event.stopPropagation();quickNotice(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#1a1a1a;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ededef">📄 通知書</button>${!isLocked?`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#3d9a6a;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ededef">💰 月締め</button>`:`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#888;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ededef">🔓 解除</button>`}`:''}
+        ${!s.signedAt?`<button onclick="event.stopPropagation();quickSignURL(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#3d9a6a;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ededef">✍️ 署名URL</button>`:''}
+        <button onclick="event.stopPropagation();quickCopyURL(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4a90d9;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">🔗 打刻URL</button>
       </div>
     </div>`;
   }).join('');
@@ -2231,7 +2232,7 @@ function openStaff(i){
   if(aw){
     aw.innerHTML=currentStaff.approved
       ?'<span style="font-size:11px;color:#4caf7d;font-weight:700">✅ 承認済</span>'
-      :`<button onclick="approveCurrentStaff()" style="padding:6px 14px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">✓ 登録承認</button>`;
+      :`<button onclick="approveCurrentStaff()" style="padding:6px 14px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">✓ 登録承認</button>`;
   }
   // Basic info
   const bi=['name:氏名','phone:電話','email:メール','addr:住所','station:最寄駅','signedAt:締結日'];
@@ -2259,8 +2260,8 @@ function openStaff(i){
     <div style="font-size:12px">契約：${(currentStaff.contracts||[]).join('・')}</div>
     <div style="font-size:11px;color:#8b8b92;margin-top:4px">電子署名：</div>
     ${signImg}
-    <button style="margin-top:8px;font-size:11px;padding:5px 12px;background:none;border:1px solid #e2e2e5;border-radius:8px;cursor:pointer;color:#1a1a1a;font-family:'Noto Sans JP',sans-serif" onclick="viewStaffContract()">📋 契約書を印刷</button>
-    <button style="margin-top:8px;margin-left:6px;font-size:11px;padding:5px 12px;background:#1a1a1a;border:none;border-radius:8px;cursor:pointer;color:#fff;font-family:'Noto Sans JP',sans-serif" onclick="copyStaffURL()">🔗 打刻URLをコピー</button>`;
+    <button style="margin-top:8px;font-size:11px;padding:5px 12px;background:none;border:1px solid #e2e2e5;border-radius:8px;cursor:pointer;color:#1a1a1a;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onclick="viewStaffContract()">📋 契約書を印刷</button>
+    <button style="margin-top:8px;margin-left:6px;font-size:11px;padding:5px 12px;background:#1a1a1a;border:none;border-radius:8px;cursor:pointer;color:#fff;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onclick="copyStaffURL()">🔗 打刻URLをコピー</button>`;
   // 代理入力フォーム
   const ev=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||''};
   ev('mEditBirth',currentStaff.birth); ev('mEditPhone',currentStaff.phone);
@@ -2321,7 +2322,7 @@ function loadWorkData(){
       </div>
       <div style="flex:2;min-width:140px">
         <div style="font-size:10px;font-weight:700;color:#8b8b92;margin-bottom:3px">広告 備考</div>
-        <input type="text" id="mAdNote" value="${(md.snsAdNote||'').replace(/"/g,'&quot;')}" placeholder="案件名など" style="width:100%;padding:6px 8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;color:#17171a;background:#fff;box-sizing:border-box;font-family:'Noto Sans JP',sans-serif" onchange="saveMonthSettings()">
+        <input type="text" id="mAdNote" value="${(md.snsAdNote||'').replace(/"/g,'&quot;')}" placeholder="案件名など" style="width:100%;padding:6px 8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:13px;color:#17171a;background:#fff;box-sizing:border-box;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onchange="saveMonthSettings()">
       </div>
     </div>`;
   if(!keys.length){
@@ -2392,7 +2393,7 @@ function viewStaffContract(){
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>業務委託契約書</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-  <style>body{font-family:'Noto Sans JP',sans-serif;color:#333;padding:24px;max-width:640px;margin:0 auto;font-size:13px;line-height:1.9}
+  <style>body{font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#333;padding:24px;max-width:640px;margin:0 auto;font-size:13px;line-height:1.9}
   h3{font-size:18px;color:#1a1a1a;text-align:center}h4{font-size:12px;font-weight:700;margin:12px 0 3px;border-bottom:1px solid #e2e2e5;padding-bottom:2px}
   .sa{display:flex;gap:16px;margin-top:20px;border-top:1px solid #ddd;padding-top:14px}
   .sb{flex:1;border:1px solid #e2e2e5;border-radius:8px;padding:10px;min-height:90px}
@@ -2521,7 +2522,7 @@ function printNotice(){
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Noto Sans JP',sans-serif;color:#333;padding:32px 40px;max-width:780px;margin:0 auto;line-height:1.7;background:#fff}
+    body{font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#333;padding:32px 40px;max-width:780px;margin:0 auto;line-height:1.7;background:#fff}
     .doc-header{border-bottom:3px solid #1a1a1a;padding-bottom:18px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end}
     .doc-title{font-size:26px;font-weight:700;color:#1a1a1a;letter-spacing:4px}
     .doc-meta{text-align:right;font-size:12px;color:#666}
@@ -2685,7 +2686,7 @@ function previewTemplate(i){
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${t.name}</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-  <style>body{font-family:'Noto Sans JP',sans-serif;color:#333;padding:24px;max-width:640px;margin:0 auto;font-size:13px;line-height:1.9}h3{font-size:18px;color:#1a1a1a;text-align:center}h4{font-size:12px;font-weight:700;margin:12px 0 3px;border-bottom:1px solid #e2e2e5;padding-bottom:2px}</style></head>
+  <style>body{font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#333;padding:24px;max-width:640px;margin:0 auto;font-size:13px;line-height:1.9}h3{font-size:18px;color:#1a1a1a;text-align:center}h4{font-size:12px;font-weight:700;margin:12px 0 3px;border-bottom:1px solid #e2e2e5;padding-bottom:2px}</style></head>
   <body>${t.body}</body></html>`);
   w.document.close();
 }
@@ -2840,7 +2841,7 @@ function renderPendingList(){
         <div style="font-size:11px;color:#8b8b92">${s.email||''} ${s.phone||''}</div>
         <div style="font-size:11px;color:#8b8b92">登録日：${s.signedAt?new Date(s.signedAt).toLocaleDateString('ja-JP'):'-'}</div>
       </div>
-      <button onclick="approveStaff('${s.id}')" style="background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">✓ 承認</button>
+      <button onclick="approveStaff('${s.id}')" style="background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">✓ 承認</button>
     </div>`).join('');
 }
 
@@ -3611,21 +3612,21 @@ function buildCards(){
       </div>
       ${isOpen&&!isLocked?`<div style="padding:14px;border-top:1px solid ${borderClr};background:#fff">
         ${isCopied?'<div style="background:#e8f0fe;color:#4a90d9;padding:8px 12px;border-radius:10px;font-size:12px;margin-bottom:12px;font-weight:700;text-align:center">📋 前回の内容をコピー済み。確認して保存</div>':''}
-        ${has?`<button onclick="copyDayToOthers(${d})" style="width:100%;padding:8px;background:#fff;border:1.5px dashed #4a90d9;color:#4a90d9;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;margin-bottom:10px">📋 この日を他の日にコピー</button>`:''}
+        ${has?`<button onclick="copyDayToOthers(${d})" style="width:100%;padding:8px;background:#fff;border:1.5px dashed #4a90d9;color:#4a90d9;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;margin-bottom:10px">📋 この日を他の日にコピー</button>`:''}
 
         <!-- 業務先 -->
         ${currentStaff?.isFixedDaily?`
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-            ${['大森','銀座'].map(s=>`<button onclick="pickStoreForDay(${d},'${s}',this)" class="stbtn${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #e2e2e5;background:${r.store===s?'#1a1a1a':'#fff'};color:${r.store===s?'#fff':'#1a1a1a'};border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">${s}</button>`).join('')}
+            ${['大森','銀座'].map(s=>`<button onclick="pickStoreForDay(${d},'${s}',this)" class="stbtn${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #e2e2e5;background:${r.store===s?'#1a1a1a':'#fff'};color:${r.store===s?'#fff':'#1a1a1a'};border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">${s}</button>`).join('')}
           </div>
           <input id="inp_store_${d}" type="hidden" value="${r.store||''}">
           ${fareNoteHTML(d, r.store)}
         `:`
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
-            ${STORES.map(s=>`<button onclick="pickStoreForDay(${d},'${s}',this)" class="stbtn${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #e2e2e5;background:${r.store===s?'#1a1a1a':'#fff'};color:${r.store===s?'#fff':'#1a1a1a'};border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">${s}</button>`).join('')}
+            ${STORES.map(s=>`<button onclick="pickStoreForDay(${d},'${s}',this)" class="stbtn${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #e2e2e5;background:${r.store===s?'#1a1a1a':'#fff'};color:${r.store===s?'#fff':'#1a1a1a'};border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">${s}</button>`).join('')}
           </div>
           <div id="stb_${d}" style="display:none"></div>
-          <input id="inp_store_${d}" type="text" value="${r.store||''}" placeholder="🏪 業務先（直接入力もOK）" style="width:100%;padding:12px;border:2px solid #e2e2e5;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Noto Sans JP',sans-serif;margin-bottom:12px">
+          <input id="inp_store_${d}" type="text" value="${r.store||''}" placeholder="🏪 業務先（直接入力もOK）" style="width:100%;padding:12px;border:2px solid #e2e2e5;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;margin-bottom:12px">
           ${fareNoteHTML(d, r.store)}
         `}
 
@@ -3640,7 +3641,7 @@ function buildCards(){
             <div style="margin-bottom:10px">
               <span style="font-size:11px;color:#8b8b92;font-weight:700;display:block;margin-bottom:4px">☕ 休憩</span>
               <div style="display:flex;gap:5px;flex-wrap:wrap">
-                ${[0,30,60,90,120].map(v=>`<button onclick="document.getElementById('inp_rest_${d}').value=${v};this.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='#1a1a1a'});this.style.background='#1a1a1a';this.style.color='#fff'" style="padding:6px 14px;border:1.5px solid #e2e2e5;background:${(r.rest||60)===v?'#1a1a1a':'#fff'};color:${(r.rest||60)===v?'#fff':'#1a1a1a'};border-radius:16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">${v===0?'なし':v+'分'}</button>`).join('')}
+                ${[0,30,60,90,120].map(v=>`<button onclick="document.getElementById('inp_rest_${d}').value=${v};this.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='#1a1a1a'});this.style.background='#1a1a1a';this.style.color='#fff'" style="padding:6px 14px;border:1.5px solid #e2e2e5;background:${(r.rest||60)===v?'#1a1a1a':'#fff'};color:${(r.rest||60)===v?'#fff':'#1a1a1a'};border-radius:16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">${v===0?'なし':v+'分'}</button>`).join('')}
               </div>
               <input id="inp_rest_${d}" type="hidden" value="${r.rest!=null?r.rest:60}">
             </div>
@@ -3648,21 +3649,21 @@ function buildCards(){
             <div style="margin-bottom:10px">
               <span style="font-size:11px;color:#8b8b92;font-weight:700;display:block;margin-bottom:4px">🚃 交通費</span>
               <div style="display:flex;gap:4px;margin-bottom:5px">
-                <input id="inp_r1a_${d}" type="text" value="${r.r1a||''}" placeholder="往（○○駅→○○駅）" style="flex:1;padding:8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;box-sizing:border-box;font-family:'Noto Sans JP',sans-serif">
-                <input id="inp_f1a_${d}" type="number" min="0" step="1" value="${r.f1a||''}" placeholder="0" style="width:80px;padding:8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;text-align:right;box-sizing:border-box;font-family:'Noto Sans JP',sans-serif">
+                <input id="inp_r1a_${d}" type="text" value="${r.r1a||''}" placeholder="往（○○駅→○○駅）" style="flex:1;padding:8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;box-sizing:border-box;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">
+                <input id="inp_f1a_${d}" type="number" min="0" step="1" value="${r.f1a||''}" placeholder="0" style="width:80px;padding:8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;text-align:right;box-sizing:border-box;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">
               </div>
               <div style="display:flex;gap:4px">
-                <input id="inp_r1b_${d}" type="text" value="${r.r1b||''}" placeholder="復（○○駅→○○駅）" style="flex:1;padding:8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;box-sizing:border-box;font-family:'Noto Sans JP',sans-serif">
-                <input id="inp_f1b_${d}" type="number" min="0" step="1" value="${r.f1b||''}" placeholder="0" style="width:80px;padding:8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;text-align:right;box-sizing:border-box;font-family:'Noto Sans JP',sans-serif">
+                <input id="inp_r1b_${d}" type="text" value="${r.r1b||''}" placeholder="復（○○駅→○○駅）" style="flex:1;padding:8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;box-sizing:border-box;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">
+                <input id="inp_f1b_${d}" type="number" min="0" step="1" value="${r.f1b||''}" placeholder="0" style="width:80px;padding:8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;text-align:right;box-sizing:border-box;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">
               </div>
               <details style="margin-top:5px"><summary style="font-size:10px;color:#8b8b92;cursor:pointer;padding:4px 0">+ 2本目を追加</summary>
               <div style="display:flex;gap:4px;margin-bottom:5px;margin-top:5px">
-                <input id="inp_r2a_${d}" type="text" value="${r.r2a||''}" placeholder="2本目 往" style="flex:1;padding:8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;box-sizing:border-box;font-family:'Noto Sans JP',sans-serif">
-                <input id="inp_f2a_${d}" type="number" min="0" step="1" value="${r.f2a||''}" placeholder="0" style="width:80px;padding:8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;text-align:right;box-sizing:border-box;font-family:'Noto Sans JP',sans-serif">
+                <input id="inp_r2a_${d}" type="text" value="${r.r2a||''}" placeholder="2本目 往" style="flex:1;padding:8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;box-sizing:border-box;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">
+                <input id="inp_f2a_${d}" type="number" min="0" step="1" value="${r.f2a||''}" placeholder="0" style="width:80px;padding:8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;text-align:right;box-sizing:border-box;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">
               </div>
               <div style="display:flex;gap:4px">
-                <input id="inp_r2b_${d}" type="text" value="${r.r2b||''}" placeholder="2本目 復" style="flex:1;padding:8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;box-sizing:border-box;font-family:'Noto Sans JP',sans-serif">
-                <input id="inp_f2b_${d}" type="number" min="0" step="1" value="${r.f2b||''}" placeholder="0" style="width:80px;padding:8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;text-align:right;box-sizing:border-box;font-family:'Noto Sans JP',sans-serif">
+                <input id="inp_r2b_${d}" type="text" value="${r.r2b||''}" placeholder="2本目 復" style="flex:1;padding:8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;box-sizing:border-box;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">
+                <input id="inp_f2b_${d}" type="number" min="0" step="1" value="${r.f2b||''}" placeholder="0" style="width:80px;padding:8px;border:1.5px solid #e2e2e5;border-radius:8px;font-size:12px;text-align:right;box-sizing:border-box;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">
               </div>
               </details>
             </div>
@@ -3671,12 +3672,12 @@ function buildCards(){
               <span style="font-size:11px;color:#8b8b92;font-weight:700;display:block;margin-bottom:4px">💰 手当</span>
               <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px">
                 <span style="font-size:10px;color:#888;align-self:center;min-width:32px">出張</span>
-                ${[0,2000,5000].map(v=>`<button onclick="document.getElementById('inp_trip_${d}').value=${v};this.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='#4a90d9'});this.style.background='#4a90d9';this.style.color='#fff'" style="padding:5px 12px;border:1.5px solid #4a90d9;background:${(parseInt(r.tripAllow)||0)===v?'#4a90d9':'#fff'};color:${(parseInt(r.tripAllow)||0)===v?'#fff':'#4a90d9'};border-radius:14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">${v===0?'なし':'+¥'+v.toLocaleString()}</button>`).join('')}
+                ${[0,2000,5000].map(v=>`<button onclick="document.getElementById('inp_trip_${d}').value=${v};this.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='#4a90d9'});this.style.background='#4a90d9';this.style.color='#fff'" style="padding:5px 12px;border:1.5px solid #4a90d9;background:${(parseInt(r.tripAllow)||0)===v?'#4a90d9':'#fff'};color:${(parseInt(r.tripAllow)||0)===v?'#fff':'#4a90d9'};border-radius:14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">${v===0?'なし':'+¥'+v.toLocaleString()}</button>`).join('')}
                 <input id="inp_trip_${d}" type="hidden" value="${r.tripAllow||0}">
               </div>
               ${(sat||sun)&&!isDailyStaff()?`<div style="display:flex;gap:5px;flex-wrap:wrap">
                 <span style="font-size:10px;color:#888;align-self:center;min-width:32px">土日</span>
-                ${[0,1000,2000,5000].map(v=>`<button onclick="document.getElementById('inp_we_${d}').value=${v};this.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='#1a1a1a'});this.style.background='#1a1a1a';this.style.color='#fff'" style="padding:5px 12px;border:1.5px solid #1a1a1a;background:${(parseInt(r.weekendAllow)||0)===v?'#1a1a1a':'#fff'};color:${(parseInt(r.weekendAllow)||0)===v?'#fff':'#1a1a1a'};border-radius:14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">${v===0?'なし':'+¥'+v.toLocaleString()}</button>`).join('')}
+                ${[0,1000,2000,5000].map(v=>`<button onclick="document.getElementById('inp_we_${d}').value=${v};this.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='#1a1a1a'});this.style.background='#1a1a1a';this.style.color='#fff'" style="padding:5px 12px;border:1.5px solid #1a1a1a;background:${(parseInt(r.weekendAllow)||0)===v?'#1a1a1a':'#fff'};color:${(parseInt(r.weekendAllow)||0)===v?'#fff':'#1a1a1a'};border-radius:14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">${v===0?'なし':'+¥'+v.toLocaleString()}</button>`).join('')}
               </div>`:''}
               <input id="inp_we_${d}" type="hidden" value="${r.weekendAllow||0}">
             </div>
@@ -3685,9 +3686,9 @@ function buildCards(){
 
         <!-- 保存・削除 -->
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${has?`<button onclick="deleteDayInline(${d})" style="padding:14px 16px;background:#fff;border:1.5px solid #e05050;color:#e05050;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">🗑</button>`:''}
-          <button onclick="saveDraftDayInline(${d})" style="flex:1;min-width:100px;padding:14px;background:#fff;border:1.5px solid #e0963a;color:#e0963a;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">📝 下書き</button>
-          <button onclick="saveDayInline(${d})" style="flex:2;min-width:140px;padding:14px;background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;box-shadow:0 3px 10px rgba(0,0,0,.25)">✓ 確定保存</button>
+          ${has?`<button onclick="deleteDayInline(${d})" style="padding:14px 16px;background:#fff;border:1.5px solid #e05050;color:#e05050;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">🗑</button>`:''}
+          <button onclick="saveDraftDayInline(${d})" style="flex:1;min-width:100px;padding:14px;background:#fff;border:1.5px solid #e0963a;color:#e0963a;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">📝 下書き</button>
+          <button onclick="saveDayInline(${d})" style="flex:2;min-width:140px;padding:14px;background:linear-gradient(135deg,#2e2e2e,#1a1a1a);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;box-shadow:0 3px 10px rgba(0,0,0,.25)">✓ 確定保存</button>
         </div>
       </div>`:''}
     </div>`;
@@ -3970,16 +3971,16 @@ function copyDayToOthers(srcDay){
     const has=r&&r.in&&r.out;
     const dt=new Date(yr,mo-1,d),wd=dt.getDay();
     const wdc=wd===6?'#55698a':wd===0?'#1a1a1a':'#17171a';
-    html+=`<button data-d="${d}" onclick="this.classList.toggle('on');this.style.background=this.classList.contains('on')?'#1a1a1a':'#fff';this.style.color=this.classList.contains('on')?'#fff':'${wdc}'" style="padding:8px 4px;border:1.5px solid ${has?'#88d4a8':'#e2e2e5'};background:#fff;color:${wdc};border-radius:8px;font-size:11px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-weight:700">${d}<br><span style="font-size:9px">${WD[wd]}</span>${has?'<br><span style="font-size:8px;color:#4caf7d">入力済</span>':''}</button>`;
+    html+=`<button data-d="${d}" onclick="this.classList.toggle('on');this.style.background=this.classList.contains('on')?'#1a1a1a':'#fff';this.style.color=this.classList.contains('on')?'#fff':'${wdc}'" style="padding:8px 4px;border:1.5px solid ${has?'#88d4a8':'#e2e2e5'};background:#fff;color:${wdc};border-radius:8px;font-size:11px;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-weight:700">${d}<br><span style="font-size:9px">${WD[wd]}</span>${has?'<br><span style="font-size:8px;color:#4caf7d">入力済</span>':''}</button>`;
   }
   html+=`</div>
     <div style="display:flex;gap:4px;margin-top:10px;flex-wrap:wrap">
-      <button onclick="selectSameWeekday(${srcDay})" style="flex:1;padding:8px;background:#fff;border:1.5px solid #4a90d9;color:#4a90d9;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">同じ曜日を選択</button>
-      <button onclick="selectAllWeekdays(${srcDay})" style="flex:1;padding:8px;background:#fff;border:1.5px solid #4a90d9;color:#4a90d9;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">全平日</button>
+      <button onclick="selectSameWeekday(${srcDay})" style="flex:1;padding:8px;background:#fff;border:1.5px solid #4a90d9;color:#4a90d9;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">同じ曜日を選択</button>
+      <button onclick="selectAllWeekdays(${srcDay})" style="flex:1;padding:8px;background:#fff;border:1.5px solid #4a90d9;color:#4a90d9;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">全平日</button>
     </div>
     <div style="display:flex;gap:6px;margin-top:10px">
-      <button onclick="document.getElementById('copyOverlay').remove()" style="flex:1;padding:10px;background:#fff;border:1.5px solid #ccc;color:#666;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">キャンセル</button>
-      <button onclick="executeCopyDays(${srcDay})" style="flex:2;padding:10px;background:linear-gradient(135deg,#4a90d9,#3a7ec9);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif">📋 一括コピー実行</button>
+      <button onclick="document.getElementById('copyOverlay').remove()" style="flex:1;padding:10px;background:#fff;border:1.5px solid #ccc;color:#666;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">キャンセル</button>
+      <button onclick="executeCopyDays(${srcDay})" style="flex:2;padding:10px;background:linear-gradient(135deg,#4a90d9,#3a7ec9);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">📋 一括コピー実行</button>
     </div>
   </div>`;
   const ov=document.createElement('div');
@@ -4188,7 +4189,7 @@ function dayTimeSectionHTML(d, r){
       '<input id="inp_paymode_'+d+'" type="hidden" value="'+mode+'">'+
       '<input id="inp_sessions_'+d+'" type="hidden" value="'+n+'">';
   }
-  const st="flex:1;padding:14px;border:2px solid #e2e2e5;border-radius:12px;font-size:20px;font-weight:700;text-align:center;font-family:'Noto Sans JP',sans-serif;background:#f4f4f5";
+  const st="flex:1;padding:14px;border:2px solid #e2e2e5;border-radius:12px;font-size:20px;font-weight:700;text-align:center;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;background:#f4f4f5";
   return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">'+
     '<input id="inp_in_'+d+'" type="time" value="'+(r.in||DEF_IN)+'" style="'+st+'">'+
     '<span style="font-size:16px;color:#8b8b92;font-weight:700">〜</span>'+
@@ -4455,7 +4456,7 @@ function renderPresetList(){
         <input class="pr-fare" type="number" placeholder="0" value="${r.fare||''}" oninput="setPresetField('${s}',${i},'fare',this.value)">
         <span class="pr-yen">円</span>
       </div>`).join('')}
-      <button style="font-size:11px;color:var(--acc);background:none;border:1px dashed var(--border);border-radius:8px;padding:3px 10px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;margin-top:2px" onclick="addPresetRow('${s}')">＋ 追加</button>
+      <button style="font-size:11px;color:var(--acc);background:none;border:1px dashed var(--border);border-radius:8px;padding:3px 10px;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;margin-top:2px" onclick="addPresetRow('${s}')">＋ 追加</button>
       </div>
     </div><hr style="border:none;border-top:1px solid var(--border);margin:4px 0">`;
   }).join('');
@@ -4550,7 +4551,7 @@ function viewContract(){
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>業務委託契約書</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-  <style>body{font-family:'Noto Sans JP',sans-serif;color:#333;padding:24px;max-width:640px;margin:0 auto;font-size:13px;line-height:1.9}
+  <style>body{font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#333;padding:24px;max-width:640px;margin:0 auto;font-size:13px;line-height:1.9}
   h3{font-size:18px;color:#1a1a1a;text-align:center}h4{font-size:12px;font-weight:700;margin:12px 0 3px;border-bottom:1px solid #e2e2e5;padding-bottom:2px}
   .sa{display:flex;gap:16px;margin-top:20px;border-top:1px solid #ddd;padding-top:14px}
   .sb{flex:1;border:1px solid #e2e2e5;border-radius:8px;padding:10px;min-height:90px}
@@ -4621,7 +4622,7 @@ function printNotice(){
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>支払通知書</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-  <style>body{font-family:'Noto Sans JP',sans-serif;color:#333;padding:24px;max-width:600px;margin:0 auto}
+  <style>body{font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#333;padding:24px;max-width:600px;margin:0 auto}
   h3{font-size:18px;color:#1a1a1a;font-weight:700;text-align:center}
   table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px}
   th{background:#ededef;color:#1a1a1a;padding:5px 6px;text-align:left;font-weight:700;border:1px solid #e2e2e5}
