@@ -188,6 +188,51 @@ input, select, textarea {
 .sc-sub { color: #8a8781 !important }
 .sd-v { color: #1b1a17 !important }
 .sd-v.pay { color: #1a1a1a !important }
+
+/* ─ 高密度ダッシュボード UI ─ */
+#adminApp{background:#f1f2f4;min-height:100svh}
+.hdr{background:#fff !important;border-bottom:1px solid #e5e6ea !important;box-shadow:none;padding:16px 22px 12px}
+.hdr h1{color:#111 !important;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif !important;font-weight:800;font-size:19px;letter-spacing:.01em !important}
+.hdr p{color:#8a8f98 !important;font-size:11px}
+.tab-nav{border-bottom:1px solid #e5e6ea !important}
+.tab-btn{font-size:12.5px}
+.panel{background:#f1f2f4 !important;padding:16px 20px 90px;max-width:1240px;margin:0 auto;width:100%}
+.panel .card{border:1px solid #e8e9ec;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.kpi{background:#fff;border:1px solid #e8e9ec;border-radius:12px;padding:14px 16px}
+.kpi-l{font-size:11px;color:#8a8f98;font-weight:600}
+.kpi-v{font-size:21px;font-weight:800;color:#111;margin-top:4px}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#fff;border:1px solid #e8e9ec;border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.tb-inp{flex:1;min-width:180px;padding:9px 12px;border:1px solid #e5e6ea !important;border-radius:8px;font-size:13px;background:#f4f5f7 !important;font-family:inherit}
+.tb-inp:focus{outline:none;border-color:#9aa0a8 !important;background:#fff !important}
+.tb-btn{padding:8px 14px;border:1px solid #d7dade;background:#fff;color:#333;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:border-color .12s}
+.tb-btn:hover{border-color:#9aa0a8}
+.tb-btn.dark{background:#111;border-color:#111;color:#fff}
+.seg{display:flex;background:#f1f2f4;border:1px solid #e5e6ea;border-radius:8px;padding:3px;gap:2px;overflow-x:auto}
+.seg-btn{border:none;background:none;padding:6px 12px;font-size:12px;font-weight:600;color:#6b7078;border-radius:6px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .12s}
+.seg-btn.on{background:#fff;color:#111;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.chip{padding:5px 12px;border:1px solid #d7dade;background:#fff;color:#555;border-radius:20px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
+.chip:hover{border-color:#9aa0a8}
+.chip.on{background:#111;border-color:#111;color:#fff}
+.tbl{background:#fff;border:1px solid #e8e9ec;border-radius:12px;overflow:hidden}
+.tbl .empty{background:#fff}
+.tbl-head,.tbl-row{display:grid;grid-template-columns:minmax(240px,2.4fr) minmax(88px,.8fr) minmax(88px,.8fr) minmax(110px,1fr) minmax(300px,2fr);gap:8px;align-items:center;padding:10px 16px}
+.tbl-head{font-size:10.5px;color:#9aa0a8;font-weight:700;letter-spacing:.08em;border-bottom:1px solid #eef0f2;background:#fafbfc}
+.tbl-row{border-bottom:1px solid #f0f1f3;cursor:pointer;transition:background .12s}
+.tbl-row:hover{background:#f7f8fa}
+.tbl-row:last-child{border-bottom:none}
+.avatar{width:38px;height:38px;border-radius:50%;background:#23262b;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.05em}
+.pill{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.pill.blue{background:#e8f1fd;color:#2f6fc4}.pill.orange{background:#fdf0dd;color:#c07a1e}.pill.gray{background:#eceef0;color:#666}
+.pill.green{background:#e3f4ea;color:#2e8b57}.pill.red{background:#fbe9e7;color:#c0503a}.pill.dim{background:#f3f4f6;color:#9aa0a8}
+.mini{padding:5px 10px;border:1px solid #d7dade;background:#fff;color:#444;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:border-color .12s}
+.mini:hover{border-color:#9aa0a8}
+.mini.green{color:#2e8b57;border-color:#bfe3cf}.mini.blue{color:#2f6fc4;border-color:#c3d9f2}
+@media(max-width:820px){
+  .tbl-head{display:none}
+  .tbl-row{grid-template-columns:1fr auto;row-gap:6px}
+  .tbl-row>div:nth-child(4){text-align:left}
+  .tbl-row>div:nth-child(5){grid-column:1/-1;justify-content:flex-start}
+}
 </style>
 
 <!-- Staff CSS -->
@@ -415,9 +460,9 @@ html,body{min-height:100svh;background:#f2f1ee;color:#1b1a17;font-family:'Inter'
 
 <!-- 帳票スタイル・オーバーライド -->
 <style id="docTheme">
-.hdr,.app-hdr{background:#fff !important;box-shadow:none;border-bottom:2px solid #111}
-.hdr h1,.app-hdr h1{color:#111;font-family:'Shippori Mincho',serif;font-weight:700;letter-spacing:.16em;font-size:17px}
-.hdr p,.app-hdr p{color:#8a8781}
+.app-hdr{background:#fff !important;box-shadow:none;border-bottom:2px solid #111}
+.app-hdr h1{color:#111;font-family:'Shippori Mincho',serif;font-weight:700;letter-spacing:.16em;font-size:17px}
+.app-hdr p{color:#8a8781}
 .ob-hero{background:#fff;border-bottom:2px solid #111}
 .ob-hero h1{color:#111;font-family:'Shippori Mincho',serif;letter-spacing:.12em}
 .ob-hero p{color:#777}
@@ -522,34 +567,36 @@ window.__auth = _auth;
 <!-- ── STAFF PANEL ── -->
 <div class="panel on" id="pStaff">
   <!-- ダッシュボード -->
-  <div id="dashboard" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px"></div>
+  <div id="dashboard" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px"></div>
   <!-- 通知センター -->
-  <div id="notifCenter" style="display:none;background:linear-gradient(135deg,#fff3e6,#fffaf0);border:1.5px solid #f0c060;border-radius:5px;padding:10px 14px;margin-bottom:10px;cursor:pointer" onclick="scrollToFirstSubmitted()"></div>
-  <!-- 検索 -->
-  <div style="display:flex;gap:6px;margin-bottom:8px">
-    <input type="text" id="staffSearch" placeholder="名前で検索" oninput="renderStaffList()" style="flex:1;padding:8px 12px;border:1.5px solid #ddd9d2;border-radius:4px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;background:#f2f1ee">
-    <select id="statusFilter" onchange="renderStaffList()" style="padding:8px;border:1.5px solid #ddd9d2;border-radius:4px;font-size:12px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;background:#f2f1ee">
-      <option value="all">全状態</option>
-      <option value="pending">承認待ち</option>
-      <option value="submitted">申請中</option>
-      <option value="locked">締め済</option>
-      <option value="working">入力中</option>
-    </select>
+  <div id="notifCenter" style="display:none;background:#fff7ec;border:1px solid #f0d9b0;border-radius:12px;padding:12px 16px;margin-bottom:12px;cursor:pointer" onclick="scrollToFirstSubmitted()"></div>
+  <!-- 検索・フィルター -->
+  <div class="toolbar">
+    <input type="text" id="staffSearch" placeholder="名前で検索" oninput="renderStaffList()" class="tb-inp">
+    <input type="hidden" id="statusFilter" value="all">
+    <div class="seg" id="statusSeg">
+      <button class="seg-btn on" data-v="all" onclick="setStatusFilter('all')">全体</button>
+      <button class="seg-btn" data-v="pending" onclick="setStatusFilter('pending')">承認待ち</button>
+      <button class="seg-btn" data-v="submitted" onclick="setStatusFilter('submitted')">申請中</button>
+      <button class="seg-btn" data-v="locked" onclick="setStatusFilter('locked')">締め済</button>
+      <button class="seg-btn" data-v="working" onclick="setStatusFilter('working')">入力中</button>
+    </div>
+    <button onclick="exportPaymentCSV()" class="tb-btn">CSV出力</button>
   </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:6px">
-    <div style="font-size:13px;font-weight:700;color:#1a1a1a">登録スタッフ一覧</div>
-    <div style="font-size:11px;color:#8a8781" id="staffCount">0名</div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px" id="deptFilter"></div>
+  <div class="toolbar" style="justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onclick="changeListMonth(-1)" class="tb-btn" style="padding:8px 11px">◀</button>
+      <div style="font-size:15px;font-weight:800;color:#111;min-width:110px;text-align:center" id="listMonthLabel">2026年4月</div>
+      <button onclick="changeListMonth(1)" class="tb-btn" style="padding:8px 11px">▶</button>
+      <button onclick="resetListMonth()" class="tb-btn dark">今月</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="font-size:11px;color:#8a8f98" id="staffCount">0名</div>
+      <button onclick="openAddStaffModal()" class="tb-btn dark">スタッフ追加</button>
+    </div>
   </div>
-  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px" id="deptFilter"></div>
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:10px 12px;background:#fff;border:1.5px solid #ddd9d2;border-radius:5px">
-    <button onclick="changeListMonth(-1)" style="padding:6px 10px;border:none;background:#ecebe6;color:#1a1a1a;border-radius:3px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">◀</button>
-    <div style="flex:1;text-align:center;font-size:15px;font-weight:700;color:#1a1a1a" id="listMonthLabel">2026年4月</div>
-    <button onclick="changeListMonth(1)" style="padding:6px 10px;border:none;background:#ecebe6;color:#1a1a1a;border-radius:3px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">▶</button>
-    <button onclick="resetListMonth()" style="padding:6px 12px;border:none;background:#1a1a1a;color:#fff;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">今月</button>
-    <button onclick="exportPaymentCSV()" style="padding:6px 10px;border:1.5px solid #4a90d9;background:#fff;color:#4a90d9;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">CSV</button>
-    <button onclick="openAddStaffModal()" style="padding:6px 12px;border:none;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">スタッフ追加</button>
-  </div>
-  <div id="staffList"><div class="empty">登録スタッフがいません</div></div>
+  <div id="staffList" class="tbl"><div class="empty">登録スタッフがいません</div></div></div>
 </div>
 
 <!-- ── CONTRACTS PANEL ── -->
@@ -1679,10 +1726,10 @@ function saveDepts(){localStorage.setItem('sc_departments',JSON.stringify(depart
 function renderDeptFilter(){
   const df=document.getElementById('deptFilter');if(!df)return;
   const counts={};allStaff.forEach(s=>{const d=s.department||'未分類';counts[d]=(counts[d]||0)+1});
-  df.innerHTML=`<button class="dept-btn${_deptFilter==='all'?' on':''}" onclick="filterDept('all')">全て (${allStaff.length})</button>`+
-    departments.map(d=>`<button class="dept-btn${_deptFilter===d?' on':''}" onclick="filterDept('${d}')">${d} (${counts[d]||0})</button>`).join('')+
-    (counts['未分類']?`<button class="dept-btn${_deptFilter==='未分類'?' on':''}" onclick="filterDept('未分類')">未分類 (${counts['未分類']})</button>`:'')+
-    `<button class="dept-btn" onclick="addDept()" style="color:#1a1a1a;border-style:dashed">+ 追加</button>`;
+  df.innerHTML=`<button class="chip${_deptFilter==='all'?' on':''}" onclick="filterDept('all')">全て (${allStaff.length})</button>`+
+    departments.map(d=>`<button class="chip${_deptFilter===d?' on':''}" onclick="filterDept('${d}')">${d} (${counts[d]||0})</button>`).join('')+
+    (counts['未分類']?`<button class="chip${_deptFilter==='未分類'?' on':''}" onclick="filterDept('未分類')">未分類 (${counts['未分類']})</button>`:'')+
+    `<button class="chip" onclick="addDept()" style="border-style:dashed">+ 追加</button>`;
 }
 function filterDept(d){_deptFilter=d;renderStaffList()}
 function lockMonth(){
@@ -2079,10 +2126,10 @@ function renderDashboard(){
     if(md.locked)lockedCount++;
   });
   el.innerHTML=`
-    <div style="background:linear-gradient(135deg,#eae8e3,#fff);border:1.5px solid #ddd9d2;border-radius:4px;padding:8px;text-align:center"><div style="font-size:9px;color:#8a8781;font-weight:700">支払予定</div><div style="font-size:14px;font-weight:700;color:#1a1a1a;margin-top:2px">¥${totalAmount.toLocaleString()}</div></div>
-    <div style="background:linear-gradient(135deg,#fff3e6,#fff);border:1.5px solid #f0c060;border-radius:4px;padding:8px;text-align:center"><div style="font-size:9px;color:#8a8781;font-weight:700">申請待ち</div><div style="font-size:14px;font-weight:700;color:#b5443c;margin-top:2px">${submittedCount}件</div></div>
-    <div style="background:linear-gradient(135deg,#edfaf3,#fff);border:1.5px solid #88d4a8;border-radius:4px;padding:8px;text-align:center"><div style="font-size:9px;color:#8a8781;font-weight:700">締め済</div><div style="font-size:14px;font-weight:700;color:#3d9a6a;margin-top:2px">${lockedCount}件</div></div>
-    <div style="background:linear-gradient(135deg,#fff3e6,#fff);border:1.5px solid #f0a068;border-radius:4px;padding:8px;text-align:center"><div style="font-size:9px;color:#8a8781;font-weight:700">登録待ち</div><div style="font-size:14px;font-weight:700;color:#d47030;margin-top:2px">${pendingApproval}名</div></div>
+    <div class="kpi"><div class="kpi-l">支払予定</div><div class="kpi-v">¥${totalAmount.toLocaleString()}</div></div>
+    <div class="kpi"><div class="kpi-l">申請待ち</div><div class="kpi-v"${submittedCount>0?' style="color:#c07a1e"':''}>${submittedCount}件</div></div>
+    <div class="kpi"><div class="kpi-l">締め済</div><div class="kpi-v">${lockedCount}件</div></div>
+    <div class="kpi"><div class="kpi-l">登録待ち</div><div class="kpi-v"${pendingApproval>0?' style="color:#c0503a"':''}>${pendingApproval}名</div></div>
   `;
   // 通知センター
   const nc=document.getElementById('notifCenter');
@@ -2098,12 +2145,16 @@ function renderDashboard(){
     }
   }
 }
+function setStatusFilter(v){
+  const f=document.getElementById('statusFilter');if(f)f.value=v;
+  document.querySelectorAll('#statusSeg .seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  renderStaffList();
+}
 function scrollToFirstSubmitted(){
   // 月締め申請があればそちら、なければ登録承認待ちに絞り込む
   const anySubmitted=allStaff.some(s=>{const md=(s.workData||{})[`${_listYear}-${pad(_listMonth)}_${s.name}`]||{};return md.submitted&&!md.locked});
   const anyPending=allStaff.some(s=>!s.approved);
-  document.getElementById('statusFilter').value=anySubmitted?'submitted':(anyPending?'pending':'all');
-  renderStaffList();
+  setStatusFilter(anySubmitted?'submitted':(anyPending?'pending':'all'));
   document.getElementById('staffList')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
 // CSV出力
@@ -2161,7 +2212,8 @@ function renderStaffList(){
   const now=new Date();
   const lbl=document.getElementById('listMonthLabel');
   if(lbl)lbl.textContent=`${_listYear}年${_listMonth}月`;
-  el.innerHTML=filtered.map((s)=>{const i=allStaff.indexOf(s);
+  const tblHead=`<div class="tbl-head"><div>スタッフ情報</div><div>稼働（今月）</div><div>ステータス</div><div style="text-align:right">金額（今月）</div><div style="text-align:right">操作</div></div>`;
+  el.innerHTML=tblHead+filtered.map((s)=>{const i=allStaff.indexOf(s);
     const workData=s.workData||JSON.parse(ls('sc_admin_work_'+s.id)||'{}');
     const curKey=`${_listYear}-${pad(_listMonth)}_${s.name}`;
     const curMonth=workData[curKey]||{};
@@ -2178,35 +2230,32 @@ function renderStaffList(){
     const isLocked=!!curMonth.locked;
     const isSubmitted=!!curMonth.submitted;
     // ステータス
-    let statusBadge='';
-    if(isLocked)statusBadge='<span style="font-size:11px;color:#fff;background:linear-gradient(135deg,#888,#666);padding:4px 12px;border-radius:6px;font-weight:700;box-shadow:0 2px 4px rgba(0,0,0,.15)">締め済</span>';
-    else if(isSubmitted)statusBadge='<span style="font-size:11px;color:#fff;background:linear-gradient(135deg,#f0a040,#e0963a);padding:4px 12px;border-radius:6px;font-weight:700;animation:pulse 2s infinite;box-shadow:0 2px 6px rgba(224,150,58,.4)">申請中</span>';
-    else if(grandTotal>0)statusBadge='<span style="font-size:11px;color:#fff;background:linear-gradient(135deg,#4a90d9,#3a7ec9);padding:4px 12px;border-radius:6px;font-weight:700;box-shadow:0 2px 4px rgba(74,144,217,.3)">入力中</span>';
-    return`<div style="background:#fff;border:1.5px solid #ddd9d2;border-radius:5px;margin-bottom:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04)">
-      <div onclick="openStaff(${i})" style="padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:10px">
-        <div style="width:36px;height:36px;border-radius:50%;background:#f6f5f2;border:1px solid #ddd9d2;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;font-family:'Shippori Mincho',serif;color:#555;flex-shrink:0">${(s.name||'').trim().charAt(0)}</div>
-        <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-            <span style="font-size:14px;font-weight:700;color:#1b1a17">${s.name}</span>
-            ${s.department?`<span style="font-size:9px;color:#fff;background:#1a1a1a;padding:2px 7px;border-radius:3px;font-weight:700">${s.department}</span>`:''}
-            ${s.snsOnly?'<span style="font-size:9px;color:#fff;background:#b5443c;padding:2px 7px;border-radius:3px;font-weight:700">SNS</span>':''}
-            ${!s.approved?'<span style="font-size:9px;color:#fff;background:#e0963a;padding:2px 7px;border-radius:3px;font-weight:700">登録待</span>':''}
-            ${s.signedAt?'<span style="font-size:9px;color:#fff;background:#4caf7d;padding:2px 7px;border-radius:3px;font-weight:700">署名済</span>':'<span style="font-size:9px;color:#fff;background:#b0a0a8;padding:2px 7px;border-radius:3px;font-weight:700">未署名</span>'}
-            ${s.isFixedDaily&&s.dailyRate?`<span style="font-size:9px;color:#fff;background:#3d9a6a;padding:2px 7px;border-radius:3px;font-weight:700">日当 ¥${Number(s.dailyRate).toLocaleString()}</span>`:''}
-            ${(!s.bank||!s.pin)?`<span title="振込先または暗証番号が未登録" style="font-size:9px;color:#fff;background:#e0603a;padding:2px 7px;border-radius:3px;font-weight:700">${!s.bank&&!s.pin?'口座・暗証番号':(!s.bank?'口座':'暗証番号')}未登録</span>`:''}
-          </div>
-          <div style="font-size:10px;color:#8a8781;margin-top:2px">${now.getMonth()+1}月：${s.snsOnly?`SNS ${mSnsCount}件`:`${td}日 ${total>0?`(${total}件中)`:''}`}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:16px;font-weight:700;color:#1a1a1a">¥${grandTotal.toLocaleString()}</div>
-          ${statusBadge}
+    let statusPill='<span style="color:#c3c7cd;font-size:12px">—</span>';
+    if(isLocked)statusPill='<span class="pill gray">締め済</span>';
+    else if(isSubmitted)statusPill='<span class="pill orange" style="animation:pulse 2s infinite">申請中</span>';
+    else if(grandTotal>0)statusPill='<span class="pill blue">入力中</span>';
+    const initials=(s.name||'').replace(/[\s　]/g,'').slice(0,2);
+    return`<div class="tbl-row" onclick="openStaff(${i})">
+      <div style="display:flex;align-items:center;gap:10px;min-width:0">
+        <div class="avatar">${initials}</div>
+        <div style="min-width:0;display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+          <span style="font-size:13.5px;font-weight:700;color:#16181b">${s.name}</span>
+          ${s.department?`<span class="pill dim">${s.department}</span>`:''}
+          ${s.snsOnly?'<span class="pill red">SNS</span>':''}
+          ${!s.approved?'<span class="pill orange">登録待</span>':''}
+          ${s.signedAt?'<span class="pill green">署名済</span>':'<span class="pill dim">未署名</span>'}
+          ${s.isFixedDaily&&s.dailyRate?`<span class="pill green">日当 ¥${Number(s.dailyRate).toLocaleString()}</span>`:''}
+          ${(!s.bank||!s.pin)?`<span class="pill red" title="振込先または暗証番号が未登録">${!s.bank&&!s.pin?'口座・暗証番号':(!s.bank?'口座':'暗証番号')}未登録</span>`:''}
         </div>
       </div>
-      <div style="display:flex;border-top:1px solid #ecebe6;background:#fbfaf8">
-        ${!s.approved?`<button onclick="event.stopPropagation();quickApprove(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4caf7d;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ecebe6">✓ 登録承認</button>`:''}
-        ${grandTotal>0?`<button onclick="event.stopPropagation();quickNotice(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#1a1a1a;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ecebe6">通知書</button>${!isLocked?`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#3d9a6a;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ecebe6">月締め</button>`:`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#888;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ecebe6">解除</button>`}`:''}
-        ${!s.signedAt?`<button onclick="event.stopPropagation();quickSignURL(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#3d9a6a;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ecebe6">署名URL</button>`:''}
-        <button onclick="event.stopPropagation();quickCopyURL(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4a90d9;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">打刻URL</button>
+      <div><div style="font-size:13px;font-weight:700;color:#16181b">${s.snsOnly?`SNS ${mSnsCount}件`:`${td}日`}</div><div style="font-size:10.5px;color:#9aa0a8">${s.snsOnly?'':(total>0?`${total}件中`:'')}</div></div>
+      <div>${statusPill}</div>
+      <div style="text-align:right;font-size:15px;font-weight:800;color:#111">¥${grandTotal.toLocaleString()}</div>
+      <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap" onclick="event.stopPropagation()">
+        ${!s.approved?`<button onclick="quickApprove(${i})" class="mini green">✓ 登録承認</button>`:''}
+        ${grandTotal>0?`<button onclick="quickNotice(${i})" class="mini">通知書</button>${!isLocked?`<button onclick="quickLock(${i})" class="mini green">月締め</button>`:`<button onclick="quickLock(${i})" class="mini">解除</button>`}`:''}
+        ${!s.signedAt?`<button onclick="quickSignURL(${i})" class="mini green">署名URL</button>`:''}
+        <button onclick="quickCopyURL(${i})" class="mini blue">打刻URL</button>
       </div>
     </div>`;
   }).join('');
