@@ -453,7 +453,7 @@ window.addEventListener('load', () => {
     const banner = document.createElement('div');
     banner.innerHTML = `
       <div style="position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#1a1a1a,#000000);color:#fff;padding:12px;text-align:center;z-index:10000;font-weight:700">
-        🔄 新しいバージョンが利用可能です。<a href="javascript:location.reload()" style="color:#fff;text-decoration:underline;margin-left:8px">更新してください</a>
+        新しいバージョンが利用可能です。<a href="javascript:location.reload()" style="color:#fff;text-decoration:underline;margin-left:8px">更新してください</a>
       </div>`;
     document.body.insertBefore(banner, document.body.firstChild);
     document.body.style.paddingTop = '48px';
@@ -514,9 +514,9 @@ window.__auth = _auth;
 </header>
 
 <div class="tab-nav">
-  <button class="tab-btn on" onclick="switchTab('staff',this)">👥 スタッフ</button>
-  <button class="tab-btn" onclick="switchTab('contracts',this)">📋 契約書</button>
-  <button class="tab-btn" onclick="switchTab('invite',this)">🔗 招待URL</button>
+  <button class="tab-btn on" onclick="switchTab('staff',this)">スタッフ</button>
+  <button class="tab-btn" onclick="switchTab('contracts',this)">契約書</button>
+  <button class="tab-btn" onclick="switchTab('invite',this)">招待URL</button>
 </div>
 
 <!-- ── STAFF PANEL ── -->
@@ -527,7 +527,7 @@ window.__auth = _auth;
   <div id="notifCenter" style="display:none;background:linear-gradient(135deg,#fff3e6,#fffaf0);border:1.5px solid #f0c060;border-radius:5px;padding:10px 14px;margin-bottom:10px;cursor:pointer" onclick="scrollToFirstSubmitted()"></div>
   <!-- 検索 -->
   <div style="display:flex;gap:6px;margin-bottom:8px">
-    <input type="text" id="staffSearch" placeholder="🔍 名前で検索" oninput="renderStaffList()" style="flex:1;padding:8px 12px;border:1.5px solid #ddd9d2;border-radius:4px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;background:#f2f1ee">
+    <input type="text" id="staffSearch" placeholder="名前で検索" oninput="renderStaffList()" style="flex:1;padding:8px 12px;border:1.5px solid #ddd9d2;border-radius:4px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;background:#f2f1ee">
     <select id="statusFilter" onchange="renderStaffList()" style="padding:8px;border:1.5px solid #ddd9d2;border-radius:4px;font-size:12px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;background:#f2f1ee">
       <option value="all">全状態</option>
       <option value="pending">承認待ち</option>
@@ -546,8 +546,8 @@ window.__auth = _auth;
     <div style="flex:1;text-align:center;font-size:15px;font-weight:700;color:#1a1a1a" id="listMonthLabel">2026年4月</div>
     <button onclick="changeListMonth(1)" style="padding:6px 10px;border:none;background:#ecebe6;color:#1a1a1a;border-radius:3px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">▶</button>
     <button onclick="resetListMonth()" style="padding:6px 12px;border:none;background:#1a1a1a;color:#fff;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">今月</button>
-    <button onclick="exportPaymentCSV()" style="padding:6px 10px;border:1.5px solid #4a90d9;background:#fff;color:#4a90d9;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">📥 CSV</button>
-    <button onclick="openAddStaffModal()" style="padding:6px 12px;border:none;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">➕ スタッフ追加</button>
+    <button onclick="exportPaymentCSV()" style="padding:6px 10px;border:1.5px solid #4a90d9;background:#fff;color:#4a90d9;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">CSV</button>
+    <button onclick="openAddStaffModal()" style="padding:6px 12px;border:none;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">スタッフ追加</button>
   </div>
   <div id="staffList"><div class="empty">登録スタッフがいません</div></div>
 </div>
@@ -555,7 +555,7 @@ window.__auth = _auth;
 <!-- ── CONTRACTS PANEL ── -->
 <div class="panel" id="pContracts">
   <div class="card">
-    <div class="ch">📋 契約書テンプレート一覧</div>
+    <div class="ch">契約書テンプレート一覧</div>
     <div class="cb" id="contractList"></div>
   </div>
   <div class="card">
@@ -563,7 +563,7 @@ window.__auth = _auth;
     <div class="cb">
       <div class="field"><div class="lbl">テンプレート名</div><input class="inp" id="newTmplName" placeholder="例：動画撮影専用契約書"></div>
       <div class="field"><div class="lbl">契約書本文（HTML可）</div><textarea class="tmpl-textarea" id="newTmplBody" placeholder="契約書の内容を入力..."></textarea></div>
-      <button class="sbtn" onclick="addTemplate()">💾 テンプレートを保存</button>
+      <button class="sbtn" onclick="addTemplate()">テンプレートを保存</button>
     </div>
   </div>
 </div>
@@ -571,60 +571,60 @@ window.__auth = _auth;
 <!-- ── INVITE PANEL ── -->
 <div class="panel" id="pInvite">
   <div class="card">
-    <div class="ch">🔗 スタッフ招待URL発行</div>
+    <div class="ch">スタッフ招待URL発行</div>
     <div class="cb">
       <div style="font-size:12px;color:#8a8781;line-height:1.7;background:#f2f1ee;border-radius:4px;padding:10px 12px;border:1px solid #ddd9d2">
         ① 契約書を選ぶ　② 発行する　③ LINEで送る
       </div>
       <div class="field">
-        <div class="lbl">🏢 部門を選択</div>
+        <div class="lbl">部門を選択</div>
         <select class="inp" id="inviteDept" style="font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif"></select>
       </div>
       <div class="field">
-        <div class="lbl">📋 契約書テンプレートを選択</div>
+        <div class="lbl">契約書テンプレートを選択</div>
         <select class="inp" id="inviteContract" style="font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif"></select>
       </div>
       <div class="field" style="margin:8px 0">
-        <div class="lbl" style="font-size:11px;font-weight:700;color:#8a8781;margin-bottom:4px">📅 契約締結日</div>
+        <div class="lbl" style="font-size:11px;font-weight:700;color:#8a8781;margin-bottom:4px">契約締結日</div>
         <input type="date" class="inp" id="inviteSignDate" style="font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;padding:8px 12px;border:1.5px solid #ddd9d2;border-radius:4px;font-size:14px;color:#1b1a17;background:#f2f1ee">
       </div>
-      <button class="sbtn" onclick="generateInvite()">🔗 招待URLを発行する</button>
+      <button class="sbtn" onclick="generateInvite()">招待URLを発行する</button>
       <div id="inviteResult" style="display:none;margin-top:14px">
         <div style="background:#edfaf3;border:1.5px solid #88d4a8;border-radius:5px;padding:12px 14px;margin-bottom:10px">
-          <div style="font-size:13px;font-weight:700;color:#3d9a6a;margin-bottom:4px">✅ URLが発行されました！</div>
+          <div style="font-size:13px;font-weight:700;color:#3d9a6a;margin-bottom:4px">URLが発行されました！</div>
           <div style="font-size:12px;color:#3d9a6a;line-height:1.6">このURLをLINEやメールでスタッフに送ってください。<br>スタッフがURLを開くと登録・署名画面が表示されます。</div>
         </div>
         <div style="font-size:11px;font-weight:700;color:#8a8781;margin-bottom:4px">招待URL（タップでコピー）</div>
         <div class="invite-url" id="inviteUrl" onclick="copyInvite()">—</div>
-        <button class="sbtn" style="margin-top:10px;background:#111" onclick="copyInvite()">📋 URLをコピーしてLINEで送る</button>
+        <button class="sbtn" style="margin-top:10px;background:#111" onclick="copyInvite()">URLをコピーしてLINEで送る</button>
       </div>
     </div>
   </div>
   <div class="card" style="border-color:#88d4a8">
-    <div class="ch" style="background:#edfaf3;color:#3d9a6a">✍️ 契約書 署名URL発行</div>
+    <div class="ch" style="background:#edfaf3;color:#3d9a6a">契約書 署名URL発行</div>
     <div class="cb">
       <div style="font-size:12px;color:#3d9a6a;line-height:1.7;background:#edfaf3;border-radius:4px;padding:10px 12px;border:1px solid #88d4a8">
         登録済みスタッフ向けの【契約書に署名するだけ】のURLです。<br>
         ① スタッフを選ぶ　② 発行する　③ LINEで送る
       </div>
       <div class="field">
-        <div class="lbl">👤 スタッフを選択</div>
+        <div class="lbl">スタッフを選択</div>
         <select class="inp" id="signStaffSel" style="font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onchange="renderSignUrl()"></select>
       </div>
-      <button class="sbtn" style="background:linear-gradient(135deg,#4caf7d,#3d9a6a)" onclick="renderSignUrl(true)">✍️ 署名URLを発行する</button>
+      <button class="sbtn" style="background:linear-gradient(135deg,#4caf7d,#3d9a6a)" onclick="renderSignUrl(true)">署名URLを発行する</button>
       <div id="signUrlResult" style="display:none;margin-top:14px">
         <div style="background:#edfaf3;border:1.5px solid #88d4a8;border-radius:5px;padding:12px 14px;margin-bottom:10px">
-          <div style="font-size:13px;font-weight:700;color:#3d9a6a;margin-bottom:4px">✅ 署名URLを発行しました</div>
+          <div style="font-size:13px;font-weight:700;color:#3d9a6a;margin-bottom:4px">署名URLを発行しました</div>
           <div style="font-size:12px;color:#3d9a6a;line-height:1.6" id="signUrlNote"></div>
         </div>
         <div style="font-size:11px;font-weight:700;color:#8a8781;margin-bottom:4px">署名URL（タップでコピー）</div>
         <div class="invite-url" id="signUrlBox" onclick="copySignUrl()">—</div>
-        <button class="sbtn" style="margin-top:10px;background:linear-gradient(135deg,#4caf7d,#3d9a6a)" onclick="copySignUrl()">📋 URLをコピーしてLINEで送る</button>
+        <button class="sbtn" style="margin-top:10px;background:linear-gradient(135deg,#4caf7d,#3d9a6a)" onclick="copySignUrl()">URLをコピーしてLINEで送る</button>
       </div>
     </div>
   </div>
   <div class="card" id="pendingCard" style="border-color:#ddd9d2">
-    <div class="ch" style="background:#ecebe6">⏳ 承認待ちスタッフ <span id="pendingCount" style="background:#1a1a1a;color:#fff;border-radius:4px;padding:1px 8px;font-size:11px;margin-left:6px">0</span></div>
+    <div class="ch" style="background:#ecebe6">承認待ちスタッフ <span id="pendingCount" style="background:#1a1a1a;color:#fff;border-radius:4px;padding:1px 8px;font-size:11px;margin-left:6px">0</span></div>
     <div class="cb" id="pendingList">
       <div style="font-size:12px;color:#8a8781;text-align:center;padding:8px">承認待ちのスタッフはいません</div>
     </div>
@@ -643,10 +643,10 @@ window.__auth = _auth;
     <!-- ステータスバッジ -->
     <div id="mStatusBadges" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
 
-    <!-- ★ 月別詳細（メイン） -->
+    <!-- 月別詳細（メイン） -->
     <div style="background:#fff;border:2px solid #1a1a1a;border-radius:8px;padding:14px;margin-bottom:10px;box-shadow:0 4px 16px rgba(0,0,0,.05)">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-        <span style="font-size:15px;font-weight:700;color:#1a1a1a">📅</span>
+        <span style="font-size:15px;font-weight:700;color:#1a1a1a"></span>
         <select id="mYear" style="padding:6px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-weight:700;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17"></select>
         <select id="mMonth" style="padding:6px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-weight:700;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17"></select>
         <button style="padding:6px 14px;background:var(--acc);color:#fff;border:none;border-radius:3px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:12px;font-weight:700;cursor:pointer" onclick="loadWorkData()">表示</button>
@@ -656,20 +656,20 @@ window.__auth = _auth;
 
     <!-- 設定（折りたたみ） -->
     <details style="margin-bottom:8px">
-      <summary style="font-size:12px;font-weight:700;color:#8a8781;cursor:pointer;padding:8px 12px;background:#ecebe6;border-radius:4px;list-style:none">⚙️ 設定（部門・承認・インボイス・打刻URL）</summary>
+      <summary style="font-size:12px;font-weight:700;color:#8a8781;cursor:pointer;padding:8px 12px;background:#ecebe6;border-radius:4px;list-style:none">設定（部門・承認・インボイス・打刻URL）</summary>
       <div style="padding:12px 4px;display:flex;flex-direction:column;gap:10px">
         <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:11px;font-weight:700;color:#8a8781;min-width:50px">🏢 部門</span>
+          <span style="font-size:11px;font-weight:700;color:#8a8781;min-width:50px">部門</span>
           <select id="mDept" class="inp" style="flex:1;padding:6px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee" onchange="saveStaffDept()"></select>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:11px;font-weight:700;color:#8a8781;min-width:50px">💰 時給</span>
+          <span style="font-size:11px;font-weight:700;color:#8a8781;min-width:50px">時給</span>
           <input type="number" id="mRate" placeholder="2014" style="flex:1;padding:6px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box">
           <span style="font-size:11px;color:#8a8781">円/時</span>
           <button onclick="saveStaffRate()" style="padding:6px 10px;background:#1a1a1a;color:#fff;border:none;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">保存</button>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <label style="font-size:11px;font-weight:700;color:#3d9a6a;display:flex;align-items:center;gap:4px;cursor:pointer;min-width:76px"><input type="checkbox" id="mFixedDaily" onchange="toggleDailyRow()">📅 日当制</label>
+          <label style="font-size:11px;font-weight:700;color:#3d9a6a;display:flex;align-items:center;gap:4px;cursor:pointer;min-width:76px"><input type="checkbox" id="mFixedDaily" onchange="toggleDailyRow()">日当制</label>
           <input type="number" id="mDailyRate" placeholder="17000" style="flex:1;min-width:90px;padding:6px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box">
           <span style="font-size:11px;color:#8a8781">円/日</span>
           <button onclick="saveStaffDaily()" style="padding:6px 10px;background:#3d9a6a;color:#fff;border:none;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">保存</button>
@@ -677,40 +677,40 @@ window.__auth = _auth;
         <div id="mDailyHint" style="display:none;font-size:11px;color:#3d9a6a;background:#edfaf3;border:1px solid #88d4a8;border-radius:3px;padding:6px 10px;line-height:1.6">日当制のスタッフです。契約書・打刻画面とも時給ではなくこの日額が使われます。</div>
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
           <span id="mApproveWrap"></span>
-          <label style="font-size:12px;color:#8a8781;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" id="mInvoice" onchange="saveStaffInvoice()">📄 インボイス登録</label>
-          <label style="font-size:12px;color:#b5443c;display:flex;align-items:center;gap:4px;cursor:pointer;font-weight:700"><input type="checkbox" id="mSnsOnly" onchange="saveStaffSnsOnly()">📸 SNSのみのスタッフ</label>
+          <label style="font-size:12px;color:#8a8781;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" id="mInvoice" onchange="saveStaffInvoice()">インボイス登録</label>
+          <label style="font-size:12px;color:#b5443c;display:flex;align-items:center;gap:4px;cursor:pointer;font-weight:700"><input type="checkbox" id="mSnsOnly" onchange="saveStaffSnsOnly()">SNSのみのスタッフ</label>
         </div>
-        <button style="font-size:12px;padding:8px 14px;background:#1a1a1a;border:none;border-radius:4px;cursor:pointer;color:#fff;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-weight:700" onclick="copyStaffURL()">🔗 打刻URLをコピー</button>
+        <button style="font-size:12px;padding:8px 14px;background:#1a1a1a;border:none;border-radius:4px;cursor:pointer;color:#fff;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-weight:700" onclick="copyStaffURL()">打刻URLをコピー</button>
       </div>
     </details>
 
     <!-- 年間サマリー（折りたたみ） -->
     <details style="margin-bottom:8px">
-      <summary style="font-size:12px;font-weight:700;color:#8a8781;cursor:pointer;padding:8px 12px;background:#ecebe6;border-radius:4px;list-style:none">📊 年間月別サマリー</summary>
+      <summary style="font-size:12px;font-weight:700;color:#8a8781;cursor:pointer;padding:8px 12px;background:#ecebe6;border-radius:4px;list-style:none">年間月別サマリー</summary>
       <div id="mYearSummary" style="padding:8px 0"></div>
     </details>
 
     <!-- 詳細情報（折りたたみ） -->
     <details>
-      <summary style="font-size:12px;font-weight:700;color:#8a8781;cursor:pointer;padding:8px 12px;background:#ecebe6;border-radius:4px;list-style:none">📋 基本情報・口座・契約</summary>
+      <summary style="font-size:12px;font-weight:700;color:#8a8781;cursor:pointer;padding:8px 12px;background:#ecebe6;border-radius:4px;list-style:none">基本情報・口座・契約</summary>
       <div style="padding:8px 0">
         <div class="info-grid" id="mBasicInfo" style="margin-bottom:8px"></div>
-        <div class="m-sec-ttl" style="margin-bottom:4px">🏦 振込先口座</div>
+        <div class="m-sec-ttl" style="margin-bottom:4px">振込先口座</div>
         <div class="info-grid" id="mBankInfo" style="margin-bottom:8px"></div>
-        <div class="m-sec-ttl" style="margin-bottom:4px">📋 契約情報</div>
+        <div class="m-sec-ttl" style="margin-bottom:4px">契約情報</div>
         <div id="mContractInfo"></div>
       </div>
     </details>
 
     <!-- 代理入力（折りたたみ） -->
     <details style="margin-top:8px">
-      <summary style="font-size:12px;font-weight:700;color:#3d9a6a;cursor:pointer;padding:8px 12px;background:#edfaf3;border-radius:4px;list-style:none">✏️ 基本情報・振込先・暗証番号を編集</summary>
+      <summary style="font-size:12px;font-weight:700;color:#3d9a6a;cursor:pointer;padding:8px 12px;background:#edfaf3;border-radius:4px;list-style:none">基本情報・振込先・暗証番号を編集</summary>
       <div style="padding:10px 2px;display:flex;flex-direction:column;gap:8px">
         <div style="font-size:11px;color:#8a8781;line-height:1.7;background:#f2f1ee;border:1px solid #ddd9d2;border-radius:3px;padding:8px 10px">
           通常は署名URLから本人に入力してもらってください。ここは代理入力用です。<br>
           ※ 氏名は変更できません（過去の稼働記録が氏名で紐づいているため）
         </div>
-        <div class="m-sec-ttl" style="margin-bottom:2px">👤 基本情報</div>
+        <div class="m-sec-ttl" style="margin-bottom:2px">基本情報</div>
         <input type="date" id="mEditBirth" placeholder="生年月日" style="padding:7px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box;width:100%">
         <input type="tel" id="mEditPhone" placeholder="電話番号" style="padding:7px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box;width:100%">
         <input type="email" id="mEditEmail" placeholder="メールアドレス" style="padding:7px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box;width:100%">
@@ -718,7 +718,7 @@ window.__auth = _auth;
         <input type="text" id="mEditStation" placeholder="最寄駅" style="padding:7px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box;width:100%">
         <input type="text" id="mEditInvoiceNum" placeholder="インボイス登録番号（任意）" style="padding:7px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box;width:100%">
 
-        <div class="m-sec-ttl" style="margin:6px 0 2px">🏦 振込先口座</div>
+        <div class="m-sec-ttl" style="margin:6px 0 2px">振込先口座</div>
         <input type="text" id="mEditBank" placeholder="銀行名" style="padding:7px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box;width:100%">
         <div style="display:flex;gap:6px">
           <input type="text" id="mEditBranch" placeholder="支店名" style="padding:7px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box;width:100%">
@@ -729,33 +729,33 @@ window.__auth = _auth;
           <input type="text" id="mEditAccName" placeholder="口座名義（カナ）" style="padding:7px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box;width:100%">
         </div>
 
-        <div class="m-sec-ttl" style="margin:6px 0 2px">🔒 暗証番号</div>
+        <div class="m-sec-ttl" style="margin:6px 0 2px">暗証番号</div>
         <input type="text" id="mEditPin" placeholder="4桁以上（空欄で保存すると未設定のまま）" style="padding:7px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box;width:100%">
         <div style="font-size:11px;color:#e0963a;line-height:1.6">未設定の間は、打刻URLを知っていれば誰でも開けてしまいます。</div>
 
-        <button onclick="saveStaffProfile()" style="margin-top:6px;padding:10px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">💾 保存する</button>
+        <button onclick="saveStaffProfile()" style="margin-top:6px;padding:10px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">保存する</button>
       </div>
     </details>
 
     <!-- 交通費プリセット -->
     <details style="margin-top:8px">
-      <summary style="font-size:12px;font-weight:700;color:#4a90d9;cursor:pointer;padding:8px 12px;background:#eaf3fd;border-radius:4px;list-style:none">🚃 交通費プリセット（業務先ごとの片道運賃）</summary>
+      <summary style="font-size:12px;font-weight:700;color:#4a90d9;cursor:pointer;padding:8px 12px;background:#eaf3fd;border-radius:4px;list-style:none">交通費プリセット（業務先ごとの片道運賃）</summary>
       <div style="padding:10px 2px">
         <div style="font-size:11px;color:#4a90d9;line-height:1.7;background:#eaf3fd;border:1px solid #a8cdf0;border-radius:3px;padding:8px 10px;margin-bottom:8px">
           片道の運賃を登録しておくと、本人が勤怠でその業務先を選んだときに<b>往復（×2）</b>で自動入力されます。
         </div>
         <div id="mFareList"></div>
         <button onclick="addFarePresetRow()" style="width:100%;margin-top:6px;padding:8px;background:#fff;border:1.5px dashed #4a90d9;color:#4a90d9;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">＋ 行を追加</button>
-        <button onclick="saveFarePresets()" style="width:100%;margin-top:6px;padding:10px;background:linear-gradient(135deg,#4a90d9,#3a7ec9);color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">💾 交通費プリセットを保存</button>
+        <button onclick="saveFarePresets()" style="width:100%;margin-top:6px;padding:10px;background:linear-gradient(135deg,#4a90d9,#3a7ec9);color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">交通費プリセットを保存</button>
       </div>
     </details>
 
   </div>
   <div class="m-foot">
     <button class="ghost-btn" onclick="closeModal()">閉じる</button>
-    <button class="pink-btn" id="mContractUrlBtn" onclick="generateStaffContractUrl()" style="padding:10px 16px;background:linear-gradient(135deg,#1a1a1a,#000000);color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">🔗 契約書署名URL</button>
-    <button class="pink-btn" id="mNoticeBtn" onclick="openStaffNotice()">📄 支払通知書</button>
-    <button id="mLockBtn" onclick="lockMonth()" style="padding:10px 16px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">💰 月締め確定</button>
+    <button class="pink-btn" id="mContractUrlBtn" onclick="generateStaffContractUrl()" style="padding:10px 16px;background:linear-gradient(135deg,#1a1a1a,#000000);color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">契約書署名URL</button>
+    <button class="pink-btn" id="mNoticeBtn" onclick="openStaffNotice()">支払通知書</button>
+    <button id="mLockBtn" onclick="lockMonth()" style="padding:10px 16px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">月締め確定</button>
   </div>
 </div>
 </div>
@@ -763,10 +763,10 @@ window.__auth = _auth;
 <!-- Payment Notice Modal -->
 <div class="n-overlay" id="nOverlay" onclick="nBgClose(event)">
 <div class="n-modal">
-  <div class="n-head"><h2>📄 支払通知書</h2><button class="m-close" onclick="closeNotice()">×</button></div>
+  <div class="n-head"><h2>支払通知書</h2><button class="m-close" onclick="closeNotice()">×</button></div>
   <div class="n-body"><div id="nContent"></div></div>
   <div class="n-actions">
-    <button class="ghost-btn" style="flex:1" onclick="printNotice()">🖨️ 印刷 / PDF</button>
+    <button class="ghost-btn" style="flex:1" onclick="printNotice()">印刷 / PDF</button>
     <button class="pink-btn" style="flex:1" onclick="closeNotice()">閉じる</button>
   </div>
 </div>
@@ -777,7 +777,7 @@ window.__auth = _auth;
 <div class="modal" style="max-width:500px">
   <div class="m-handle"></div>
   <div class="m-head">
-    <div class="m-title">➕ スタッフ追加</div>
+    <div class="m-title">スタッフ追加</div>
     <button class="m-close" onclick="closeAddStaffModal()">×</button>
   </div>
   <div class="m-body">
@@ -808,10 +808,10 @@ window.__auth = _auth;
       </div>
       <div style="display:flex;gap:6px">
         <label style="flex:1;display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px">
-          <input type="checkbox" id="addStaffSnsOnly">📸 SNSのみ
+          <input type="checkbox" id="addStaffSnsOnly">SNSのみ
         </label>
         <label style="flex:1;display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px">
-          <input type="checkbox" id="addStaffInvoice">📄 インボイス登録
+          <input type="checkbox" id="addStaffInvoice">インボイス登録
         </label>
       </div>
     </div>
@@ -831,7 +831,7 @@ window.__auth = _auth;
 <div class="screen" id="screenPin">
   <div style="display:flex;align-items:center;justify-content:center;min-height:70vh">
     <div style="background:#fff;border-radius:8px;padding:32px 24px;width:100%;max-width:320px;box-shadow:0 8px 40px rgba(0,0,0,.08);text-align:center">
-      <div style="font-size:40px;margin-bottom:8px">🔒</div>
+      <div style="font-size:40px;margin-bottom:8px"></div>
       <h2 style="font-size:18px;color:#1a1a1a;margin-bottom:4px" id="pinName"></h2>
       <p style="font-size:12px;color:#8a8781;margin-bottom:20px">暗証番号を入力してください</p>
       <input type="password" id="pinInput" placeholder="暗証番号" maxlength="20" style="width:100%;padding:14px;border:2px solid #ddd9d2;border-radius:6px;font-size:20px;text-align:center;letter-spacing:8px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box" onkeydown="if(event.key==='Enter')checkPin()">
@@ -857,7 +857,7 @@ window.__auth = _auth;
 
   <!-- Step 0 -->
   <div id="s0">
-    <div style="font-size:16px;font-weight:700;color:var(--acc);margin-bottom:4px">👤 基本情報</div>
+    <div style="font-size:16px;font-weight:700;color:var(--acc);margin-bottom:4px">基本情報</div>
     <div style="font-size:12px;color:#8a8781;margin-bottom:16px">契約書に反映されます。正確にご入力ください。</div>
     <div class="field"><div class="lbl">氏名（フルネーム）</div><input class="inp" id="obName" type="text" placeholder="例：佐々木 花子"><div class="err-msg" id="eN">氏名を入力してください</div></div>
     <div class="field"><div class="lbl">生年月日</div><input class="inp" id="obBirth" type="date"></div>
@@ -865,13 +865,13 @@ window.__auth = _auth;
     <div class="field"><div class="lbl">メールアドレス</div><input class="inp" id="obEmail" type="email" placeholder="hanako@example.com"></div>
     <div class="field"><div class="lbl">住所</div><input class="inp" id="obAddr" type="text" placeholder="愛知県名古屋市〇〇区〇〇1-2-3"><div class="err-msg" id="eA">住所を入力してください</div></div>
     <div class="field"><div class="lbl">最寄駅</div><input class="inp" id="obStation" type="text" placeholder="例：金山駅"></div>
-    <div class="field"><div class="lbl">🔒 暗証番号（4桁以上）<span style="color:#1a1a1a;font-size:10px">※必須</span></div><input class="inp" id="obPin" type="password" placeholder="打刻画面のログインに使います" minlength="4"><div class="err-msg" id="eP">暗証番号を入力してください（4桁以上）</div></div>
-    <div class="field"><div class="lbl">📄 インボイス登録番号（任意）</div><input class="inp" id="obInvoiceNum" type="text" placeholder="T1234567890123（未登録の場合は空欄）"></div>
+    <div class="field"><div class="lbl">暗証番号（4桁以上）<span style="color:#1a1a1a;font-size:10px">※必須</span></div><input class="inp" id="obPin" type="password" placeholder="打刻画面のログインに使います" minlength="4"><div class="err-msg" id="eP">暗証番号を入力してください（4桁以上）</div></div>
+    <div class="field"><div class="lbl">インボイス登録番号（任意）</div><input class="inp" id="obInvoiceNum" type="text" placeholder="T1234567890123（未登録の場合は空欄）"></div>
   </div>
 
   <!-- Step 1 -->
   <div id="s1" class="hidden">
-    <div style="font-size:16px;font-weight:700;color:var(--acc);margin-bottom:4px">🏦 振込先口座</div>
+    <div style="font-size:16px;font-weight:700;color:var(--acc);margin-bottom:4px">振込先口座</div>
     <div style="font-size:12px;color:#8a8781;margin-bottom:16px">報酬の振込先口座をご入力ください。</div>
     <div class="field"><div class="lbl">銀行名</div><input class="inp" id="obBank" type="text" placeholder="〇〇銀行"><div class="err-msg" id="eB">銀行名を入力してください</div></div>
     <div class="grid2">
@@ -886,10 +886,10 @@ window.__auth = _auth;
 
   <!-- Step 2: Contract -->
   <div id="s2" class="hidden">
-    <div style="font-size:16px;font-weight:700;color:var(--acc);margin-bottom:4px">📋 業務委託契約書</div>
+    <div style="font-size:16px;font-weight:700;color:var(--acc);margin-bottom:4px">業務委託契約書</div>
     <div style="font-size:12px;color:#8a8781;margin-bottom:12px">内容をご確認のうえ、お名前でサインしてください。</div>
     <div class="contract-scroll" id="contractBox"></div>
-    <div class="sign-hint">✍️ 上記に同意のうえ、フルネームを入力してサインしてください</div>
+    <div class="sign-hint">上記に同意のうえ、フルネームを入力してサインしてください</div>
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:6px">
       <div class="field" style="margin:0">
         <div class="lbl">お名前（フルネーム）</div>
@@ -904,7 +904,7 @@ window.__auth = _auth;
 
   <!-- Step 3: Complete -->
   <div id="s3" class="hidden">
-    <div class="complete-ico">🎉</div>
+    <div class="complete-ico"></div>
     <div class="complete-msg">登録・締結が完了しました！</div>
     <div class="complete-sub">業務委託契約が締結されました。<br>これより稼働記録をご利用いただけます。</div>
     <div class="summary-box" id="obSummary"></div>
@@ -920,7 +920,7 @@ window.__auth = _auth;
 <!-- ══ SCREEN: 契約書署名（?s= 署名URL専用） ══ -->
 <div class="screen" id="screenSign">
   <div class="ob-hero">
-    <div class="ico">✍️</div>
+    <div class="ico"></div>
     <h1>業務委託契約書<br>初期登録・電子署名</h1>
     <p id="sgHeroSub">お支払いに必要な情報をご入力のうえ、<br>契約書にご署名ください</p>
     <div class="ob-steps">
@@ -932,20 +932,20 @@ window.__auth = _auth;
 
     <!-- Step 0: 基本情報 -->
     <div id="sgStep0">
-      <div style="font-size:16px;font-weight:700;color:var(--acc);margin:18px 0 4px">👤 基本情報</div>
+      <div style="font-size:16px;font-weight:700;color:var(--acc);margin:18px 0 4px">基本情報</div>
       <div style="font-size:12px;color:#8a8781;margin-bottom:16px">契約書・支払通知書に使用します。正確にご入力ください。</div>
       <div class="field"><div class="lbl">生年月日</div><input class="inp" id="sgBirth" type="date"></div>
       <div class="field"><div class="lbl">電話番号</div><input class="inp" id="sgPhone" type="tel" inputmode="tel" placeholder="090-0000-0000"></div>
       <div class="field"><div class="lbl">メールアドレス</div><input class="inp" id="sgEmail" type="email" inputmode="email" placeholder="hanako@example.com"></div>
       <div class="field"><div class="lbl">住所 <span style="color:#1a1a1a;font-size:10px">※必須</span></div><input class="inp" id="sgAddr" type="text" placeholder="愛知県名古屋市〇〇区〇〇1-2-3"><div class="err-msg" id="sgErrAddr">住所を入力してください</div></div>
       <div class="field"><div class="lbl">最寄駅</div><input class="inp" id="sgStation" type="text" placeholder="例：金山駅"></div>
-      <div class="field"><div class="lbl">🔒 暗証番号（4桁以上）<span style="color:#1a1a1a;font-size:10px">※必須</span></div><input class="inp" id="sgPin" type="password" inputmode="numeric" placeholder="打刻画面のログインに使います"><div class="err-msg" id="sgErrPin">暗証番号を入力してください（4桁以上）</div></div>
-      <div class="field"><div class="lbl">📄 インボイス登録番号（任意）</div><input class="inp" id="sgInvoiceNum" type="text" placeholder="T1234567890123（未登録の場合は空欄）"></div>
+      <div class="field"><div class="lbl">暗証番号（4桁以上）<span style="color:#1a1a1a;font-size:10px">※必須</span></div><input class="inp" id="sgPin" type="password" inputmode="numeric" placeholder="打刻画面のログインに使います"><div class="err-msg" id="sgErrPin">暗証番号を入力してください（4桁以上）</div></div>
+      <div class="field"><div class="lbl">インボイス登録番号（任意）</div><input class="inp" id="sgInvoiceNum" type="text" placeholder="T1234567890123（未登録の場合は空欄）"></div>
     </div>
 
     <!-- Step 1: 振込先口座 -->
     <div id="sgStep1" class="hidden">
-      <div style="font-size:16px;font-weight:700;color:var(--acc);margin:18px 0 4px">🏦 振込先口座</div>
+      <div style="font-size:16px;font-weight:700;color:var(--acc);margin:18px 0 4px">振込先口座</div>
       <div style="font-size:12px;color:#8a8781;margin-bottom:16px">報酬のお振込先をご入力ください。</div>
       <div class="field"><div class="lbl">銀行名 <span style="color:#1a1a1a;font-size:10px">※必須</span></div><input class="inp" id="sgBank" type="text" placeholder="〇〇銀行"><div class="err-msg" id="sgErrBank">銀行名を入力してください</div></div>
       <div class="grid2">
@@ -960,11 +960,11 @@ window.__auth = _auth;
 
     <!-- Step 2: 契約書・署名 -->
     <div id="sgStep2" class="hidden">
-    <div style="font-size:16px;font-weight:700;color:var(--acc);margin:18px 0 4px">📋 契約書本文</div>
+    <div style="font-size:16px;font-weight:700;color:var(--acc);margin:18px 0 4px">契約書本文</div>
     <div style="font-size:12px;color:#8a8781;margin-bottom:10px">スクロールして最後までご確認ください。</div>
     <div class="contract-scroll" id="sgContract" style="max-height:320px"></div>
 
-    <div class="sign-hint">✍️ 上記に同意のうえ、フルネームを入力してサインしてください</div>
+    <div class="sign-hint">上記に同意のうえ、フルネームを入力してサインしてください</div>
 
     <div class="field">
       <div class="lbl">お名前（フルネーム）</div>
@@ -994,7 +994,7 @@ window.__auth = _auth;
 <!-- ══ SCREEN: 署名完了 ══ -->
 <div class="screen" id="screenSignDone">
   <div class="ob-hero">
-    <div class="ico">🎉</div>
+    <div class="ico"></div>
     <h1 id="sgDoneMsg">署名が完了しました！</h1>
     <p>ご協力ありがとうございました</p>
   </div>
@@ -1006,15 +1006,15 @@ window.__auth = _auth;
 
     <!-- 打刻URL（署名した本人にその場で渡す） -->
     <div style="margin-top:16px;background:#fff;border:2px solid #1a1a1a;border-radius:6px;padding:16px">
-      <div style="font-size:15px;font-weight:700;color:var(--acc);margin-bottom:4px">🔗 あなたの打刻ページ</div>
+      <div style="font-size:15px;font-weight:700;color:var(--acc);margin-bottom:4px">あなたの打刻ページ</div>
       <div style="font-size:12px;color:#8a8781;line-height:1.7;margin-bottom:10px">
         毎回ここから稼働を入力します。<b>ブックマーク（ホーム画面に追加）しておいてください。</b>
       </div>
-      <a id="sgPunchOpen" href="#" style="display:block;text-align:center;background:#111;color:#fff;text-decoration:none;border-radius:5px;padding:14px;font-size:15px;font-weight:700;box-shadow:0 3px 12px rgba(0,0,0,.18)">⏰ 打刻ページをひらく</a>
+      <a id="sgPunchOpen" href="#" style="display:block;text-align:center;background:#111;color:#fff;text-decoration:none;border-radius:5px;padding:14px;font-size:15px;font-weight:700;box-shadow:0 3px 12px rgba(0,0,0,.18)">打刻ページをひらく</a>
       <div id="sgPunchUrl" style="margin-top:10px;background:#f2f1ee;border:1px solid #ddd9d2;border-radius:4px;padding:9px 11px;font-size:11px;color:#8a8781;word-break:break-all;line-height:1.5"></div>
-      <button onclick="sgCopyPunchUrl()" style="width:100%;margin-top:8px;padding:11px;background:#fff;border:1.5px solid #1a1a1a;color:#1a1a1a;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">📋 リンクをコピー</button>
+      <button onclick="sgCopyPunchUrl()" style="width:100%;margin-top:8px;padding:11px;background:#fff;border:1.5px solid #1a1a1a;color:#1a1a1a;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">リンクをコピー</button>
       <div style="margin-top:10px;font-size:11px;color:#8a8781;line-height:1.7">
-        🔒 ログインには、先ほどご登録いただいた<b>暗証番号</b>を使います。
+        ログインには、先ほどご登録いただいた<b>暗証番号</b>を使います。
       </div>
     </div>
 
@@ -1025,7 +1025,7 @@ window.__auth = _auth;
 <!-- ══ SCREEN: 署名URLエラー ══ -->
 <div class="screen" id="screenSignErr">
   <div class="ob-hero" style="background:linear-gradient(135deg,#e08080,#c05050)">
-    <div class="ico">⚠️</div>
+    <div class="ico"></div>
     <h1>契約書を開けませんでした</h1>
   </div>
   <div class="ob-body">
@@ -1037,7 +1037,7 @@ window.__auth = _auth;
 <!-- ══ SCREEN: PENDING ══ -->
 <div class="screen" id="screenPending">
   <div style="background:#fff;border-bottom:2px solid #111;padding:32px 24px 24px;text-align:center">
-    <div style="font-size:48px;margin-bottom:10px">⏳</div>
+    <div style="font-size:48px;margin-bottom:10px"></div>
     <h1 style="font-family:'Shippori Mincho',serif;font-size:20px;font-weight:700;color:#111;letter-spacing:.1em;margin-bottom:6px">承認待ちです</h1>
     <p style="font-size:13px;color:#777;line-height:1.6">登録が完了しました。<br>管理者の承認後、打刻が利用できるようになります。</p>
   </div>
@@ -1046,7 +1046,7 @@ window.__auth = _auth;
       <div style="font-size:13px;color:#8a8781;line-height:1.8">管理者が承認すると<br>このページが自動で更新されます。<br>しばらくお待ちください。</div>
     </div>
     <div id="pendingUserInfo" style="background:#f2f1ee;border:1.5px solid #ddd9d2;border-radius:6px;padding:16px;font-size:13px;line-height:2;color:#1b1a17"></div>
-    <button onclick="checkApproval()" style="background:#111;color:#fff;border:none;border-radius:5px;padding:14px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.18)">🔄 承認状況を確認する</button>
+    <button onclick="checkApproval()" style="background:#111;color:#fff;border:none;border-radius:5px;padding:14px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.18)">承認状況を確認する</button>
   </div>
 </div>
 
@@ -1065,8 +1065,8 @@ window.__auth = _auth;
 </div>
 
 <div class="tab-nav">
-  <button class="tab-btn on" onclick="switchTab('record',this)">📋 稼働記録</button>
-  <button class="tab-btn" onclick="switchTab('settings',this)">⚙️ 設定</button>
+  <button class="tab-btn on" onclick="switchTab('record',this)">稼働記録</button>
+  <button class="tab-btn" onclick="switchTab('settings',this)">設定</button>
 </div>
 
 <!-- Record tab -->
@@ -1077,11 +1077,11 @@ window.__auth = _auth;
     <div class="si"><div class="sv" id="sumP">¥0</div><div class="sl">報酬額</div></div>
     <div class="si"><div class="sv" id="sumF">¥0</div><div class="sl">交通費</div></div>
   </div>
-  <details id="snsSection" style="margin:0 14px 8px"><summary style="background:#fff;border:2px solid #f0c060;border-radius:6px;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:700;color:#b5443c;list-style:none;display:flex;align-items:center;gap:8px">📸 SNS投稿・広告出演料を入力 <span id="snsSummary" style="margin-left:auto;font-size:12px;color:#8a8781;font-weight:400"></span></summary>
+  <details id="snsSection" style="margin:0 14px 8px"><summary style="background:#fff;border:2px solid #f0c060;border-radius:6px;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:700;color:#b5443c;list-style:none;display:flex;align-items:center;gap:8px">SNS投稿・広告出演料を入力 <span id="snsSummary" style="margin-left:auto;font-size:12px;color:#8a8781;font-weight:400"></span></summary>
     <div style="background:#fff;border:2px solid #f0c060;border-radius:6px;margin-top:6px;padding:12px 16px">
       <!-- SNS投稿 -->
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed #f0c060">
-        <span style="font-size:14px;font-weight:700;color:#b5443c;min-width:90px">📸 SNS投稿</span>
+        <span style="font-size:14px;font-weight:700;color:#b5443c;min-width:90px">SNS投稿</span>
         <input type="number" id="snsCountInput" value="0" min="0" style="width:56px;padding:8px;border:1.5px solid #f0c060;border-radius:3px;font-size:16px;font-weight:700;color:#b5443c;text-align:center;background:#fffaf0;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onchange="saveSnsSettings()">
         <span style="font-size:12px;color:#8a8781;font-weight:700">件 ×</span>
         <input type="number" id="snsRateInput" value="2000" min="0" style="width:74px;padding:8px;border:1.5px solid #f0c060;border-radius:3px;font-size:16px;font-weight:700;color:#b5443c;text-align:center;background:#fffaf0;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onchange="saveSnsSettings()">
@@ -1090,7 +1090,7 @@ window.__auth = _auth;
       </div>
       <!-- 広告出演料 -->
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <span style="font-size:14px;font-weight:700;color:#b5443c;min-width:90px">🎬 広告出演料</span>
+        <span style="font-size:14px;font-weight:700;color:#b5443c;min-width:90px">広告出演料</span>
         <input type="number" id="snsAdFeeInput" value="0" min="0" placeholder="0" style="flex:1;min-width:120px;padding:8px;border:1.5px solid #f0c060;border-radius:3px;font-size:16px;font-weight:700;color:#b5443c;text-align:right;background:#fffaf0;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onchange="saveSnsSettings()">
         <span style="font-size:12px;color:#8a8781;font-weight:700">円</span>
       </div>
@@ -1107,15 +1107,15 @@ window.__auth = _auth;
 <div id="tabSettings" class="hidden">
   <div class="settings-wrap">
     <div class="card">
-      <div class="sc-head">🚃 店舗別 交通費プリセット</div>
+      <div class="sc-head">店舗別 交通費プリセット</div>
       <div class="sc-body">
         <div class="s-info">店舗を選択すると、登録した区間・金額が自動入力されます。</div>
         <div id="presetList"></div>
-        <button class="sbtn" onclick="savePresets()">💾 プリセットを保存</button>
+        <button class="sbtn" onclick="savePresets()">プリセットを保存</button>
       </div>
     </div>
     <div class="card">
-      <div class="sc-head">💴 報酬設定</div>
+      <div class="sc-head">報酬設定</div>
       <div class="sc-body">
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:13px;color:#8a8781">時給</span>
@@ -1126,30 +1126,30 @@ window.__auth = _auth;
       </div>
     </div>
     <div class="card">
-      <div class="sc-head">📄 インボイス登録</div>
+      <div class="sc-head">インボイス登録</div>
       <div class="sc-body">
         <div style="font-size:12px;color:#8a8781;margin-bottom:6px">インボイス登録番号（取得済みの場合）</div>
         <div style="display:flex;gap:8px;align-items:center">
           <input type="text" id="staffInvoiceNum" placeholder="T1234567890123" style="flex:1;padding:8px 10px;border:1.5px solid #ddd9d2;border-radius:4px;font-size:14px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee">
-          <button class="sbtn" onclick="saveStaffInvoiceNum()" style="white-space:nowrap">💾 保存</button>
+          <button class="sbtn" onclick="saveStaffInvoiceNum()" style="white-space:nowrap">保存</button>
         </div>
       </div>
     </div>
     <div class="card" style="border-color:#e3bcbc">
-      <div class="sc-head" style="color:var(--acc2)">⚠️ 登録情報</div>
+      <div class="sc-head" style="color:var(--acc2)">登録情報</div>
       <div class="sc-body">
         <div class="s-info" id="userInfoDisp">読み込み中...</div>
-        <button class="ghost-btn" style="margin-top:4px" onclick="viewContract()">📋 締結済み契約書を確認</button>
-        <button class="ghost-btn" onclick="logoutStaff()" style="margin-top:6px">🚪 ログアウト</button>
-        <button class="danger-btn" onclick="resetApp()">🔄 登録をリセット（再登録）</button>
+        <button class="ghost-btn" style="margin-top:4px" onclick="viewContract()">締結済み契約書を確認</button>
+        <button class="ghost-btn" onclick="logoutStaff()" style="margin-top:6px">ログアウト</button>
+        <button class="danger-btn" onclick="resetApp()">登録をリセット（再登録）</button>
       </div>
     </div>
   </div>
 </div>
 
 <div class="app-foot">
-  <button class="af-btn af-pink" onclick="openNotice()" style="flex:1">📄 通知書</button>
-  <button class="af-btn" onclick="submitForApproval()" style="flex:1;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff" id="submitBtn">📨 月締め申請</button>
+  <button class="af-btn af-pink" onclick="openNotice()" style="flex:1">通知書</button>
+  <button class="af-btn" onclick="submitForApproval()" style="flex:1;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff" id="submitBtn">月締め申請</button>
 </div>
 </div>
 
@@ -1163,13 +1163,13 @@ window.__auth = _auth;
   </div>
   <div class="m-body">
     <div style="margin-bottom:14px">
-      <div style="font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:8px">🏪 業務先</div>
+      <div style="font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:8px">業務先</div>
       <div class="store-tags" id="storeTags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px"></div>
       <input type="text" id="mStore" placeholder="またはここに直接入力" style="width:100%;padding:12px;border:1.5px solid #ddd9d2;border-radius:4px;font-size:15px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box" oninput="document.querySelectorAll('.store-tag').forEach(b=>b.classList.remove('on'))">
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:8px">⏰ 時間</div>
+      <div style="font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:8px">時間</div>
       <div style="display:flex;gap:8px;align-items:center">
         <input type="time" id="mIn" oninput="prevWork()" style="flex:1;padding:14px;border:2px solid #ddd9d2;border-radius:5px;font-size:22px;font-weight:700;text-align:center;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee">
         <span style="font-size:18px;color:#8a8781;font-weight:700">〜</span>
@@ -1178,7 +1178,7 @@ window.__auth = _auth;
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:8px">☕ 休憩</div>
+      <div style="font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:8px">休憩</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
         <button class="rc" data-v="0" onclick="setRest(0)">なし</button>
         <button class="rc" data-v="30" onclick="setRest(30)">30分</button>
@@ -1192,7 +1192,7 @@ window.__auth = _auth;
     <div class="work-prev" id="workPrev" style="margin-bottom:14px;padding:14px;background:linear-gradient(135deg,#eae8e3,#fff);border-radius:5px;text-align:center;font-size:18px;font-weight:700;color:#1a1a1a">稼働時間: --</div>
     </div>
     <div class="m-sec" id="secFare">
-      <div class="m-sec-ttl" style="cursor:pointer" onclick="this.parentElement.querySelector('.fare-body').classList.toggle('hidden');this.querySelector('.fare-arrow').textContent=this.parentElement.querySelector('.fare-body.hidden')?'▶':'▼'">🚃 交通費 <span class="fare-arrow" style="font-size:10px;color:#8a8781">▼</span></div>
+      <div class="m-sec-ttl" style="cursor:pointer" onclick="this.parentElement.querySelector('.fare-body').classList.toggle('hidden');this.querySelector('.fare-arrow').textContent=this.parentElement.querySelector('.fare-body.hidden')?'▶':'▼'">交通費 <span class="fare-arrow" style="font-size:10px;color:#8a8781">▼</span></div>
       <div class="fare-body">
       <div class="t-block">
         <div class="t-blbl">1本目</div>
@@ -1208,10 +1208,10 @@ window.__auth = _auth;
     </div>
     <!-- 手当 -->
     <div class="m-sec" id="secAllow">
-      <div class="m-sec-ttl">💰 手当</div>
+      <div class="m-sec-ttl">手当</div>
       <div style="display:flex;flex-direction:column;gap:10px">
         <div>
-          <div style="font-size:10px;color:#8a8781;margin-bottom:3px">🏢 出張手当</div>
+          <div style="font-size:10px;color:#8a8781;margin-bottom:3px">出張手当</div>
           <div style="display:flex;gap:6px">
             <button type="button" class="wa-btn" data-g="trip" data-v="0" onclick="setTripAllow(0)">なし</button>
             <button type="button" class="wa-btn" data-g="trip" data-v="2000" onclick="setTripAllow(2000)">+¥2,000</button>
@@ -1219,7 +1219,7 @@ window.__auth = _auth;
           <input type="hidden" id="mTripAllow" value="0">
         </div>
         <div>
-          <div style="font-size:10px;color:#8a8781;margin-bottom:3px">🎉 土日手当</div>
+          <div style="font-size:10px;color:#8a8781;margin-bottom:3px">土日手当</div>
           <div style="display:flex;gap:6px">
             <button type="button" class="wa-btn" data-g="we" data-v="0" onclick="setWeekendAllow(0)">なし</button>
             <button type="button" class="wa-btn" data-g="we" data-v="1000" onclick="setWeekendAllow(1000)">+¥1,000</button>
@@ -1243,10 +1243,10 @@ window.__auth = _auth;
 <!-- Notice modal -->
 <div class="n-overlay" id="snOverlay" onclick="nBgClose(event)">
 <div class="n-modal">
-  <div class="n-head"><h2>📄 支払通知書</h2><button class="m-close" onclick="closeNotice()">×</button></div>
+  <div class="n-head"><h2>支払通知書</h2><button class="m-close" onclick="closeNotice()">×</button></div>
   <div class="n-body"><div id="snContent"></div></div>
   <div class="n-actions">
-    <button class="n-print" onclick="printNotice()">🖨️ 印刷 / PDF保存</button>
+    <button class="n-print" onclick="printNotice()">印刷 / PDF保存</button>
     <button class="n-close" onclick="closeNotice()">閉じる</button>
   </div>
 </div>
@@ -1331,7 +1331,7 @@ async function fbBoot(){
   if(staffLoadOk){
     await ensureStaffExist();
   } else {
-    console.warn('⚠️ スタッフ一覧を読めなかったため、自動登録（ensureStaffExist）をスキップしました');
+    console.warn('スタッフ一覧を読めなかったため、自動登録（ensureStaffExist）をスキップしました');
   }
 
   // Admin JSブロックのbootが定義されるまで待つ
@@ -1384,7 +1384,7 @@ async function approveStaffCloud(staffId){
   await fbSave('staff', staffId, {approved: true, approvedAt: s.approvedAt});
   localStorage.setItem('sc_approved_' + staffId, '1');
   refreshAll();
-  toast('✅ 承認しました');
+  toast('承認しました');
 }
 
 // Auto-add staff members if they don't exist
@@ -1428,7 +1428,7 @@ async function ensureStaffExist(){
       if(window.__db){
         await fbSave('staff', id, newStaff).catch(e => console.error('Save error:', e));
       }
-      console.log(`✅ ${req.name} を追加しました`);
+      console.log(`${req.name} を追加しました`);
     } else {
       // 既存スタッフへの補完。この機能より前に登録された人は
       // フィールド自体が無いため、未設定のときだけ埋める。
@@ -1439,7 +1439,7 @@ async function ensureStaffExist(){
       if(exists.name !== req.name){
         const hasWork = Object.keys(exists.workData||{}).length > 0;
         if(hasWork){
-          console.warn(`⚠️ ${exists.name} は稼働記録があるため改名を見送りました（手動で対応してください）`);
+          console.warn(`${exists.name} は稼働記録があるため改名を見送りました（手動で対応してください）`);
         } else {
           patch.name = req.name;
         }
@@ -1460,7 +1460,7 @@ async function ensureStaffExist(){
         if(window.__db){
           await fbSave('staff', exists.id, patch).catch(e => console.error('Backfill error:', e));
         }
-        console.log(`✅ ${req.name} の設定を補完しました`, patch);
+        console.log(`${req.name} の設定を補完しました`, patch);
       }
     }
   }
@@ -1654,11 +1654,11 @@ function createNewStaff(){
     window.__db.collection('staff').doc(id).set(newStaff).catch(e=>console.error('Firestore error:',e));
   }
 
-  toast(`✅ ${name} (${jobType||'指定なし'}) を追加しました。契約書署名用URLを発行してください。`);
+  toast(`${name} (${jobType||'指定なし'}) を追加しました。契約書署名用URLを発行してください。`);
   closeAddStaffModal();
   renderStaffList();
 
-  setTimeout(()=>alert(`【手順】\n1. 「🔗 招待URL」タブから契約書署名用URLを発行\n2. ${name} さんに送信\n3. 完了後、「承認」ボタンで承認`),300);
+  setTimeout(()=>alert(`【手順】\n1. 「招待URL」タブから契約書署名用URLを発行\n2. ${name} さんに送信\n3. 完了後、「承認」ボタンで承認`),300);
 }
 
 // ── Departments ───────────────────────────────────
@@ -1695,10 +1695,10 @@ function lockMonth(){
   if(workData[key].locked){
     if(!confirm(`${yr}年${mo}月の月締めを解除しますか？`))return;
     workData[key].locked=false;
-    toast('🔓 月締めを解除しました');
+    toast('月締めを解除しました');
   } else {
     workData[key].locked=true;
-    toast('💰 月締めを確定しました。メール送信中...');
+    toast('月締めを確定しました。メール送信中...');
     setTimeout(()=>sendApprovalEmail(yr,mo,key),500);
     // 太田川の場合、吉川先生インセンティブを計算
     if(currentStaff.department==='太田川') setTimeout(()=>calcYoshikawaIncentive(yr,mo),1000);
@@ -1765,9 +1765,9 @@ function sendApprovalEmail(yr,mo,key){
       cc:''
     })
   }).then(r=>r.json()).then(d=>{
-    if(d.success)toast('📧 支払通知書をzaimに送信しました');
-    else toast('❌ メール送信失敗: '+(d.error||''));
-  }).catch(e=>toast('❌ 通信エラー: '+e.message));
+    if(d.success)toast('支払通知書をzaimに送信しました');
+    else toast('メール送信失敗: '+(d.error||''));
+  }).catch(e=>toast('通信エラー: '+e.message));
 }
 function calcYoshikawaIncentive(yr,mo){
   // 太田川の全スタッフの月間合計を集計
@@ -1784,7 +1784,7 @@ function calcYoshikawaIncentive(yr,mo){
   });
   if(totalOtagawa<=0)return;
   const incentive=Math.floor(totalOtagawa*0.05*1.1); // 5% tax included
-  toast(`📊 吉川先生インセンティブ: ¥${incentive.toLocaleString()}（太田川合計¥${totalOtagawa.toLocaleString()}×5%税込）`);
+  toast(`吉川先生インセンティブ: ¥${incentive.toLocaleString()}（太田川合計¥${totalOtagawa.toLocaleString()}×5%税込）`);
   // Send email notification
   fetch('https://us-central1-shareconnect-71706.cloudfunctions.net/sendPaymentNotice',{
     method:'POST',headers:{'Content-Type':'application/json'},
@@ -1804,7 +1804,7 @@ function calcYoshikawaIncentive(yr,mo){
         '<p style="font-size:11px;color:#999;text-align:center;margin-top:12px">ShareConnect Auto</p></body></html>')
     })
   }).then(r=>r.json()).then(d=>{
-    if(d.success)toast('📧 吉川先生インセンティブ通知を送信しました');
+    if(d.success)toast('吉川先生インセンティブ通知を送信しました');
   }).catch(e=>console.error(e));
 }
 function updateLockBtn(){
@@ -1814,7 +1814,7 @@ function updateLockBtn(){
   const key=`${yr}-${pad(mo)}_${currentStaff.name}`;
   const wd=currentStaff.workData||{};
   const locked=(wd[key]||{}).locked;
-  btn.textContent=locked?'🔓 月締め解除':'💰 月締め確定';
+  btn.textContent=locked?'月締め解除':'月締め確定';
   btn.style.background=locked?'linear-gradient(135deg,#888,#666)':'linear-gradient(135deg,#4caf7d,#3d9a6a)';
 }
 function renderYearSummary(){
@@ -1822,7 +1822,7 @@ function renderYearSummary(){
   const el=document.getElementById('mYearSummary');if(!el)return;
   const workData=currentStaff.workData||JSON.parse(ls('sc_admin_work_'+currentStaff.id)||'{}');
   const yr=new Date().getFullYear();
-  let html='<div style="font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:6px">📊 '+yr+'年 月別サマリー</div>';
+  let html='<div style="font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:6px">'+yr+'年 月別サマリー</div>';
   html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px">';
   for(let m=1;m<=12;m++){
     const key=`${yr}-${pad(m)}_${currentStaff.name}`;
@@ -1859,12 +1859,12 @@ function refreshStatusBadges(){
   if(!currentStaff)return;
   const sb=document.getElementById('mStatusBadges');if(!sb)return;
   const badges=[];
-  if(currentStaff.department)badges.push(`<span style="font-size:11px;color:#fff;background:#1a1a1a;padding:3px 10px;border-radius:5px;font-weight:700">🏢 ${currentStaff.department}</span>`);
+  if(currentStaff.department)badges.push(`<span style="font-size:11px;color:#fff;background:#1a1a1a;padding:3px 10px;border-radius:5px;font-weight:700">${currentStaff.department}</span>`);
   badges.push(currentStaff.approved
-    ?'<span style="font-size:11px;color:#fff;background:#4caf7d;padding:3px 10px;border-radius:5px;font-weight:700">✅ 登録承認済</span>'
-    :'<span style="font-size:11px;color:#fff;background:#e0963a;padding:3px 10px;border-radius:5px;font-weight:700">⏳ 登録待ち</span>');
-  if(currentStaff.invoice)badges.push('<span style="font-size:11px;color:#fff;background:#4a90d9;padding:3px 10px;border-radius:5px;font-weight:700">📄 インボイス</span>');
-  if(currentStaff.snsOnly)badges.push('<span style="font-size:11px;color:#fff;background:#b5443c;padding:3px 10px;border-radius:5px;font-weight:700">📸 SNSのみ</span>');
+    ?'<span style="font-size:11px;color:#fff;background:#4caf7d;padding:3px 10px;border-radius:5px;font-weight:700">登録承認済</span>'
+    :'<span style="font-size:11px;color:#fff;background:#e0963a;padding:3px 10px;border-radius:5px;font-weight:700">登録待ち</span>');
+  if(currentStaff.invoice)badges.push('<span style="font-size:11px;color:#fff;background:#4a90d9;padding:3px 10px;border-radius:5px;font-weight:700">インボイス</span>');
+  if(currentStaff.snsOnly)badges.push('<span style="font-size:11px;color:#fff;background:#b5443c;padding:3px 10px;border-radius:5px;font-weight:700">SNSのみ</span>');
   sb.innerHTML=badges.join('');
 }
 function saveStaffSnsOnly(){
@@ -1872,7 +1872,7 @@ function saveStaffSnsOnly(){
   currentStaff.snsOnly=document.getElementById('mSnsOnly').checked;
   localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({snsOnly:currentStaff.snsOnly},{merge:true}).catch(e=>console.error(e));
-  toast(currentStaff.snsOnly?'📸 SNSのみモードに設定':'通常モードに変更');
+  toast(currentStaff.snsOnly?'SNSのみモードに設定':'通常モードに変更');
   refreshStatusBadges();
   loadWorkData();
 }
@@ -1881,7 +1881,7 @@ function saveStaffInvoice(){
   currentStaff.invoice=document.getElementById('mInvoice').checked;
   localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({invoice:currentStaff.invoice},{merge:true}).catch(e=>console.error(e));
-  toast(currentStaff.invoice?'✅ インボイス登録済み':'インボイス未登録に変更');
+  toast(currentStaff.invoice?'インボイス登録済み':'インボイス未登録に変更');
   refreshStatusBadges();
 }
 function approveCurrentStaff(){
@@ -1891,16 +1891,16 @@ function approveCurrentStaff(){
   localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
   localStorage.setItem('sc_approved_'+currentStaff.id,'1');
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({approved:true,approvedAt:currentStaff.approvedAt},{merge:true}).catch(e=>console.error(e));
-  document.getElementById('mApproveWrap').innerHTML='<span style="font-size:12px;color:#4caf7d;font-weight:700">✅ 承認済</span>';
+  document.getElementById('mApproveWrap').innerHTML='<span style="font-size:12px;color:#4caf7d;font-weight:700">承認済</span>';
   refreshStatusBadges();
-  renderStaffList();toast('✅ 承認しました');
+  renderStaffList();toast('承認しました');
 }
 function saveStaffDept(){
   if(!currentStaff)return;
   currentStaff.department=document.getElementById('mDept').value||'';
   localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({department:currentStaff.department},{merge:true}).catch(e=>console.error(e));
-  renderStaffList();refreshStatusBadges();toast('🏢 部門を変更しました');
+  renderStaffList();refreshStatusBadges();toast('部門を変更しました');
 }
 // 単価未設定のスタッフの既定値（SNSは1投稿¥2,000、それ以外は時給¥2,014）
 // ── 職種ごとの報酬単位・既定単価・契約書の文言 ─────────────
@@ -1995,7 +1995,7 @@ function saveFarePresets(){
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set(patch,{merge:true}).catch(e=>console.error(e));
   _fareDraft=cleaned.map(p=>({...p}));
   renderFarePresets();
-  toast('🚃 交通費プリセットを保存しました（'+cleaned.length+'件）');
+  toast('交通費プリセットを保存しました（'+cleaned.length+'件）');
 }
 
 function saveStaffProfile(){
@@ -2021,7 +2021,7 @@ function saveStaffProfile(){
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set(patch,{merge:true}).catch(e=>console.error(e));
   openStaff(allStaff.findIndex(s=>s.id===currentStaff.id));
   renderStaffList();
-  toast('💾 保存しました');
+  toast('保存しました');
 }
 
 function saveStaffDaily(){
@@ -2037,7 +2037,7 @@ function saveStaffDaily(){
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set(patch,{merge:true}).catch(e=>console.error(e));
   toggleDailyRow();
   renderStaffList();
-  toast(on?`✅ 日当制（¥${dr.toLocaleString()}/日）に設定しました`:'✅ 日当制を解除しました');
+  toast(on?`日当制（¥${dr.toLocaleString()}/日）に設定しました`:'日当制を解除しました');
 }
 
 function saveStaffRate(){
@@ -2048,13 +2048,13 @@ function saveStaffRate(){
   if(idx>=0)allStaff[idx].rate=rate;
   localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({rate},{merge:true}).catch(e=>console.error(e));
-  toast(`✅ 時給を¥${rate.toLocaleString()}/時に更新しました`);
+  toast(`時給を¥${rate.toLocaleString()}/時に更新しました`);
 }
 function addDept(){
   const name=prompt('新しい部門名を入力');
   if(!name||!name.trim())return;
   if(departments.includes(name.trim())){toast('既に存在します');return}
-  departments.push(name.trim());saveDepts();renderDeptFilter();toast('✅ 部門「'+name.trim()+'」を追加しました');
+  departments.push(name.trim());saveDepts();renderDeptFilter();toast('部門「'+name.trim()+'」を追加しました');
 }
 
 // ── Staff ──────────────────────────────────────────
@@ -2090,9 +2090,9 @@ function renderDashboard(){
     if(submittedCount>0||pendingApproval>0){
       nc.style.display='block';
       const msgs=[];
-      if(submittedCount>0)msgs.push(`📨 月締め申請 <b>${submittedCount}件</b>`);
-      if(pendingApproval>0)msgs.push(`⏳ 登録承認待ち <b>${pendingApproval}名</b>`);
-      nc.innerHTML=`<div style="font-size:13px;font-weight:700;color:#a08020">🔔 ${msgs.join(' / ')}</div><div style="font-size:10px;color:#8a8781;margin-top:2px">タップで対応してください</div>`;
+      if(submittedCount>0)msgs.push(`月締め申請 <b>${submittedCount}件</b>`);
+      if(pendingApproval>0)msgs.push(`登録承認待ち <b>${pendingApproval}名</b>`);
+      nc.innerHTML=`<div style="font-size:13px;font-weight:700;color:#a08020">${msgs.join(' / ')}</div><div style="font-size:10px;color:#8a8781;margin-top:2px">タップで対応してください</div>`;
     } else {
       nc.style.display='none';
     }
@@ -2128,7 +2128,7 @@ function exportPaymentCSV(){
   a.href=URL.createObjectURL(blob);
   a.download=`振込データ_${_listYear}-${pad(_listMonth)}.csv`;
   a.click();
-  toast('📥 CSVをダウンロードしました');
+  toast('CSVをダウンロードしました');
 }
 function renderStaffList(){
   document.getElementById('staffCount').textContent='計 '+allStaff.length+' 名登録';
@@ -2175,21 +2175,21 @@ function renderStaffList(){
     const isSubmitted=!!curMonth.submitted;
     // ステータス
     let statusBadge='';
-    if(isLocked)statusBadge='<span style="font-size:11px;color:#fff;background:linear-gradient(135deg,#888,#666);padding:4px 12px;border-radius:6px;font-weight:700;box-shadow:0 2px 4px rgba(0,0,0,.15)">🔒 締め済</span>';
-    else if(isSubmitted)statusBadge='<span style="font-size:11px;color:#fff;background:linear-gradient(135deg,#f0a040,#e0963a);padding:4px 12px;border-radius:6px;font-weight:700;animation:pulse 2s infinite;box-shadow:0 2px 6px rgba(224,150,58,.4)">📨 申請中</span>';
-    else if(grandTotal>0)statusBadge='<span style="font-size:11px;color:#fff;background:linear-gradient(135deg,#4a90d9,#3a7ec9);padding:4px 12px;border-radius:6px;font-weight:700;box-shadow:0 2px 4px rgba(74,144,217,.3)">✏️ 入力中</span>';
+    if(isLocked)statusBadge='<span style="font-size:11px;color:#fff;background:linear-gradient(135deg,#888,#666);padding:4px 12px;border-radius:6px;font-weight:700;box-shadow:0 2px 4px rgba(0,0,0,.15)">締め済</span>';
+    else if(isSubmitted)statusBadge='<span style="font-size:11px;color:#fff;background:linear-gradient(135deg,#f0a040,#e0963a);padding:4px 12px;border-radius:6px;font-weight:700;animation:pulse 2s infinite;box-shadow:0 2px 6px rgba(224,150,58,.4)">申請中</span>';
+    else if(grandTotal>0)statusBadge='<span style="font-size:11px;color:#fff;background:linear-gradient(135deg,#4a90d9,#3a7ec9);padding:4px 12px;border-radius:6px;font-weight:700;box-shadow:0 2px 4px rgba(74,144,217,.3)">入力中</span>';
     return`<div style="background:#fff;border:1.5px solid #ddd9d2;border-radius:5px;margin-bottom:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04)">
       <div onclick="openStaff(${i})" style="padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:10px">
-        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#eae8e3,#ddd9d2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">👤</div>
+        <div style="width:36px;height:36px;border-radius:50%;background:#f6f5f2;border:1px solid #ddd9d2;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;font-family:'Shippori Mincho',serif;color:#555;flex-shrink:0">${(s.name||'').trim().charAt(0)}</div>
         <div style="flex:1;min-width:0">
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
             <span style="font-size:14px;font-weight:700;color:#1b1a17">${s.name}</span>
             ${s.department?`<span style="font-size:9px;color:#fff;background:#1a1a1a;padding:2px 7px;border-radius:3px;font-weight:700">${s.department}</span>`:''}
-            ${s.snsOnly?'<span style="font-size:9px;color:#fff;background:#b5443c;padding:2px 7px;border-radius:3px;font-weight:700">📸SNS</span>':''}
-            ${!s.approved?'<span style="font-size:9px;color:#fff;background:#e0963a;padding:2px 7px;border-radius:3px;font-weight:700">⏳登録待</span>':''}
-            ${s.signedAt?'<span style="font-size:9px;color:#fff;background:#4caf7d;padding:2px 7px;border-radius:3px;font-weight:700">✍️署名済</span>':'<span style="font-size:9px;color:#fff;background:#b0a0a8;padding:2px 7px;border-radius:3px;font-weight:700">✍️未署名</span>'}
-            ${s.isFixedDaily&&s.dailyRate?`<span style="font-size:9px;color:#fff;background:#3d9a6a;padding:2px 7px;border-radius:3px;font-weight:700">📅日当 ¥${Number(s.dailyRate).toLocaleString()}</span>`:''}
-            ${(!s.bank||!s.pin)?`<span title="振込先または暗証番号が未登録" style="font-size:9px;color:#fff;background:#e0603a;padding:2px 7px;border-radius:3px;font-weight:700">⚠️${!s.bank&&!s.pin?'口座・暗証番号':(!s.bank?'口座':'暗証番号')}未登録</span>`:''}
+            ${s.snsOnly?'<span style="font-size:9px;color:#fff;background:#b5443c;padding:2px 7px;border-radius:3px;font-weight:700">SNS</span>':''}
+            ${!s.approved?'<span style="font-size:9px;color:#fff;background:#e0963a;padding:2px 7px;border-radius:3px;font-weight:700">登録待</span>':''}
+            ${s.signedAt?'<span style="font-size:9px;color:#fff;background:#4caf7d;padding:2px 7px;border-radius:3px;font-weight:700">署名済</span>':'<span style="font-size:9px;color:#fff;background:#b0a0a8;padding:2px 7px;border-radius:3px;font-weight:700">未署名</span>'}
+            ${s.isFixedDaily&&s.dailyRate?`<span style="font-size:9px;color:#fff;background:#3d9a6a;padding:2px 7px;border-radius:3px;font-weight:700">日当 ¥${Number(s.dailyRate).toLocaleString()}</span>`:''}
+            ${(!s.bank||!s.pin)?`<span title="振込先または暗証番号が未登録" style="font-size:9px;color:#fff;background:#e0603a;padding:2px 7px;border-radius:3px;font-weight:700">${!s.bank&&!s.pin?'口座・暗証番号':(!s.bank?'口座':'暗証番号')}未登録</span>`:''}
           </div>
           <div style="font-size:10px;color:#8a8781;margin-top:2px">${now.getMonth()+1}月：${s.snsOnly?`SNS ${mSnsCount}件`:`${td}日 ${total>0?`(${total}件中)`:''}`}</div>
         </div>
@@ -2200,9 +2200,9 @@ function renderStaffList(){
       </div>
       <div style="display:flex;border-top:1px solid #ecebe6;background:#fbfaf8">
         ${!s.approved?`<button onclick="event.stopPropagation();quickApprove(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4caf7d;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ecebe6">✓ 登録承認</button>`:''}
-        ${grandTotal>0?`<button onclick="event.stopPropagation();quickNotice(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#1a1a1a;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ecebe6">📄 通知書</button>${!isLocked?`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#3d9a6a;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ecebe6">💰 月締め</button>`:`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#888;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ecebe6">🔓 解除</button>`}`:''}
-        ${!s.signedAt?`<button onclick="event.stopPropagation();quickSignURL(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#3d9a6a;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ecebe6">✍️ 署名URL</button>`:''}
-        <button onclick="event.stopPropagation();quickCopyURL(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4a90d9;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">🔗 打刻URL</button>
+        ${grandTotal>0?`<button onclick="event.stopPropagation();quickNotice(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#1a1a1a;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ecebe6">通知書</button>${!isLocked?`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#3d9a6a;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ecebe6">月締め</button>`:`<button onclick="event.stopPropagation();quickLock(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#888;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ecebe6">解除</button>`}`:''}
+        ${!s.signedAt?`<button onclick="event.stopPropagation();quickSignURL(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#3d9a6a;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;border-right:1px solid #ecebe6">署名URL</button>`:''}
+        <button onclick="event.stopPropagation();quickCopyURL(${i})" style="flex:1;padding:8px;border:none;background:none;font-size:11px;font-weight:700;color:#4a90d9;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">打刻URL</button>
       </div>
     </div>`;
   }).join('');
@@ -2222,12 +2222,12 @@ function openStaff(i){
   const sb=document.getElementById('mStatusBadges');
   if(sb){
     const badges=[];
-    if(currentStaff.department)badges.push(`<span style="font-size:11px;color:#fff;background:#1a1a1a;padding:3px 10px;border-radius:5px;font-weight:700">🏢 ${currentStaff.department}</span>`);
+    if(currentStaff.department)badges.push(`<span style="font-size:11px;color:#fff;background:#1a1a1a;padding:3px 10px;border-radius:5px;font-weight:700">${currentStaff.department}</span>`);
     badges.push(currentStaff.approved
-      ?'<span style="font-size:11px;color:#fff;background:#4caf7d;padding:3px 10px;border-radius:5px;font-weight:700">✅ 登録承認済</span>'
-      :'<span style="font-size:11px;color:#fff;background:#e0963a;padding:3px 10px;border-radius:5px;font-weight:700">⏳ 登録待ち</span>');
-    if(currentStaff.invoice)badges.push('<span style="font-size:11px;color:#fff;background:#4a90d9;padding:3px 10px;border-radius:5px;font-weight:700">📄 インボイス</span>');
-    if(currentStaff.snsOnly)badges.push('<span style="font-size:11px;color:#fff;background:#b5443c;padding:3px 10px;border-radius:5px;font-weight:700">📸 SNSのみ</span>');
+      ?'<span style="font-size:11px;color:#fff;background:#4caf7d;padding:3px 10px;border-radius:5px;font-weight:700">登録承認済</span>'
+      :'<span style="font-size:11px;color:#fff;background:#e0963a;padding:3px 10px;border-radius:5px;font-weight:700">登録待ち</span>');
+    if(currentStaff.invoice)badges.push('<span style="font-size:11px;color:#fff;background:#4a90d9;padding:3px 10px;border-radius:5px;font-weight:700">インボイス</span>');
+    if(currentStaff.snsOnly)badges.push('<span style="font-size:11px;color:#fff;background:#b5443c;padding:3px 10px;border-radius:5px;font-weight:700">SNSのみ</span>');
     sb.innerHTML=badges.join('');
   }
   // Department
@@ -2254,7 +2254,7 @@ function openStaff(i){
   const aw=document.getElementById('mApproveWrap');
   if(aw){
     aw.innerHTML=currentStaff.approved
-      ?'<span style="font-size:11px;color:#4caf7d;font-weight:700">✅ 承認済</span>'
+      ?'<span style="font-size:11px;color:#4caf7d;font-weight:700">承認済</span>'
       :`<button onclick="approveCurrentStaff()" style="padding:6px 14px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:3px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">✓ 登録承認</button>`;
   }
   // Basic info
@@ -2283,8 +2283,8 @@ function openStaff(i){
     <div style="font-size:12px">契約：${(currentStaff.contracts||[]).join('・')}</div>
     <div style="font-size:11px;color:#8a8781;margin-top:4px">電子署名：</div>
     ${signImg}
-    <button style="margin-top:8px;font-size:11px;padding:5px 12px;background:none;border:1px solid #ddd9d2;border-radius:3px;cursor:pointer;color:#1a1a1a;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onclick="viewStaffContract()">📋 契約書を印刷</button>
-    <button style="margin-top:8px;margin-left:6px;font-size:11px;padding:5px 12px;background:#1a1a1a;border:none;border-radius:3px;cursor:pointer;color:#fff;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onclick="copyStaffURL()">🔗 打刻URLをコピー</button>`;
+    <button style="margin-top:8px;font-size:11px;padding:5px 12px;background:none;border:1px solid #ddd9d2;border-radius:3px;cursor:pointer;color:#1a1a1a;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onclick="viewStaffContract()">契約書を印刷</button>
+    <button style="margin-top:8px;margin-left:6px;font-size:11px;padding:5px 12px;background:#1a1a1a;border:none;border-radius:3px;cursor:pointer;color:#fff;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onclick="copyStaffURL()">打刻URLをコピー</button>`;
   // 代理入力フォーム
   const ev=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||''};
   ev('mEditBirth',currentStaff.birth); ev('mEditPhone',currentStaff.phone);
@@ -2307,8 +2307,8 @@ function openStaff(i){
 }
 function copyStaffURL(){
   const url='https://seishokai.github.io/shareconnect/?staff&id='+currentStaff.id;
-  navigator.clipboard.writeText(url).then(()=>toast('🔗 打刻URLをコピーしました')).catch(()=>{
-    const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('🔗 打刻URLをコピーしました');
+  navigator.clipboard.writeText(url).then(()=>toast('打刻URLをコピーしました')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('打刻URLをコピーしました');
   });
 }
 
@@ -2340,7 +2340,7 @@ function loadWorkData(){
         <input type="number" id="mSnsRate" value="${curSnsRate}" style="width:100%;padding:6px 8px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:14px;font-weight:700;color:#b5443c;background:#fff;box-sizing:border-box" onchange="saveMonthSettings()">
       </div>
       <div style="flex:1;min-width:120px">
-        <div style="font-size:10px;font-weight:700;color:#8a8781;margin-bottom:3px">🎬 広告出演料</div>
+        <div style="font-size:10px;font-weight:700;color:#8a8781;margin-bottom:3px">広告出演料</div>
         <input type="number" id="mAdFee" value="${parseInt(md.snsAdFee)||0}" min="0" style="width:100%;padding:6px 8px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:14px;font-weight:700;color:#b5443c;background:#fff;box-sizing:border-box" onchange="saveMonthSettings()">
       </div>
       <div style="flex:2;min-width:140px">
@@ -2352,7 +2352,7 @@ function loadWorkData(){
     const snsOnly=curSnsCount*curSnsRate;
     el.innerHTML=settingsHTML+(snsOnly>0
       ?`<div style="background:linear-gradient(135deg,#fffaf0,#fff);border:2px solid #f0c060;border-radius:6px;padding:14px 16px;margin-top:8px">
-        <div style="font-size:11px;color:#8a8781">📸 SNS ${curSnsCount}件 × ¥${curSnsRate.toLocaleString()}</div>
+        <div style="font-size:11px;color:#8a8781">SNS ${curSnsCount}件 × ¥${curSnsRate.toLocaleString()}</div>
         <div style="font-size:24px;font-weight:700;color:#b5443c;margin-top:2px">合計 ¥${snsOnly.toLocaleString()}</div>
       </div>`
       :'<div style="font-size:12px;color:#8a8781;padding:8px 0">この月の稼働記録がありません</div>');
@@ -2404,7 +2404,7 @@ function saveMonthSettings(){
   save('sc_admin_work_'+currentStaff.id,workData);
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({workData:workData},{merge:true}).catch(e=>console.error(e));
   loadWorkData();
-  toast('💾 設定を保存しました');
+  toast('設定を保存しました');
 }
 
 function viewStaffContract(){
@@ -2643,7 +2643,7 @@ function printNotice(){
     </div>
 
     <div class="notes">
-      <div class="notes-title">📌 ご注意事項</div>
+      <div class="notes-title">ご注意事項</div>
       ・本通知書記載の金額は、業務委託契約に基づき算出されたものです。<br>
       ・お振込手数料は当社負担にて、上記口座へお振込みいたします。<br>
       ・記載内容にご不明点がございましたら、下記お問い合わせ先までご連絡ください。
@@ -2694,7 +2694,7 @@ function addTemplate(){
   if(window.__db) window.__db.collection('admin').doc('templates').set({list:templates}).catch(e=>console.error(e));
   document.getElementById('newTmplName').value='';
   document.getElementById('newTmplBody').value='';
-  renderContractList();toast('✅ テンプレートを保存しました');
+  renderContractList();toast('テンプレートを保存しました');
 }
 function deleteTemplate(i){
   if(!confirm('このテンプレートを削除しますか？'))return;
@@ -2702,7 +2702,7 @@ function deleteTemplate(i){
   save(TMPL_KEY,templates);
   // Firestoreにも保存
   if(window.__db) window.__db.collection('admin').doc('templates').set({list:templates}).catch(e=>console.error(e));
-  renderContractList();toast('🗑 削除しました');
+  renderContractList();toast('削除しました');
 }
 function previewTemplate(i){
   const t=templates[i];
@@ -2743,12 +2743,12 @@ function generateInvite(){
   const url = base + '?staff&i=' + payload;
   document.getElementById('inviteUrl').textContent = url;
   document.getElementById('inviteResult').style.display='block';
-  toast('✅ URLを発行しました！');
+  toast('URLを発行しました！');
 }
 function copyInvite(){
   const url=document.getElementById('inviteUrl').textContent;
-  navigator.clipboard.writeText(url).then(()=>toast('📋 URLをコピーしました')).catch(()=>{
-    const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('📋 URLをコピーしました');
+  navigator.clipboard.writeText(url).then(()=>toast('URLをコピーしました')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('URLをコピーしました');
   });
 }
 
@@ -2778,11 +2778,11 @@ function staffRateLabel(s){
   return jobUnit(s.jobType).label+' ¥'+r.toLocaleString();
 }
 
-// スタッフ一覧の「✍️署名URL」ボタン
+// スタッフ一覧の「署名URL」ボタン
 function quickSignURL(i){
   const s=allStaff[i];
   if(!s)return;
-  scCopy(buildSignUrl(s),'✍️ '+s.name+' さんの署名URLをコピーしました');
+  scCopy(buildSignUrl(s),''+s.name+' さんの署名URLをコピーしました');
 }
 
 // 招待URLタブのプルダウン
@@ -2792,7 +2792,7 @@ function updateSignStaffDropdown(){
   const keep=sel.value;
   const sorted=[...allStaff].sort((a,b)=>(a.signedAt?1:0)-(b.signedAt?1:0));
   sel.innerHTML='<option value="">選択してください</option>'+
-    sorted.map(s=>`<option value="${s.id}">${s.signedAt?'✅':'⏳'} ${s.name}${(s.department||s.dept)?'（'+(s.department||s.dept)+'）':''}</option>`).join('');
+    sorted.map(s=>`<option value="${s.id}">${s.signedAt?'':''} ${s.name}${(s.department||s.dept)?'（'+(s.department||s.dept)+'）':''}</option>`).join('');
   if(keep&&allStaff.some(s=>s.id===keep))sel.value=keep;
 }
 
@@ -2810,15 +2810,15 @@ function renderSignUrl(force){
   document.getElementById('signUrlBox').textContent=buildSignUrl(s);
   document.getElementById('signUrlNote').innerHTML=
     `${s.name} さん｜${s.jobType||'業務区分なし'}｜${staffRateLabel(s)}`+
-    (s.signedAt?`<br><b style="color:#e0963a">⚠️ この方は${new Date(s.signedAt).toLocaleDateString('ja-JP')}に署名済みです（開くと署名済み画面が表示されます）</b>`:'');
+    (s.signedAt?`<br><b style="color:#e0963a">この方は${new Date(s.signedAt).toLocaleDateString('ja-JP')}に署名済みです（開くと署名済み画面が表示されます）</b>`:'');
   box.style.display='block';
-  if(force)toast('✅ 署名URLを発行しました！');
+  if(force)toast('署名URLを発行しました！');
 }
 
 function copySignUrl(){
   const url=document.getElementById('signUrlBox').textContent;
   if(!url||url==='\u2014'){toast('先にURLを発行してください');return}
-  scCopy(url,'📋 署名URLをコピーしました');
+  scCopy(url,'署名URLをコピーしました');
 }
 
 function generateStaffContractUrl(){
@@ -2830,9 +2830,9 @@ function generateStaffContractUrl(){
   const resultDiv = document.createElement('div');
   resultDiv.style.cssText = 'margin-top:14px;padding:14px;background:#f0fbf5;border:1.5px solid #88d4a8;border-radius:5px';
   resultDiv.innerHTML = `
-    <div style="font-size:12px;font-weight:700;color:#3d9a6a;margin-bottom:8px">✅ ${currentStaff.name}さんの契約書署名用URL</div>
-    <div style="background:#fff;border:1.5px solid #88d4a8;border-radius:4px;padding:10px 12px;font-size:12px;word-break:break-all;color:#3d9a6a;font-family:monospace;margin-bottom:8px;cursor:pointer" onclick="navigator.clipboard.writeText('${url}');toast('📋 URLをコピーしました')">${url}</div>
-    <div style="font-size:11px;color:#888">⬆ タップでコピー</div>
+    <div style="font-size:12px;font-weight:700;color:#3d9a6a;margin-bottom:8px">${currentStaff.name}さんの契約書署名用URL</div>
+    <div style="background:#fff;border:1.5px solid #88d4a8;border-radius:4px;padding:10px 12px;font-size:12px;word-break:break-all;color:#3d9a6a;font-family:monospace;margin-bottom:8px;cursor:pointer" onclick="navigator.clipboard.writeText('${url}');toast('URLをコピーしました')">${url}</div>
+    <div style="font-size:11px;color:#888">タップでコピー</div>
   `;
 
   const mBody = document.querySelector('.m-body');
@@ -2842,7 +2842,7 @@ function generateStaffContractUrl(){
   resultDiv.setAttribute('data-contract-url', '1');
   mBody.appendChild(resultDiv);
 
-  toast(`✅ ${currentStaff.name}さんの契約書署名URLを生成しました`);
+  toast(`${currentStaff.name}さんの契約書署名URLを生成しました`);
 }
 
 // ── Modal ──────────────────────────────────────────
@@ -2882,10 +2882,10 @@ function approveStaff(id){
   // Firestore保存（クロスデバイス同期）
   if(window.__db){
     window.__db.collection('staff').doc(id).set({approved:true,approvedAt:allStaff[idx].approvedAt},{merge:true})
-      .then(()=>console.log('✅ 承認をFirestoreに保存'))
+      .then(()=>console.log('承認をFirestoreに保存'))
       .catch(e=>console.error('承認Firestore error:',e));
   }
-  toast('✅ '+allStaff[idx].name+' を承認しました');
+  toast(''+allStaff[idx].name+' を承認しました');
   refreshAll();
   renderPendingList();
 }
@@ -2944,7 +2944,7 @@ function seedDemoData(){
   });
   localStorage.setItem('sc_admin_staff',JSON.stringify(existing));
   refreshAll();
-  toast(`✅ ${toAdd.length}名のデモデータを追加しました`);
+  toast(`${toAdd.length}名のデモデータを追加しました`);
 }
   boot();
 }
@@ -3167,10 +3167,10 @@ function renderSignScreen(){
   }
 
   document.getElementById('sgInfo').innerHTML=
-    '<div>👤 <b>'+sgEsc(s.name)+'</b> 様</div>'+
-    ((s.department||s.dept)?'<div>🏢 '+sgEsc(s.department||s.dept)+'</div>':'')+
-    '<div>📋 '+sgJobTitle(s.jobType)+'</div>'+
-    '<div>💴 '+sgRateLabel(s)+'</div>';
+    '<div><b>'+sgEsc(s.name)+'</b> 様</div>'+
+    ((s.department||s.dept)?'<div>'+sgEsc(s.department||s.dept)+'</div>':'')+
+    '<div>'+sgJobTitle(s.jobType)+'</div>'+
+    '<div>'+sgRateLabel(s)+'</div>';
 
   // 契約書本文は既存の buildContract() をそのまま使う（文面の二重管理を避ける）
   document.getElementById('sgContract').innerHTML=
@@ -3284,7 +3284,7 @@ function punchUrlFor(id){return location.origin+location.pathname+'?staff&id='+i
 function sgCopyPunchUrl(){
   const url=(document.getElementById('sgPunchUrl')||{}).textContent||'';
   if(!url)return;
-  const done=()=>toast('📋 リンクをコピーしました');
+  const done=()=>toast('リンクをコピーしました');
   const fallback=()=>{
     const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);
     ta.select();document.execCommand('copy');document.body.removeChild(ta);done();
@@ -3299,9 +3299,9 @@ function showSignDone(name,signedAt,already){
   document.getElementById('sgDoneMsg').textContent=already?'すでに署名済みです':'署名が完了しました！';
   const d=new Date(signedAt);
   document.getElementById('sgDoneBox').innerHTML=
-    '<div>👤 <b>'+sgEsc(name)+'</b> 様</div>'+
-    (signStaff?'<div>📋 '+sgJobTitle(signStaff.jobType)+'</div>':'')+
-    '<div>✍️ 署名日：'+(isNaN(d.getTime())?'-':d.toLocaleDateString('ja-JP'))+'</div>';
+    '<div><b>'+sgEsc(name)+'</b> 様</div>'+
+    (signStaff?'<div>'+sgJobTitle(signStaff.jobType)+'</div>':'')+
+    '<div>署名日：'+(isNaN(d.getTime())?'-':d.toLocaleDateString('ja-JP'))+'</div>';
 
   // 打刻URLをその場で本人に渡す（管理者の送信待ちをなくす）
   const purl = signStaffId ? punchUrlFor(signStaffId) : '';
@@ -3326,9 +3326,9 @@ function showPending(u){
   show('screenPending');
   const el=document.getElementById('pendingUserInfo');
   if(el) el.innerHTML=
-    '<div>👤 '+u.name+'</div>'+
-    '<div>📄 締結済み：'+((u.contracts&&u.contracts.length)?u.contracts.join(' ／ '):'歯科医療・運営業務 ／ 動画撮影業務')+'</div>'+
-    '<div>✍️ 署名日：'+new Date(u.signedAt).toLocaleDateString('ja-JP')+'</div>';
+    '<div>'+u.name+'</div>'+
+    '<div>締結済み：'+((u.contracts&&u.contracts.length)?u.contracts.join(' ／ '):'歯科医療・運営業務 ／ 動画撮影業務')+'</div>'+
+    '<div>署名日：'+new Date(u.signedAt).toLocaleDateString('ja-JP')+'</div>';
   
   // Firestoreリアルタイム監視（承認されたら即座に遷移）
   if(window.__db && u.id){
@@ -3365,7 +3365,7 @@ function checkApproval(){
         toast('承認されました。打刻を開始できます');
         setTimeout(()=>startApp(u),1000);
       } else {
-        toast('⏳ まだ承認待ちです。しばらくお待ちください。');
+        toast('まだ承認待ちです。しばらくお待ちください。');
         setTimeout(checkApproval,15000);
       }
     }).catch(()=>{
@@ -3378,7 +3378,7 @@ function checkApproval(){
     toast('承認されました。打刻を開始できます');
     setTimeout(()=>startApp(u),1000);
   } else {
-    toast('⏳ まだ承認待ちです。しばらくお待ちください。');
+    toast('まだ承認待ちです。しばらくお待ちください。');
     setTimeout(checkApproval,15000);
   }
 }
@@ -3436,11 +3436,11 @@ function updateObUI(){updateOBUI()}
 function buildSummary(){
   const n=vv('obName'),a=vv('obAddr'),st=vv('obStation'),bk=vv('obBank'),br=vv('obBranch'),at=vv('obAccType'),an=vv('obAccNum');
   document.getElementById('obSummary').innerHTML=
-    `<div>👤 <b>${n}</b></div>`+
-    `<div>🏠 ${a}</div>`+
-    (st?`<div>🚉 ${st}</div>`:'')+
-    `<div>🏦 ${bk} ${br} ${at} ${an}</div>`+
-    `<div>📄 歯科医療・運営業務 ／ 動画撮影業務</div>`+
+    `<div><b>${n}</b></div>`+
+    `<div>${a}</div>`+
+    (st?`<div>${st}</div>`:'')+
+    `<div>${bk} ${br} ${at} ${an}</div>`+
+    `<div>歯科医療・運営業務 ／ 動画撮影業務</div>`+
     `<div style="font-size:11px;color:#8a8781;margin-top:4px">署名日：${new Date().toLocaleDateString('ja-JP')}</div>`;
 }
 function finishOB(){
@@ -3470,7 +3470,7 @@ function finishOB(){
       contracts:u.contracts,approved:false,registeredAt:Date.now(),
       department:u.department||'',pin:u.pin||'',invoiceNum:u.invoiceNum||''};
     window.__db.collection('staff').doc(u.id).set(fData)
-      .then(()=>console.log('✅ Registered to Firestore'))
+      .then(()=>console.log('Registered to Firestore'))
       .catch(e=>console.error('Firestore error:',e));
   }
   showPending(u);
@@ -3518,7 +3518,7 @@ function startApp(u){
     if(localStorage.getItem('sc_pending_sync')!=='1')return;
     if(!window.__db||!u.id||!navigator.onLine)return;
     window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true})
-      .then(()=>{localStorage.removeItem('sc_pending_sync');toast('✅ 保留データを同期しました')})
+      .then(()=>{localStorage.removeItem('sc_pending_sync');toast('保留データを同期しました')})
       .catch(()=>{});
   };
   _retryPending();
@@ -3550,14 +3550,14 @@ function render(){
   const hasData=Object.keys(md).some(k=>k.startsWith('d'));
   // 太田川はSNSセクション非表示
   const snsSec=document.getElementById('snsSection');if(snsSec)snsSec.style.display=isSimpleDept()?'none':'';
-  if(cl)cl.innerHTML=md.locked?'🔒 承認済み（閲覧のみ）':md.submitted?'📨 申請済み（承認待ち）':hasData?'🗓 カレンダーを開く':'🗓 稼働日を選択';
+  if(cl)cl.innerHTML=md.locked?'承認済み（閲覧のみ）':md.submitted?'申請済み（承認待ち）':hasData?'カレンダーを開く':'稼働日を選択';
   const cd=document.getElementById('calDetails');
   if(cd&&hasData&&!md.locked)cd.removeAttribute('open');
   const sb=document.getElementById('submitBtn');
   if(sb){
-    if(md.locked){sb.textContent='✅ 承認済';sb.disabled=true;sb.style.background='#888'}
-    else if(md.submitted){sb.textContent='📨 申請済み';sb.disabled=true;sb.style.background='#888'}
-    else{sb.textContent='📨 月締め申請';sb.disabled=false;sb.style.background='linear-gradient(135deg,#4caf7d,#3d9a6a)'}
+    if(md.locked){sb.textContent='承認済';sb.disabled=true;sb.style.background='#888'}
+    else if(md.submitted){sb.textContent='申請済み';sb.disabled=true;sb.style.background='#888'}
+    else{sb.textContent='月締め申請';sb.disabled=false;sb.style.background='linear-gradient(135deg,#4caf7d,#3d9a6a)'}
   }
   buildCal();buildCards();updateSum();
 }
@@ -3595,7 +3595,7 @@ function buildCards(){
   const days=new Date(yr,mo,0).getDate();
   const isLocked=!!md.locked;
   // 月の全日を表示
-  let html='<div style="font-size:12px;color:#8a8781;margin-bottom:8px;padding:0 4px">⬇ 出勤した日をタップ。前回の内容が自動でコピーされます</div>';
+  let html='<div style="font-size:12px;color:#8a8781;margin-bottom:8px;padding:0 4px">出勤した日をタップ。前回の内容が自動でコピーされます</div>';
   // 直近の入力済みデータを取得（コピー用）
   function getLastEntry(beforeDay){
     for(let i=beforeDay-1;i>=1;i--){
@@ -3634,8 +3634,8 @@ function buildCards(){
               <span style="font-weight:700;color:#1a1a1a">¥${total.toLocaleString()}</span>`:`<span style="flex:1;color:#ccc;font-size:11px">+ タップして入力</span>`}
       </div>
       ${isOpen&&!isLocked?`<div style="padding:14px;border-top:1px solid ${borderClr};background:#fff">
-        ${isCopied?'<div style="background:#e8f0fe;color:#4a90d9;padding:8px 12px;border-radius:4px;font-size:12px;margin-bottom:12px;font-weight:700;text-align:center">📋 前回の内容をコピー済み。確認して保存</div>':''}
-        ${has?`<button onclick="copyDayToOthers(${d})" style="width:100%;padding:8px;background:#fff;border:1.5px dashed #4a90d9;color:#4a90d9;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;margin-bottom:10px">📋 この日を他の日にコピー</button>`:''}
+        ${isCopied?'<div style="background:#e8f0fe;color:#4a90d9;padding:8px 12px;border-radius:4px;font-size:12px;margin-bottom:12px;font-weight:700;text-align:center">前回の内容をコピー済み。確認して保存</div>':''}
+        ${has?`<button onclick="copyDayToOthers(${d})" style="width:100%;padding:8px;background:#fff;border:1.5px dashed #4a90d9;color:#4a90d9;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;margin-bottom:10px">この日を他の日にコピー</button>`:''}
 
         <!-- 業務先 -->
         ${currentStaff?.isFixedDaily?`
@@ -3649,7 +3649,7 @@ function buildCards(){
             ${STORES.map(s=>`<button onclick="pickStoreForDay(${d},'${s}',this)" class="stbtn${r.store===s?' on':''}" style="padding:8px 14px;border:1.5px solid #ddd9d2;background:${r.store===s?'#1a1a1a':'#fff'};color:${r.store===s?'#fff':'#1a1a1a'};border-radius:4px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">${s}</button>`).join('')}
           </div>
           <div id="stb_${d}" style="display:none"></div>
-          <input id="inp_store_${d}" type="text" value="${r.store||''}" placeholder="🏪 業務先（直接入力もOK）" style="width:100%;padding:12px;border:2px solid #ddd9d2;border-radius:4px;font-size:14px;box-sizing:border-box;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;margin-bottom:12px">
+          <input id="inp_store_${d}" type="text" value="${r.store||''}" placeholder="業務先（直接入力もOK）" style="width:100%;padding:12px;border:2px solid #ddd9d2;border-radius:4px;font-size:14px;box-sizing:border-box;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;margin-bottom:12px">
           ${fareNoteHTML(d, r.store)}
         `}
 
@@ -3658,11 +3658,11 @@ function buildCards(){
 
         <!-- 詳細（折りたたみ・必要な時だけ） -->
         <details style="margin-bottom:12px">
-          <summary style="font-size:11px;color:#8a8781;cursor:pointer;padding:6px 10px;background:#ecebe6;border-radius:3px;list-style:none;text-align:center">⚙️ 休憩・交通費・手当を入力する</summary>
+          <summary style="font-size:11px;color:#8a8781;cursor:pointer;padding:6px 10px;background:#ecebe6;border-radius:3px;list-style:none;text-align:center">休憩・交通費・手当を入力する</summary>
           <div style="padding:10px 0">
             <!-- 休憩 -->
             <div style="margin-bottom:10px">
-              <span style="font-size:11px;color:#8a8781;font-weight:700;display:block;margin-bottom:4px">☕ 休憩</span>
+              <span style="font-size:11px;color:#8a8781;font-weight:700;display:block;margin-bottom:4px">休憩</span>
               <div style="display:flex;gap:5px;flex-wrap:wrap">
                 ${[0,30,60,90,120].map(v=>`<button onclick="document.getElementById('inp_rest_${d}').value=${v};this.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='#1a1a1a'});this.style.background='#1a1a1a';this.style.color='#fff'" style="padding:6px 14px;border:1.5px solid #ddd9d2;background:${(r.rest||60)===v?'#1a1a1a':'#fff'};color:${(r.rest||60)===v?'#fff':'#1a1a1a'};border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">${v===0?'なし':v+'分'}</button>`).join('')}
               </div>
@@ -3670,7 +3670,7 @@ function buildCards(){
             </div>
             <!-- 交通費 -->
             <div style="margin-bottom:10px">
-              <span style="font-size:11px;color:#8a8781;font-weight:700;display:block;margin-bottom:4px">🚃 交通費</span>
+              <span style="font-size:11px;color:#8a8781;font-weight:700;display:block;margin-bottom:4px">交通費</span>
               <div style="display:flex;gap:4px;margin-bottom:5px">
                 <input id="inp_r1a_${d}" type="text" value="${r.r1a||''}" placeholder="往（○○駅→○○駅）" style="flex:1;padding:8px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:12px;box-sizing:border-box;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">
                 <input id="inp_f1a_${d}" type="number" min="0" step="1" value="${r.f1a||''}" placeholder="0" style="width:80px;padding:8px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:12px;text-align:right;box-sizing:border-box;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">
@@ -3692,7 +3692,7 @@ function buildCards(){
             </div>
             <!-- 手当 -->
             <div>
-              <span style="font-size:11px;color:#8a8781;font-weight:700;display:block;margin-bottom:4px">💰 手当</span>
+              <span style="font-size:11px;color:#8a8781;font-weight:700;display:block;margin-bottom:4px">手当</span>
               <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px">
                 <span style="font-size:10px;color:#888;align-self:center;min-width:32px">出張</span>
                 ${[0,2000,5000].map(v=>`<button onclick="document.getElementById('inp_trip_${d}').value=${v};this.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='#4a90d9'});this.style.background='#4a90d9';this.style.color='#fff'" style="padding:5px 12px;border:1.5px solid #4a90d9;background:${(parseInt(r.tripAllow)||0)===v?'#4a90d9':'#fff'};color:${(parseInt(r.tripAllow)||0)===v?'#fff':'#4a90d9'};border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">${v===0?'なし':'+¥'+v.toLocaleString()}</button>`).join('')}
@@ -3709,8 +3709,8 @@ function buildCards(){
 
         <!-- 保存・削除 -->
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${has?`<button onclick="deleteDayInline(${d})" style="padding:14px 16px;background:#fff;border:1.5px solid #e05050;color:#e05050;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">🗑</button>`:''}
-          <button onclick="saveDraftDayInline(${d})" style="flex:1;min-width:100px;padding:14px;background:#fff;border:1.5px solid #e0963a;color:#e0963a;border-radius:5px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">📝 下書き</button>
+          ${has?`<button onclick="deleteDayInline(${d})" style="padding:14px 16px;background:#fff;border:1.5px solid #e05050;color:#e05050;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">削除</button>`:''}
+          <button onclick="saveDraftDayInline(${d})" style="flex:1;min-width:100px;padding:14px;background:#fff;border:1.5px solid #e0963a;color:#e0963a;border-radius:5px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">下書き</button>
           <button onclick="saveDayInline(${d})" style="flex:2;min-width:140px;padding:14px;background:#111;color:#fff;border:none;border-radius:5px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;box-shadow:0 3px 10px rgba(0,0,0,.25)">✓ 確定保存</button>
         </div>
       </div>`:''}
@@ -3746,7 +3746,7 @@ function buildCards(){
           <div style="font-size:24px;font-weight:700;color:#1a1a1a;margin-top:2px">合計 ¥${ttAll.toLocaleString()}</div>
         </div>
         <div style="display:flex;align-items:center;gap:6px">
-          ${allOk?'<span style="font-size:13px;color:#4caf7d;font-weight:700">✅ 全日確定済み</span>':'<span style="font-size:12px;color:#e0963a;font-weight:700">⚠️ 未確定あり</span>'}
+          ${allOk?'<span style="font-size:13px;color:#4caf7d;font-weight:700">全日確定済み</span>':'<span style="font-size:12px;color:#e0963a;font-weight:700">未確定あり</span>'}
         </div>
       </div>
     </div>`;
@@ -3782,8 +3782,8 @@ function updateSum(){
   const snsSum=document.getElementById('snsSummary');
   if(snsSum){
     const parts=[];
-    if(snsPay>0)parts.push(`📸${snsCount}件`);
-    if(snsAdFee>0)parts.push(`🎬¥${snsAdFee.toLocaleString()}`);
+    if(snsPay>0)parts.push(`${snsCount}件`);
+    if(snsAdFee>0)parts.push(`¥${snsAdFee.toLocaleString()}`);
     snsSum.textContent=parts.length?parts.join(' / ')+` 計¥${snsTotal.toLocaleString()}`:'';
   }
   // update subtitle with total
@@ -3804,7 +3804,7 @@ function switchTab(id,btn){
 // ── Entry Modal ────────────────────────────────────
 function openModal(day){
   const md=getMD();
-  if(md.locked){toast('🔒 この月は承認済みのため編集できません');return}
+  if(md.locked){toast('この月は承認済みのため編集できません');return}
   editing=day;
   const r=md[`d${day}`]||{};
   const dt=new Date(yr,mo-1,day);
@@ -3863,7 +3863,7 @@ function confirmDay(){
   const cd=document.getElementById('calDetails');if(cd)cd.removeAttribute('open');
   syncAdminData();
 }
-function delDay(){if(!editing)return;delete getMD()[`d${editing}`];closeModal();render();toast('🗑 削除しました');syncAdminData()}
+function delDay(){if(!editing)return;delete getMD()[`d${editing}`];closeModal();render();toast('削除しました');syncAdminData()}
 
 function syncAdminData(){
   save(SK,db);
@@ -3878,9 +3878,9 @@ function syncAdminData(){
 }
 function submitForApproval(){
   const md=getMD();
-  if(md.submitted){toast('📨 この月は既に申請済みです');return}
+  if(md.submitted){toast('この月は既に申請済みです');return}
   const unc=Object.entries(md).filter(([k,r])=>k.startsWith('d')&&!r.ok).length;
-  if(unc){toast(`⚠️ 未確定${unc}件あります。全日程を確定してから申請してください`);return}
+  if(unc){toast(`未確定${unc}件あります。全日程を確定してから申請してください`);return}
   const days=Object.keys(md).filter(k=>k.startsWith('d')).length;
   const snsCount=md.snsCount||0;
   if(!days&&!snsCount){toast('稼働・SNS投稿の記録がありません');return}
@@ -3904,9 +3904,9 @@ function submitForApproval(){
       md.submitted=true;md.submittedAt=new Date().toISOString();
       save(SK,db);
       if(window.__db){const u=JSON.parse(ls(UK)||'null');if(u&&u.id)window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true}).catch(e=>console.error(e))}
-      toast('📨 承認申請を送信しました！');render();
-    } else toast('❌ 送信に失敗しました: '+(d.error||''));
-  }).catch(e=>{toast('❌ 通信エラー: '+e.message);console.error(e)});
+      toast('承認申請を送信しました！');render();
+    } else toast('送信に失敗しました: '+(d.error||''));
+  }).catch(e=>{toast('通信エラー: '+e.message);console.error(e)});
 }
 let _pinUser=null;
 let _idleTimer=null;
@@ -3959,11 +3959,11 @@ function saveStaffInvoiceNum(){
   u.invoiceNum=document.getElementById('staffInvoiceNum').value.trim();
   save(UK,u);
   if(window.__db&&u.id)window.__db.collection('staff').doc(u.id).set({invoiceNum:u.invoiceNum},{merge:true}).catch(e=>console.error(e));
-  toast(u.invoiceNum?'📄 インボイス番号を保存しました':'インボイス番号をクリアしました');
+  toast(u.invoiceNum?'インボイス番号を保存しました':'インボイス番号をクリアしました');
 }
 function saveSnsSettings(){
   const md=getMD();
-  if(md.locked){toast('🔒 月締め済みのため変更できません');return}
+  if(md.locked){toast('月締め済みのため変更できません');return}
   md.snsCount=parseInt(document.getElementById('snsCountInput').value)||0;
   md.snsRate=parseInt(document.getElementById('snsRateInput').value)||2000;
   md.snsAdFee=parseInt(document.getElementById('snsAdFeeInput')?.value)||0;
@@ -3974,7 +3974,7 @@ function saveSnsSettings(){
     if(u&&u.id) window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true}).catch(e=>console.error(e));
   }
   updateSum();
-  toast('📸 SNS設定を保存しました');
+  toast('SNS設定を保存しました');
 }
 
 // ── Store / Time / Rest ────────────────────────────
@@ -3985,7 +3985,7 @@ function copyDayToOthers(srcDay){
   // コピー先選択ダイアログ
   const days=new Date(yr,mo,0).getDate();
   let html=`<div style="padding:14px;background:#fff;border-radius:6px;max-width:340px;width:90%;max-height:80vh;overflow:auto">
-    <div style="font-size:14px;font-weight:700;color:#1a1a1a;margin-bottom:8px">📋 ${mo}/${srcDay}（${src.store||''} ${src.in}〜${src.out}）をコピー</div>
+    <div style="font-size:14px;font-weight:700;color:#1a1a1a;margin-bottom:8px">${mo}/${srcDay}（${src.store||''} ${src.in}〜${src.out}）をコピー</div>
     <div style="font-size:11px;color:#8a8781;margin-bottom:10px">コピーしたい日をタップしてください（複数選択可）</div>
     <div id="copyTargets" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">`;
   for(let d=1;d<=days;d++){
@@ -4003,7 +4003,7 @@ function copyDayToOthers(srcDay){
     </div>
     <div style="display:flex;gap:6px;margin-top:10px">
       <button onclick="document.getElementById('copyOverlay').remove()" style="flex:1;padding:10px;background:#fff;border:1.5px solid #ccc;color:#666;border-radius:4px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">キャンセル</button>
-      <button onclick="executeCopyDays(${srcDay})" style="flex:2;padding:10px;background:linear-gradient(135deg,#4a90d9,#3a7ec9);color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">📋 一括コピー実行</button>
+      <button onclick="executeCopyDays(${srcDay})" style="flex:2;padding:10px;background:linear-gradient(135deg,#4a90d9,#3a7ec9);color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">一括コピー実行</button>
     </div>
   </div>`;
   const ov=document.createElement('div');
@@ -4044,7 +4044,7 @@ function executeCopyDays(srcDay){
   document.getElementById('copyOverlay').remove();
   window._openedDay=null;
   render();
-  toast(`📋 ${targets.length}日分にコピーしました`);
+  toast(`${targets.length}日分にコピーしました`);
 }
 // ══════════════════════════════════════════════
 // 交通費の自動入力（業務先ごとの片道運賃プリセット）
@@ -4112,7 +4112,7 @@ function fareNoteHTML(d, store){
   const p=farePresetFor(store);
   if(!p)return '<div id="fareNote_'+d+'" style="display:none"></div>';
   return '<div id="fareNote_'+d+'" style="font-size:11px;color:#3d9a6a;background:#edfaf3;border:1px solid #88d4a8;border-radius:3px;padding:7px 10px;margin-bottom:10px;line-height:1.6">'+
-    '🚃 '+p.from+' ⇄ '+p.to+'　往復 <b>¥'+(Number(p.fare)*2).toLocaleString()+'</b> を自動入力（片道 ¥'+Number(p.fare).toLocaleString()+'）</div>';
+    ''+p.from+' ⇄ '+p.to+'　往復 <b>¥'+(Number(p.fare)*2).toLocaleString()+'</b> を自動入力（片道 ¥'+Number(p.fare).toLocaleString()+'）</div>';
 }
 
 // 交通費欄が空かどうか
@@ -4322,8 +4322,8 @@ function _validateDayForm(d, draft){
   // 時間の論理チェック
   const toMinL=t=>{const[h,m]=t.split(':').map(Number);return h*60+m};
   const inM=toMinL(f.in), outM=toMinL(f.out);
-  if(outM<=inM){toast('⚠️ 終了時間は開始時間より後にしてください');return {ok:false}}
-  if(f.rest>=outM-inM){toast('⚠️ 休憩が勤務時間を超えています');return {ok:false}}
+  if(outM<=inM){toast('終了時間は開始時間より後にしてください');return {ok:false}}
+  if(f.rest>=outM-inM){toast('休憩が勤務時間を超えています');return {ok:false}}
   return {ok:true, data:f};
 }
 function _firestoreSave(){
@@ -4334,7 +4334,7 @@ function _firestoreSave(){
     .then(()=>{localStorage.removeItem('sc_pending_sync')})
     .catch(e=>{
       console.error('save error:',e);
-      toast('⚠️ ネット接続エラー。次回接続時に再同期します');
+      toast('ネット接続エラー。次回接続時に再同期します');
       localStorage.setItem('sc_pending_sync','1');
       throw e;
     });
@@ -4342,7 +4342,7 @@ function _firestoreSave(){
 function saveDayInline(d){
   if(!staff){toast('エラー：スタッフ情報が読み込まれていません');return}
   const md=getMD();
-  if(md.locked){toast('🔒 月締め済みのため編集できません');return}
+  if(md.locked){toast('月締め済みのため編集できません');return}
   const v=_validateDayForm(d, false);
   if(!v.ok)return;
   if(!md[`d${d}`])md[`d${d}`]={};
@@ -4358,7 +4358,7 @@ function saveDayInline(d){
 function deleteDayInline(d){
   if(!staff){toast('エラー：スタッフ情報が読み込まれていません');return}
   const md=getMD();
-  if(md.locked){toast('🔒 月締め済みのため削除できません');return}
+  if(md.locked){toast('月締め済みのため削除できません');return}
   if(!confirm(mo+'/'+d+'の記録を削除しますか？'))return;
   delete md[`d${d}`];
   save(SK,db);
@@ -4378,19 +4378,19 @@ function deleteDayInline(d){
   }
   window._openedDay=null;
   render();
-  toast('🗑 '+mo+'/'+d+' 削除しました');
+  toast(''+mo+'/'+d+' 削除しました');
 }
 function saveDraftDayInline(d){
   if(!staff){toast('エラー：スタッフ情報が読み込まれていません');return}
   const md=getMD();
-  if(md.locked){toast('🔒 月締め済みのため編集できません');return}
+  if(md.locked){toast('月締め済みのため編集できません');return}
   const v=_validateDayForm(d, true);
   if(!v.ok)return;
   if(!md[`d${d}`])md[`d${d}`]={};
   Object.assign(md[`d${d}`], v.data, {ok:false});
   save(SK,db);
   syncAdminData();
-  toast('📝 '+mo+'/'+d+' 下書き保存');
+  toast(''+mo+'/'+d+' 下書き保存');
   _firestoreSave();
 }
 function pickStore(name){
@@ -4429,7 +4429,7 @@ function addStorePreset(){
     st.appendChild(add);
   }
   pickStore(trimmed);
-  toast('✅ 「'+trimmed+'」を追加しました');
+  toast('「'+trimmed+'」を追加しました');
 }
 function adjTime(id,delta){
   const el=document.getElementById(id);
@@ -4460,7 +4460,7 @@ function prevWork(){
     const wa=isDailyStaff()?0:(parseInt(document.getElementById('mWeekendAllow')?.value)||0);
     const waStr=wa>0?` + 土日手当¥${wa.toLocaleString()}`:'';
     const total=pay+wa;
-    el.innerHTML=`⏱ 稼働: <b>${toStr(wm)}</b>（休憩 ${parseInt(r.rest)||0}分）<br>💴 報酬: <b>¥${total.toLocaleString()}</b>${waStr}`;
+    el.innerHTML=`稼働: <b>${toStr(wm)}</b>（休憩 ${parseInt(r.rest)||0}分）<br>報酬: <b>¥${total.toLocaleString()}</b>${waStr}`;
   } else el.textContent='稼働時間: --';
 }
 
@@ -4507,19 +4507,19 @@ function applyPreset(name){
     document.getElementById(ids[i*2+1]).value=r.fare||'';
   });
 }
-function savePresets(){save(PK,presets);toast('✅ プリセット保存しました')}
-function saveSettings(){settings.rate=parseInt(document.getElementById('hourlyRate').value)||2014;save(SETK,settings);toast('✅ 保存しました')}
+function savePresets(){save(PK,presets);toast('プリセット保存しました')}
+function saveSettings(){settings.rate=parseInt(document.getElementById('hourlyRate').value)||2014;save(SETK,settings);toast('保存しました')}
 
 // ── User info ──────────────────────────────────────
 function loadUserInfo(){
   const el=document.getElementById('userInfoDisp');if(!el)return;
   const u=JSON.parse(ls(UK)||'null');
   if(!u){el.innerHTML='<span style="color:var(--acc2)">未登録</span>';return}
-  el.innerHTML=`<div>👤 ${u.name}</div><div>🏠 ${u.addr||'—'}</div>`+
-    (u.station?`<div>🚉 ${u.station}</div>`:'')+
-    (u.phone?`<div>📞 ${u.phone}</div>`:'')+
-    (u.email?`<div>📧 ${u.email}</div>`:'')+
-    `<div>🏦 ${u.bank||'—'} ${u.branch||''} ${u.accType||''} ${u.accNum||''}</div>`+
+  el.innerHTML=`<div>${u.name}</div><div>${u.addr||'—'}</div>`+
+    (u.station?`<div>${u.station}</div>`:'')+
+    (u.phone?`<div>${u.phone}</div>`:'')+
+    (u.email?`<div>${u.email}</div>`:'')+
+    `<div>${u.bank||'—'} ${u.branch||''} ${u.accType||''} ${u.accNum||''}</div>`+
     `<div style="font-size:11px;color:#8a8781;margin-top:4px">締結日：${u.signedAt?new Date(u.signedAt).toLocaleDateString('ja-JP'):'-'}</div>`;
   // インボイス番号をロード
   const invInput=document.getElementById('staffInvoiceNum');
@@ -4598,7 +4598,7 @@ function openNotice(){
   const keys=Object.keys(md).filter(k=>k.startsWith('d')).map(k=>+k.replace('d','')).sort((a,b)=>a-b);
   if(!keys.length){toast('稼働記録がありません');return}
   const unc=Object.entries(md).filter(([k,r])=>k.startsWith('d')&&!r.ok).length;
-  if(unc)toast(`⚠️ 未確定${unc}件あります`);
+  if(unc)toast(`未確定${unc}件あります`);
   let tw=0,tf=0,twa=0,tta=0;
   const rows=keys.map(d=>{
     const r=md[`d${d}`]||{};const dt=new Date(yr,mo-1,d);
@@ -4670,7 +4670,7 @@ function saveData(){
         .catch(e=>console.error('Work sync error:',e));
     }
   }
-  toast('💾 保存しました');
+  toast('保存しました');
 }
 function exportCSV(){
   if(!staff){toast('スタッフを選択してください');return}
@@ -4685,7 +4685,7 @@ function exportCSV(){
   const bom='\uFEFF';
   const csv=bom+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-  a.download=`稼働_${staff}_${yr}${pad(mo)}.csv`;a.click();toast('📥 CSV出力しました');
+  a.download=`稼働_${staff}_${yr}${pad(mo)}.csv`;a.click();toast('CSV出力しました');
 }
 
 // ── Canvas ─────────────────────────────────────────
