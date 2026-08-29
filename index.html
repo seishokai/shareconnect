@@ -2099,8 +2099,12 @@ function renderDashboard(){
   }
 }
 function scrollToFirstSubmitted(){
-  document.getElementById('statusFilter').value='submitted';
+  // 月締め申請があればそちら、なければ登録承認待ちに絞り込む
+  const anySubmitted=allStaff.some(s=>{const md=(s.workData||{})[`${_listYear}-${pad(_listMonth)}_${s.name}`]||{};return md.submitted&&!md.locked});
+  const anyPending=allStaff.some(s=>!s.approved);
+  document.getElementById('statusFilter').value=anySubmitted?'submitted':(anyPending?'pending':'all');
   renderStaffList();
+  document.getElementById('staffList')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
 // CSV出力
 function exportPaymentCSV(){
