@@ -101,7 +101,8 @@ function buildHtml(staff) {
     <p style="margin:0 0 14px"><b>${staff.name} 様</b></p>
     <p style="margin:0 0 14px">お疲れさまです。シェアコネクト運営です。<br>
     ${y}年${m}月の稼働報告（勤怠入力）の締め切りが近づいています。<br>
-    <b>${deadline}まで</b>に、以下のURLから今月の稼働内容をご入力のうえ、<b>「月締め申請」</b>をお願いいたします。</p>
+    <b>${deadline}まで</b>に、以下のURLから今月の稼働内容をご入力のうえ、<b>「月締め申請」</b>をお願いいたします。<br>
+    今月稼働がない場合は、このメールは無視していただいて大丈夫です☺</p>
     <p style="margin:18px 0;text-align:center">
       <a href="${url}" style="display:inline-block;background:#1a1a1a;color:#fff;text-decoration:none;padding:12px 28px;border-radius:6px;font-weight:bold">稼働入力ページを開く</a>
     </p>
