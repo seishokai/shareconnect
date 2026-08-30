@@ -889,7 +889,11 @@ window.__auth = _auth;
   </div>
 </div>
 <div class="screen" id="screenLoading">
-  <div style="display:flex;align-items:center;justify-content:center;min-height:60vh"><div style="text-align:center"><div style="width:54px;height:54px;margin:0 auto 16px;background:#111;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:21px;font-weight:700;font-family:'Shippori Mincho',serif">SC</div><div style="font-size:14px;color:#8a8781">読み込み中...</div></div></div>
+  <div style="display:flex;align-items:center;justify-content:center;min-height:60vh"><div style="text-align:center;padding:0 24px">
+    <div style="width:54px;height:54px;margin:0 auto 16px;background:#111;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:21px;font-weight:700;font-family:'Shippori Mincho',serif">SC</div>
+    <div id="loadingMsg" style="font-size:14px;color:#8a8781">読み込み中...</div>
+    <button id="loadingRetryBtn" onclick="location.reload()" style="display:none;margin-top:18px;padding:11px 26px;background:#111;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">再読み込み</button>
+  </div></div>
 </div>
 <div class="screen" id="screenOB">
 <div class="ob-hero">
@@ -3051,41 +3055,63 @@ let _tt;
 function toast(msg){const t=document.getElementById('toastStaff');t.textContent=msg;t.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('on'),2500)}
 
 // ── Boot ───────────────────────────────────────────
+function showLoadError(){
+  const m=document.getElementById('loadingMsg');
+  if(m)m.textContent='読み込みに失敗しました。電波の良い場所でもう一度お試しください。';
+  const b=document.getElementById('loadingRetryBtn');
+  if(b)b.style.display='inline-block';
+}
+function loadStaffDoc(urlId,retryCount){
+  window.__db.collection('staff').doc(urlId).get().then(doc=>{
+    if(doc.exists){
+      const data=doc.data();
+      const u={...data, id:urlId, approved:true};
+      save(UK, u);
+      if(data.workData){save(SK, data.workData);db=data.workData}
+      // PINが設定されている場合は認証チェック
+      if(u.pin){
+        const authedId=sessionStorage.getItem('sc_authed');
+        const authedAt=parseInt(sessionStorage.getItem('sc_authed_at')||'0');
+        // 同じスタッフで認証済み & 30分以内ならスキップ
+        if(authedId===urlId && (Date.now()-authedAt)<IDLE_TIMEOUT_MS){
+          startApp(u);startIdleTimer();
+        } else {
+          showPinLogin(u);
+        }
+      } else startApp(u);
+    } else if(retryCount<2){
+      // 直後の書き込み反映待ちなどの可能性があるため少し待って再試行
+      setTimeout(()=>loadStaffDoc(urlId,retryCount+1),800);
+    } else {
+      // 再試行しても見つからない場合のみ、ローカルの保存データを確認
+      const u=JSON.parse(ls(UK)||'null');
+      if(u && u.id===urlId) startApp(u);
+      else showLoadError();
+    }
+  }).catch(()=>{
+    if(retryCount<2){ setTimeout(()=>loadStaffDoc(urlId,retryCount+1),800); return }
+    const u=JSON.parse(ls(UK)||'null');
+    if(u) startApp(u);
+    else showLoadError();
+  });
+}
 function boot(){
   // ?staff&id=xxx でアクセスした場合、Firestoreからスタッフデータを読み込み
   const params=new URLSearchParams(location.search);
   const urlId=params.get('id');
   if(urlId){
     show('screenLoading');
-    if(!window.__db){const u=JSON.parse(ls(UK)||'null');if(u)startApp(u);else show('screenOB');return}
-    window.__db.collection('staff').doc(urlId).get().then(doc=>{
-      if(doc.exists){
-        const data=doc.data();
-        const u={...data, id:urlId, approved:true};
-        save(UK, u);
-        if(data.workData){save(SK, data.workData);db=data.workData}
-        // PINが設定されている場合は認証チェック
-        if(u.pin){
-          const authedId=sessionStorage.getItem('sc_authed');
-          const authedAt=parseInt(sessionStorage.getItem('sc_authed_at')||'0');
-          // 同じスタッフで認証済み & 30分以内ならスキップ
-          if(authedId===urlId && (Date.now()-authedAt)<IDLE_TIMEOUT_MS){
-            startApp(u);startIdleTimer();
-          } else {
-            showPinLogin(u);
-          }
-        } else startApp(u);
-      } else {
-        // Firestoreにない場合、localStorageを確認
-        const u=JSON.parse(ls(UK)||'null');
-        if(u && u.id===urlId) startApp(u);
-        else { show('screenOB'); document.getElementById('contractBox').innerHTML=buildContract(''); }
-      }
-    }).catch(()=>{
-      const u=JSON.parse(ls(UK)||'null');
-      if(u) startApp(u);
-      else { show('screenOB'); document.getElementById('contractBox').innerHTML=buildContract(''); }
-    });
+    // 通信不良・読み込みタイミングでの取得失敗を「未登録の新規スタッフ」と誤認し、
+    // 既存スタッフに契約書（登録フロー）を見せてしまわないよう、最大3回まで再試行してから
+    // 諦める場合は再読み込みボタンのエラー表示にする（契約書には絶対に落とさない）。
+    let dbWaitTries=0;
+    const waitForDbThenLoad=()=>{
+      if(window.__db){ loadStaffDoc(urlId,0); return }
+      dbWaitTries++;
+      if(dbWaitTries>60){ showLoadError(); return } // 約6秒待っても繋がらない
+      setTimeout(waitForDbThenLoad,100);
+    };
+    waitForDbThenLoad();
     return;
   }
 
