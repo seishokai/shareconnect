@@ -1,0 +1,30 @@
+name: 月末稼働報告リマインダー
+
+on:
+  schedule:
+    # 毎日 09:00 JST (00:00 UTC)。スクリプト側で「月末最終日 or 前日」のみ送信する
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: '日付判定を無視して今すぐ送る'
+        type: boolean
+        default: false
+      test_to:
+        description: 'テスト送信先（指定すると全メールをこのアドレスへ送る）'
+        type: string
+        default: ''
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: リマインダー送信
+        env:
+          FORCE: ${{ inputs.force && '1' || '' }}
+          TEST_TO: ${{ inputs.test_to }}
+        run: node scripts/send-work-report-reminder.mjs
