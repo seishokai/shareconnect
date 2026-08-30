@@ -23,8 +23,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: 依存関係インストール
+        run: npm install --no-save nodemailer
       - name: リマインダー送信
         env:
           FORCE: ${{ inputs.force && '1' || '' }}
           TEST_TO: ${{ inputs.test_to }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         run: node scripts/send-work-report-reminder.mjs

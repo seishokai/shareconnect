@@ -6,10 +6,22 @@
 //   FORCE=1   … 日付判定をスキップして必ず送る（手動テスト用）
 //   TEST_TO   … 指定するとメールを全てこのアドレスに送る（本人には送らない）
 
+import nodemailer from 'nodemailer';
+
 const PROJECT = 'shareconnect-71706';
 const API_KEY = 'AIzaSyApt0DIeMvelIlwTTXeTPz67yL1vdWoFnI'; // 公開Webクライアントキー（index.htmlと同一）
-const MAIL_FN = 'https://us-central1-shareconnect-71706.cloudfunctions.net/sendPaymentNotice';
 const APP_URL = 'https://seishokai.github.io/shareconnect/';
+
+const GMAIL_USER = (process.env.GMAIL_USER || '').trim();
+const GMAIL_APP_PASSWORD = (process.env.GMAIL_APP_PASSWORD || '').trim();
+if (!GMAIL_USER || !GMAIL_APP_PASSWORD) {
+  console.error('GMAIL_USER / GMAIL_APP_PASSWORD が未設定です。リポジトリの Secrets に登録してください。');
+  process.exit(1);
+}
+const mailer = nodemailer.createTransport({
+  host: 'smtp.gmail.com', port: 465, secure: true,
+  auth: { user: GMAIL_USER, pass: GMAIL_APP_PASSWORD }
+});
 
 // ── JSTの今日 ──
 const jstNow = new Date(Date.now() + 9 * 3600 * 1000);
@@ -113,27 +125,15 @@ if (skippedNoMail.length) console.log(`メールアドレス未登録のため�
 let sent = 0, failed = 0;
 for (const s of targets) {
   const to = testTo || s.email;
-  const body = {
-    to,
-    staffName: s.name,
-    month: `${y}-${pad(m)} 稼働報告のお願い`,
-    pdfBase64: Buffer.from(buildHtml(s), 'utf8').toString('base64'),
-    cc: ''
-  };
   try {
-    const res = await fetch(MAIL_FN, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+    await mailer.sendMail({
+      from: `シェアコネクト <${GMAIL_USER}>`,
+      to,
+      subject: `【稼働報告のお願い】${y}年${m}月分の入力をお願いします`,
+      html: buildHtml(s)
     });
-    const json = await res.json().catch(() => ({}));
-    if (res.ok && json.success !== false) {
-      sent++;
-      console.log(`OK  ${s.name} -> ${to}`);
-    } else {
-      failed++;
-      console.error(`NG  ${s.name} -> ${to}: ${res.status} ${JSON.stringify(json)}`);
-    }
+    sent++;
+    console.log(`OK  ${s.name} -> ${to}`);
   } catch (e) {
     failed++;
     console.error(`NG  ${s.name} -> ${to}: ${e.message}`);
