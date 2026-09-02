@@ -883,7 +883,7 @@ window.__auth = _auth;
 
 <div id="staffApp">
 <!-- ══ SCREEN: ONBOARDING ══ -->
-<div class="screen" id="screenPin">
+<div class="screen" id="screenPin" style="display:none">
   <div style="display:flex;align-items:center;justify-content:center;min-height:70vh">
     <div style="background:#fff;border-radius:8px;padding:32px 24px;width:100%;max-width:320px;box-shadow:0 8px 40px rgba(0,0,0,.08);text-align:center">
       <div style="font-size:40px;margin-bottom:8px"></div>
@@ -895,14 +895,14 @@ window.__auth = _auth;
     </div>
   </div>
 </div>
-<div class="screen" id="screenLoading">
+<div class="screen" id="screenLoading" style="display:none">
   <div style="display:flex;align-items:center;justify-content:center;min-height:60vh"><div style="text-align:center;padding:0 24px">
     <div style="width:54px;height:54px;margin:0 auto 16px;background:#111;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:21px;font-weight:700;font-family:'Shippori Mincho',serif">SC</div>
     <div id="loadingMsg" style="font-size:14px;color:#8a8781">読み込み中...</div>
     <button id="loadingRetryBtn" onclick="location.reload()" style="display:none;margin-top:18px;padding:11px 26px;background:#111;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">再読み込み</button>
   </div></div>
 </div>
-<div class="screen" id="screenOB">
+<div class="screen" id="screenOB" style="display:none">
 <div class="ob-hero">
   <div style="width:52px;height:52px;margin:0 auto 10px;background:#111;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:700;font-family:'Shippori Mincho',serif">SC</div>
   <h1>シェアコネクト<br>業務委託 初期登録</h1>
@@ -977,7 +977,7 @@ window.__auth = _auth;
 </div>
 
 <!-- ══ SCREEN: 契約書署名（?s= 署名URL専用） ══ -->
-<div class="screen" id="screenSign">
+<div class="screen" id="screenSign" style="display:none">
   <div class="ob-hero">
     <div class="ico"></div>
     <h1>業務委託契約書<br>初期登録・電子署名</h1>
@@ -1051,7 +1051,7 @@ window.__auth = _auth;
 </div>
 
 <!-- ══ SCREEN: 署名完了 ══ -->
-<div class="screen" id="screenSignDone">
+<div class="screen" id="screenSignDone" style="display:none">
   <div class="ob-hero">
     <div class="ico"></div>
     <h1 id="sgDoneMsg">署名が完了しました！</h1>
@@ -1082,7 +1082,7 @@ window.__auth = _auth;
 </div>
 
 <!-- ══ SCREEN: 署名URLエラー ══ -->
-<div class="screen" id="screenSignErr">
+<div class="screen" id="screenSignErr" style="display:none">
   <div class="ob-hero" style="background:linear-gradient(135deg,#e08080,#c05050)">
     <div class="ico"></div>
     <h1>契約書を開けませんでした</h1>
@@ -1094,7 +1094,7 @@ window.__auth = _auth;
 </div>
 
 <!-- ══ SCREEN: PENDING ══ -->
-<div class="screen" id="screenPending">
+<div class="screen" id="screenPending" style="display:none">
   <div style="background:#fff;border-bottom:2px solid #111;padding:32px 24px 24px;text-align:center">
     <div style="font-size:48px;margin-bottom:10px"></div>
     <h1 style="font-family:'Shippori Mincho',serif;font-size:20px;font-weight:700;color:#111;letter-spacing:.1em;margin-bottom:6px">承認待ちです</h1>
@@ -1110,7 +1110,7 @@ window.__auth = _auth;
 </div>
 
 <!-- ══ SCREEN: MAIN APP ══ -->
-<div class="screen" id="screenApp">
+<div class="screen" id="screenApp" style="display:none">
 
 <header class="app-hdr">
   <h1>業務委託 稼働記録</h1>
@@ -3473,8 +3473,14 @@ function checkApproval(){
 }
 
 function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  // 各スクリーンには inline style="display:none" を持たせてあるので、
+  // CSS（staffCSS の media 切り替えタイミング）に一切依存せず、
+  // ここで直接 display を書き換える。ページ読み込み中に他の画面が
+  // 一瞬見えてしまう問題（例: 契約書画面のチラつき）を根本的に防ぐ。
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active'); s.style.display='none'});
+  const el=document.getElementById(id);
+  el.classList.add('active');
+  el.style.display='flex';
 }
 
 // ── Onboarding ─────────────────────────────────────
