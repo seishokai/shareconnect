@@ -18,6 +18,13 @@
 html,body{background:#f2f1ee;color:#1b1a17;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color-scheme:light;min-height:100svh}
 #adminApp,#staffApp{display:none}
 #adminApp.show,#staffApp.show{display:block}
+/* スタッフ画面の各スクリーンは staffCSS（media="not all" → JSがmedia="all"に
+   切り替えるまで無効）の中で display 制御されていたため、ページ読み込み中は
+   このルールが効いておらず、全スクリーン（契約書を含む）が縦に生のまま
+   一瞬並んで見えてしまっていた。JSのタイミングに関係なく常に効くよう、
+   非表示の基本ルールだけ最初から有効なここに置く。*/
+.screen{display:none}
+.screen.active{display:flex}
 </style>
 
 <!-- Admin CSS -->
