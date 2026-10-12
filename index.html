@@ -1998,7 +1998,7 @@ const JOB_UNITS = {
   },
   'コンサル': {
     label:'月額', defaultRate:100000, type:'fixed-month', title:'コンサルティング業務',
-    desc:r=>`甲が指定するコンサルティング業務およびその付随業務。委託料は月額金${r}円（税込）の固定とし、稼働日数・時間によらず毎月支払う。交通費は委託料に含まず、別途実費を支給する。`
+    desc:r=>`甲が指定するコンサルティング業務およびその付随業務。委託料は月額金${r}円の固定とし、稼働日数・時間によらず毎月支払う。交通費は委託料に含まず、別途実費を支給する。`
   }
 };
 const JOB_DEFAULT = {
@@ -2952,6 +2952,37 @@ function copySignUrl(){
   scCopy(url,'署名URLをコピーしました');
 }
 
+// 月額制スタッフ向けの案内メッセージ（契約変更＋署名URL）
+function buildMonthlyNoticeMessage(st, url){
+  const call = String(st.name||'').split(/[\s\u3000]+/)[0] + 'さん';
+  const ym = String(st.monthlyFrom||'').split('-');
+  const fromtxt = ym.length===2 ? '（'+Number(ym[0])+'年'+Number(ym[1])+'月分から）' : '';
+  const fee = Number(st.monthlyRate).toLocaleString();
+  return [
+    `${call}`,
+    ``,
+    `お疲れさまです。契約内容の変更と、今後のお願いについてご連絡します。`,
+    ``,
+    `【契約内容の変更${fromtxt}】`,
+    `・業務内容：コンサルティング業務`,
+    `・報酬：月額${fee}円の固定`,
+    `・交通費：報酬とは別に、実費をお支払いします`,
+    ``,
+    `これまでの時給・稼働時間での計算ではなくなります。下のURLから契約書をご確認のうえ、署名をお願いします。`,
+    `${url}`,
+    ``,
+    `【10月の予定について】`,
+    `ここからは、${call}の側から動いてもらいたいです。`,
+    `・10月に入れたい訪問・打ち合わせ・施策の予定を、${call}から先に発信してください。`,
+    `・巻き込みたい先生やスタッフがいれば、遠慮せず声をかけて進めてください。`,
+    `・決まった予定は、早めに私にも共有してください。日程や調整が必要なものは私も動きます。`,
+    ``,
+    `訪問した日は、これまでどおりシェアコネクトに日付と交通費を入力してください。`,
+    ``,
+    `ご不明な点があれば、いつでもご連絡ください。よろしくお願いします。`
+  ].join('\n');
+}
+
 function generateStaffContractUrl(){
   if(!currentStaff)return;
 
@@ -2965,6 +2996,24 @@ function generateStaffContractUrl(){
     <div style="background:#fff;border:1.5px solid #88d4a8;border-radius:4px;padding:10px 12px;font-size:12px;word-break:break-all;color:#3d9a6a;font-family:monospace;margin-bottom:8px;cursor:pointer" onclick="navigator.clipboard.writeText('${url}');toast('URLをコピーしました')">${url}</div>
     <div style="font-size:11px;color:#888">タップでコピー</div>
   `;
+
+  // 月額制スタッフには、そのまま送れる案内メッセージ（署名URL入り）も出す
+  if(Number(currentStaff.monthlyRate)>0){
+    const msg = buildMonthlyNoticeMessage(currentStaff, url);
+    const box = document.createElement('div');
+    box.style.cssText = 'margin-top:10px';
+    const ta = document.createElement('textarea');
+    ta.id = 'monthlyMsgText';
+    ta.readOnly = true;
+    ta.value = msg;
+    ta.style.cssText = 'width:100%;height:220px;box-sizing:border-box;padding:10px;border:1.5px solid #88d4a8;border-radius:4px;font-size:12px;line-height:1.7;background:#fff;color:#1b1a17';
+    const btn = document.createElement('button');
+    btn.textContent = 'メッセージ全文をコピー';
+    btn.style.cssText = 'width:100%;margin-top:6px;padding:10px;background:linear-gradient(135deg,#4caf7d,#3d9a6a);color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:700;cursor:pointer';
+    btn.onclick = function(){ scCopy(msg, 'メッセージをコピーしました（そのまま送信できます）'); };
+    box.appendChild(ta); box.appendChild(btn);
+    resultDiv.appendChild(box);
+  }
 
   const mBody = document.querySelector('.m-body');
   const existing = mBody.querySelector('[data-contract-url]');
@@ -3245,7 +3294,7 @@ const JOB_UNITS = {
   },
   'コンサル': {
     label:'月額', defaultRate:100000, type:'fixed-month', title:'コンサルティング業務',
-    desc:r=>`甲が指定するコンサルティング業務およびその付随業務。委託料は月額金${r}円（税込）の固定とし、稼働日数・時間によらず毎月支払う。交通費は委託料に含まず、別途実費を支給する。`
+    desc:r=>`甲が指定するコンサルティング業務およびその付随業務。委託料は月額金${r}円の固定とし、稼働日数・時間によらず毎月支払う。交通費は委託料に含まず、別途実費を支給する。`
   }
 };
 const JOB_DEFAULT = {
