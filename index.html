@@ -717,12 +717,19 @@ window.__auth = _auth;
           <span style="font-size:11px;font-weight:700;color:#8a8781;min-width:50px">部門</span>
           <select id="mDept" class="inp" style="flex:1;padding:6px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee" onchange="saveStaffDept()"></select>
         </div>
-        <div style="display:flex;align-items:center;gap:8px">
+        <div id="mRateRow" style="display:flex;align-items:center;gap:8px">
           <span style="font-size:11px;font-weight:700;color:#8a8781;min-width:50px">時給</span>
           <input type="number" id="mRate" placeholder="2014" style="flex:1;padding:6px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box">
           <span style="font-size:11px;color:#8a8781">円/時</span>
           <button onclick="saveStaffRate()" style="padding:6px 10px;background:#1a1a1a;color:#fff;border:none;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">保存</button>
         </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <label style="font-size:11px;font-weight:700;color:#4a90d9;display:flex;align-items:center;gap:4px;cursor:pointer;min-width:76px"><input type="checkbox" id="mFixedMonthly" onchange="toggleMonthlyRow()">月額制</label>
+          <input type="number" id="mMonthlyRate" placeholder="100000" style="flex:1;min-width:90px;padding:6px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box">
+          <span style="font-size:11px;color:#8a8781">円/月</span>
+          <button onclick="saveStaffMonthly()" style="padding:6px 10px;background:#4a90d9;color:#fff;border:none;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">保存</button>
+        </div>
+        <div id="mMonthlyHint" style="display:none;font-size:11px;color:#4a90d9;background:#eaf3fd;border:1px solid #b9d3ef;border-radius:3px;padding:6px 10px;line-height:1.6">月額制（コンサル）のスタッフです。時給・稼働時間は使わず、毎月この金額を支払います。交通費は別途実費です。</div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           <label style="font-size:11px;font-weight:700;color:#3d9a6a;display:flex;align-items:center;gap:4px;cursor:pointer;min-width:76px"><input type="checkbox" id="mFixedDaily" onchange="toggleDailyRow()">日当制</label>
           <input type="number" id="mDailyRate" placeholder="17000" style="flex:1;min-width:90px;padding:6px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box">
@@ -1563,7 +1570,7 @@ let currentStaff=null;
 let departments=JSON.parse(localStorage.getItem('sc_departments')||'null')||['本部','仙豆','太田川','清翔会'];
 // 新しい部門は、既にlocalStorageを持っている端末にも入れる
 ['TC'].forEach(d=>{if(!departments.includes(d))departments.push(d)});
-let jobTypes=['歯科医療業務','歯科助手業務','SNS','TC教育'];
+let jobTypes=['歯科医療業務','歯科助手業務','SNS','TC教育','コンサル'];
 let _tt;
 
 function ls(k){return localStorage.getItem(k)}
@@ -1581,12 +1588,15 @@ function isDailyPay(s){return !!(s && s.isFixedDaily && Number(s.dailyRate) > 0)
 function _worked(r){return !!(r && r.in && r.out)}
 // 回数制（TC教育など）か
 function isSessionPay(s){return jobUnit(s&&s.jobType).type==='session'}
+// 月額固定（コンサル）か。稼働日が1日でもあれば月額を1回計上し、交通費は日ごとの実費
+function isMonthPay(s){return jobUnit(s&&s.jobType).type==='month'}
 // その日の実施回数（未設定なら1回）
 function sessionsOf(r){return Math.max(1, parseInt(r&&r.sessions)||1)}
 function payModeOf(r){return (r&&r.payMode==='amount')?'amount':'session'}
 
 function dayPayOf(s, r, mRate){
   if(!_worked(r))return 0;
+  if(isMonthPay(s))return 0;
   if(isDailyPay(s))return Number(s.dailyRate);
   if(isSessionPay(s)){
     if(payModeOf(r)==='amount')return parseInt(r.amount)||0;
@@ -1596,6 +1606,10 @@ function dayPayOf(s, r, mRate){
   return (wm!=null&&wm>0)?calcPay(wm,mRate):0;
 }
 function monthPayOf(s, md, mRate){
+  if(isMonthPay(s)){
+    const any=Object.entries(md||{}).some(([k,r])=>k.startsWith('d')&&_worked(r));
+    return any?(Number(mRate)||Number(s.rate)||jobUnit(s.jobType).defaultRate):0;
+  }
   if(isDailyPay(s)||isSessionPay(s)){
     let sum=0;
     Object.entries(md||{}).forEach(([k,r])=>{if(k.startsWith('d'))sum+=dayPayOf(s,r,mRate)});
@@ -1607,6 +1621,7 @@ function monthPayOf(s, md, mRate){
 }
 // 支払通知書の「業務量」表記
 function workAmountOf(s, r){
+  if(isMonthPay(s))return _worked(r)?'訪問':'—';
   if(isSessionPay(s)){
     if(!_worked(r))return '—';
     return payModeOf(r)==='amount'?'その他':(sessionsOf(r)+'回');
@@ -1615,6 +1630,11 @@ function workAmountOf(s, r){
   return wm!=null?toStr(wm):'—';
 }
 function monthAmountOf(s, md){
+  if(isMonthPay(s)){
+    let n=0;
+    Object.entries(md||{}).forEach(([k,r])=>{if(k.startsWith('d')&&_worked(r))n++});
+    return '月額（'+n+'日）';
+  }
   if(isSessionPay(s)){
     let n=0, other=0;
     Object.entries(md||{}).forEach(([k,r])=>{
@@ -1627,7 +1647,7 @@ function monthAmountOf(s, md){
   Object.entries(md||{}).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)tw+=wm});
   return toStr(tw)||'0:00';
 }
-function weekendAllowOf(s, r){return isDailyPay(s)?0:(parseInt(r&&r.weekendAllow)||0)}
+function weekendAllowOf(s, r){return (isDailyPay(s)||isMonthPay(s))?0:(parseInt(r&&r.weekendAllow)||0)}
 function calcPay(wm,rate){return wm!=null?Math.floor(wm/60*(rate||DEF_RATE)):0}
 
 // ── Boot ───────────────────────────────────────────
@@ -1973,6 +1993,10 @@ const JOB_UNITS = {
   'TC教育': {
     label:'1回', defaultRate:50000, type:'session', title:'TC教育業務',
     desc:r=>`甲が指定する店舗・医院におけるトリートメントコーディネーター（TC）の教育・研修業務およびその付随業務。委託料は実施1回あたり金${r}円（税込）とする。`
+  },
+  'コンサル': {
+    label:'月額', defaultRate:100000, type:'month', title:'コンサルティング業務',
+    desc:r=>`甲が指定するコンサルティング業務およびその付随業務。委託料は月額金${r}円（税込）の固定とし、稼働日数・時間によらず毎月支払う。交通費は委託料に含まず、別途実費を支給する。`
   }
 };
 const JOB_DEFAULT = {
@@ -2097,6 +2121,31 @@ function saveStaffDaily(){
   toggleDailyRow();
   renderStaffList();
   toast(on?`日当制（¥${dr.toLocaleString()}/日）に設定しました`:'日当制を解除しました');
+}
+
+function toggleMonthlyRow(){
+  const fm=document.getElementById('mFixedMonthly'),h=document.getElementById('mMonthlyHint'),rr=document.getElementById('mRateRow');
+  const on=!!(fm&&fm.checked);
+  if(h)h.style.display=on?'block':'none';
+  if(rr)rr.style.display=on?'none':'flex';
+}
+function saveStaffMonthly(){
+  if(!currentStaff)return;
+  const on=document.getElementById('mFixedMonthly').checked;
+  const mr=parseInt(document.getElementById('mMonthlyRate').value)||0;
+  if(on&&mr<=0){toast('月額を入力してください');return}
+  // 契約書・支払通知書は jobType と rate を見るので、月額もそこに合わせて保存する
+  const patch=on
+    ?{jobType:'コンサル', monthlyRate:mr, rate:mr, isFixedDaily:false, dailyRate:0}
+    :{monthlyRate:0, jobType:(currentStaff.jobType==='コンサル'?'歯科医療業務':currentStaff.jobType), rate:(currentStaff.jobType==='コンサル'?DEF_RATE:currentStaff.rate)};
+  Object.assign(currentStaff,patch);
+  const idx=allStaff.findIndex(s=>s.id===currentStaff.id);
+  if(idx>=0)Object.assign(allStaff[idx],patch);
+  localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
+  if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set(patch,{merge:true}).catch(e=>console.error(e));
+  toggleMonthlyRow();toggleDailyRow();
+  renderStaffList();
+  toast(on?`月額制（¥${mr.toLocaleString()}/月）に設定しました`:'月額制を解除しました');
 }
 
 function saveStaffRate(){
@@ -2312,6 +2361,11 @@ function openStaff(i){
   if(fd)fd.checked=!!currentStaff.isFixedDaily;
   if(dr)dr.value=currentStaff.dailyRate||'';
   toggleDailyRow();
+  // 月額制（コンサル）
+  const fm=document.getElementById('mFixedMonthly'),mr=document.getElementById('mMonthlyRate');
+  if(fm)fm.checked=isMonthPay(currentStaff);
+  if(mr)mr.value=isMonthPay(currentStaff)?(currentStaff.monthlyRate||currentStaff.rate||''):'';
+  toggleMonthlyRow();
   // Invoice checkbox
   const inv=document.getElementById('mInvoice');
   if(inv)inv.checked=!!currentStaff.invoice;
@@ -2394,7 +2448,7 @@ function loadWorkData(){
   const isSnsOnly=!!currentStaff.snsOnly;
   let settingsHTML=`
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;padding:10px 12px;background:#ecebe6;border-radius:4px">
-      ${(isSnsOnly||isSessionPay(currentStaff))?`<input type="hidden" id="mMonthRate" value="${curRate}">`:`<div style="flex:1;min-width:100px">
+      ${(isSnsOnly||isSessionPay(currentStaff)||isMonthPay(currentStaff))?`<input type="hidden" id="mMonthRate" value="${curRate}">`:`<div style="flex:1;min-width:100px">
         <div style="font-size:10px;font-weight:700;color:#8a8781;margin-bottom:3px">時給（税込）</div>
         <input type="number" id="mMonthRate" value="${curRate}" style="width:100%;padding:6px 8px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:14px;font-weight:700;color:#1a1a1a;background:#fff;box-sizing:border-box" onchange="saveMonthSettings()">
       </div>`}
@@ -2566,7 +2620,7 @@ function openStaffNotice(){
       </table>`}
       <div class="n-tot">
         ${!currentStaff.snsOnly?`<div class="n-tr"><span>業務実績</span><span><b>${monthAmountOf(currentStaff,md)}</b></span></div>
-        ${isSessionPay(currentStaff)?'':`<div class="n-tr"><span>業務単価</span><span>¥${mRate.toLocaleString()}</span></div>`}
+        ${(isSessionPay(currentStaff)||isMonthPay(currentStaff))?'':`<div class="n-tr"><span>業務単価</span><span>¥${mRate.toLocaleString()}</span></div>`}
         <div class="n-tr"><span>業務委託報酬</span><span>¥${tPay.toLocaleString()}</span></div>`:''}
         ${tta>0?`<div class="n-tr"><span>出張手当</span><span>¥${tta.toLocaleString()}</span></div>`:''}
         ${twa>0?`<div class="n-tr"><span>土日手当</span><span>¥${twa.toLocaleString()}</span></div>`:''}
@@ -2694,7 +2748,7 @@ function printNotice(){
     <h4>お支払い内訳</h4>
     <div class="summary-box">
       ${!isSnsOnly?`<div class="summary-row"><span class="summary-label">業務実績合計</span><span class="summary-value">${toStr(tw)||'0:00'}</span></div>
-      ${isSessionPay(currentStaff)?'':`<div class="summary-row"><span class="summary-label">業務単価</span><span class="summary-value">¥${mRate.toLocaleString()} / 時</span></div>`}
+      ${(isSessionPay(currentStaff)||isMonthPay(currentStaff))?'':`<div class="summary-row"><span class="summary-label">業務単価</span><span class="summary-value">¥${mRate.toLocaleString()} / 時</span></div>`}
       <div class="summary-row"><span class="summary-label">業務委託報酬</span><span class="summary-value">¥${tPay.toLocaleString()}</span></div>`:''}
       ${tta>0?`<div class="summary-row"><span class="summary-label">出張手当</span><span class="summary-value">¥${tta.toLocaleString()}</span></div>`:''}
       ${twa>0?`<div class="summary-row"><span class="summary-label">土日手当</span><span class="summary-value">¥${twa.toLocaleString()}</span></div>`:''}
@@ -3178,6 +3232,10 @@ const JOB_UNITS = {
   'TC教育': {
     label:'1回', defaultRate:50000, type:'session', title:'TC教育業務',
     desc:r=>`甲が指定する店舗・医院におけるトリートメントコーディネーター（TC）の教育・研修業務およびその付随業務。委託料は実施1回あたり金${r}円（税込）とする。`
+  },
+  'コンサル': {
+    label:'月額', defaultRate:100000, type:'month', title:'コンサルティング業務',
+    desc:r=>`甲が指定するコンサルティング業務およびその付随業務。委託料は月額金${r}円（税込）の固定とし、稼働日数・時間によらず毎月支払う。交通費は委託料に含まず、別途実費を支給する。`
   }
 };
 const JOB_DEFAULT = {
@@ -3714,7 +3772,7 @@ function buildCards(){
     // 日当固定スタッフの場合（確定済みデータのみ対象）
     const pay=has?dayPayS(r):0;
     const fare=calcFare(r);
-    const wa=isDailyStaff()?0:(parseInt(r.weekendAllow)||0),ta=parseInt(r.tripAllow)||0;
+    const wa=(isDailyStaff()||isMonthStaff())?0:(parseInt(r.weekendAllow)||0),ta=parseInt(r.tripAllow)||0;
     const total=pay+fare+wa+ta;
     const tripInFare=(r.r2a&&r.r2a.includes('出張'))?parseInt(r.f2a)||0:0;
     const isOpen=window._openedDay===d;
@@ -3793,7 +3851,7 @@ function buildCards(){
                 ${[0,2000,5000].map(v=>`<button onclick="document.getElementById('inp_trip_${d}').value=${v};this.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='#4a90d9'});this.style.background='#4a90d9';this.style.color='#fff'" style="padding:5px 12px;border:1.5px solid #4a90d9;background:${(parseInt(r.tripAllow)||0)===v?'#4a90d9':'#fff'};color:${(parseInt(r.tripAllow)||0)===v?'#fff':'#4a90d9'};border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">${v===0?'なし':'+¥'+v.toLocaleString()}</button>`).join('')}
                 <input id="inp_trip_${d}" type="hidden" value="${r.tripAllow||0}">
               </div>
-              ${(sat||sun)&&!isDailyStaff()?`<div style="display:flex;gap:5px;flex-wrap:wrap">
+              ${(sat||sun)&&!isDailyStaff()&&!isMonthStaff()?`<div style="display:flex;gap:5px;flex-wrap:wrap">
                 <span style="font-size:10px;color:#888;align-self:center;min-width:32px">土日</span>
                 ${[0,1000,2000,5000].map(v=>`<button onclick="document.getElementById('inp_we_${d}').value=${v};this.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.color='#1a1a1a'});this.style.background='#1a1a1a';this.style.color='#fff'" style="padding:5px 12px;border:1.5px solid #1a1a1a;background:${(parseInt(r.weekendAllow)||0)===v?'#1a1a1a':'#fff'};color:${(parseInt(r.weekendAllow)||0)===v?'#fff':'#1a1a1a'};border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif">${v===0?'なし':'+¥'+v.toLocaleString()}</button>`).join('')}
               </div>`:''}
@@ -3819,7 +3877,7 @@ function buildCards(){
   const dayCount=_keys.length;
   const dayRate=md2.dayRate||parseInt(md2.rate)||settings.rate||2014;
   let ttw=0,ttf=0,ttwa=0,ttta=0,ttTrip=0;
-  Object.entries(md2).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)ttw+=wm;if(!simple){ttf+=calcFare(r);ttwa+=(isDailyStaff()?0:(r.weekendAllow||0));ttta+=(r.tripAllow||0);if(r.r2a&&r.r2a.includes('出張'))ttTrip+=(parseInt(r.f2a)||0)}});
+  Object.entries(md2).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)ttw+=wm;if(!simple){ttf+=calcFare(r);ttwa+=((isDailyStaff()||isMonthStaff())?0:(r.weekendAllow||0));ttta+=(r.tripAllow||0);if(r.r2a&&r.r2a.includes('出張'))ttTrip+=(parseInt(r.f2a)||0)}});
   const ttPureFare=ttf-ttTrip;
   // 日当制（飯田先生など）は稼働日数×日額。simple（太田川）も同じ日数計算。
   const ttPay=simple?dayCount*dayRate:monthPayS(md2);
@@ -3828,7 +3886,9 @@ function buildCards(){
   const ttAllTrip=ttta+ttTrip;
   const ttAll=ttPay+ttf+ttwa+ttta+ttSns+ttAdFee;
   const allOk=_keys.length>0&&_keys.every(d=>md2[`d${d}`]?.ok);
-  const breakdownText=isSessionStaff()
+  const breakdownText=isMonthStaff()
+    ?`月額 ¥${ttPay.toLocaleString()}（${dayCount}日訪問）${ttf>0?' + 交通費 ¥'+ttf.toLocaleString():''}${ttAdFee>0?' + 広告 ¥'+ttAdFee.toLocaleString():''}`
+    :isSessionStaff()
     ?`報酬 ¥${ttPay.toLocaleString()}（${monthSessionsS(md2)}回${monthOtherDaysS(md2)>0?'＋その他'+monthOtherDaysS(md2)+'日':''}）${ttf>0?' + 交通費 ¥'+ttf.toLocaleString():''}${ttAllTrip>0?' + 出張 ¥'+ttAllTrip.toLocaleString():''}`
     :(simple||isDailyStaff())
     ?`${dayCount}日 × ¥${(isDailyStaff()?Number(currentStaff.dailyRate):dayRate).toLocaleString()}${isDailyStaff()&&ttf>0?' + 交通費 ¥'+ttf.toLocaleString():''}${ttAdFee>0?' + 広告 ¥'+ttAdFee.toLocaleString():''}`
@@ -4152,6 +4212,9 @@ function _workedS(r){return !!(r && r.in && r.out)}
 // 1日分の報酬
 // 回数制（TC教育など）か
 function isSessionStaff(){return !!(currentStaff && jobUnit(currentStaff.jobType).type==='session')}
+// 月額固定（コンサル）か
+function isMonthStaff(){return !!(currentStaff && jobUnit(currentStaff.jobType).type==='month')}
+function monthlyFeeS(){return Number(currentStaff&&currentStaff.rate)||jobUnit(currentStaff&&currentStaff.jobType).defaultRate}
 function sessionsOfS(r){return Math.max(1, parseInt(r&&r.sessions)||1)}
 function sessionRateS(){return Number(currentStaff&&currentStaff.rate)||jobUnit(currentStaff&&currentStaff.jobType).defaultRate}
 // その日の業務区分。旧データ（payMode無し）は回数制扱い
@@ -4161,6 +4224,7 @@ function dayRateS(r){return parseInt(r&&r.sessionRate)||sessionRateS()}
 
 function dayPayS(r){
   if(!_workedS(r))return 0;
+  if(isMonthStaff())return 0;
   if(isDailyStaff())return Number(currentStaff.dailyRate);
   if(isSessionStaff()){
     if(payModeOfS(r)==='amount')return parseInt(r.amount)||0;
@@ -4171,6 +4235,11 @@ function dayPayS(r){
 }
 // 月の報酬合計
 function monthPayS(md){
+  if(isMonthStaff()){
+    let any=false;
+    Object.entries(md||{}).forEach(([k,r])=>{if(k.startsWith('d')&&_workedS(r))any=true});
+    return any?monthlyFeeS():0;
+  }
   if(isDailyStaff()||isSessionStaff()){
     let sum=0;
     Object.entries(md||{}).forEach(([k,r])=>{if(k.startsWith('d'))sum+=dayPayS(r)});
@@ -4193,7 +4262,7 @@ function monthSessionsS(md){
   return n;
 }
 // 土日手当（日当制は対象外）
-function weekendAllowS(r){return isDailyStaff()?0:(parseInt(r&&r.weekendAllow)||0)}
+function weekendAllowS(r){return (isDailyStaff()||isMonthStaff())?0:(parseInt(r&&r.weekendAllow)||0)}
 
 function farePresetFor(store){
   if(!store)return null;
@@ -4251,6 +4320,12 @@ function pickStoreForDay(d, store, btn){
 function dayTimeSectionHTML(d, r){
   const hidden = '<input id="inp_in_'+d+'" type="hidden" value="09:00">'+
                  '<input id="inp_out_'+d+'" type="hidden" value="18:00">';
+  if(isMonthStaff()){
+    return '<div style="padding:16px;background:linear-gradient(135deg,#e8f5e9,#f1f8f6);border-radius:4px;margin-bottom:12px;text-align:center">'+
+      '<div style="font-size:11px;color:#888;margin-bottom:4px">月額固定（交通費は別途実費）</div>'+
+      '<div style="font-size:24px;font-weight:700;color:#4caf7d">¥'+monthlyFeeS().toLocaleString()+' / 月</div>'+
+      '</div>'+hidden+'<input id="inp_sessions_'+d+'" type="hidden" value="1">';
+  }
   if(isDailyStaff()){
     return '<div style="padding:16px;background:linear-gradient(135deg,#e8f5e9,#f1f8f6);border-radius:4px;margin-bottom:12px;text-align:center">'+
       '<div style="font-size:11px;color:#888;margin-bottom:4px">日当固定</div>'+
@@ -4318,7 +4393,7 @@ function dayTimeSectionHTML(d, r){
 // 日カード見出しの補足。回数制は回数、日当制は空（時刻はダミーなので出さない）
 function dayHeadNote(r){
   if(isSessionStaff())return payModeOfS(r)==='amount'?'その他':(sessionsOfS(r)+'回');
-  if(isDailyStaff())return '';
+  if(isDailyStaff()||isMonthStaff())return '';
   return (r.in||'')+'〜'+(r.out||'');
 }
 
@@ -4551,8 +4626,8 @@ function prevWork(){
   const r={in:document.getElementById('mIn').value,out:document.getElementById('mOut').value,rest:document.getElementById('mRest').value};
   const wm=calcWork(r);const el=document.getElementById('workPrev');
   if(wm!=null){
-    const pay=isDailyStaff()?Number(currentStaff.dailyRate):calcPay(wm);
-    const wa=isDailyStaff()?0:(parseInt(document.getElementById('mWeekendAllow')?.value)||0);
+    const pay=isMonthStaff()?0:isDailyStaff()?Number(currentStaff.dailyRate):calcPay(wm);
+    const wa=(isDailyStaff()||isMonthStaff())?0:(parseInt(document.getElementById('mWeekendAllow')?.value)||0);
     const waStr=wa>0?` + 土日手当¥${wa.toLocaleString()}`:'';
     const total=pay+wa;
     el.innerHTML=`稼働: <b>${toStr(wm)}</b>（休憩 ${parseInt(r.rest)||0}分）<br>報酬: <b>¥${total.toLocaleString()}</b>${waStr}`;
