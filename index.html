@@ -717,6 +717,10 @@ window.__auth = _auth;
           <span style="font-size:11px;font-weight:700;color:#8a8781;min-width:50px">部門</span>
           <select id="mDept" class="inp" style="flex:1;padding:6px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee" onchange="saveStaffDept()"></select>
         </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;font-weight:700;color:#8a8781;min-width:50px">職種</span>
+          <select id="mJobType" class="inp" style="flex:1;padding:6px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee" onchange="saveStaffJobType()"></select>
+        </div>
         <div id="mRateRow" style="display:flex;align-items:center;gap:8px">
           <span style="font-size:11px;font-weight:700;color:#8a8781;min-width:50px">時給</span>
           <input type="number" id="mRate" placeholder="2014" style="flex:1;padding:6px 10px;border:1.5px solid #ddd9d2;border-radius:3px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;color:#1b1a17;background:#f2f1ee;box-sizing:border-box">
@@ -868,6 +872,10 @@ window.__auth = _auth;
       <div>
         <div style="font-size:12px;font-weight:700;color:#8a8781;margin-bottom:4px">電話</div>
         <input type="tel" id="addStaffPhone" placeholder="090-0000-0000" style="width:100%;padding:10px 12px;border:1.5px solid #ddd9d2;border-radius:4px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;background:#f2f1ee;box-sizing:border-box">
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#8a8781;margin-bottom:4px">時給（円/時）<span style="font-weight:400">※ドクターは必須。空欄なら職種ごとの標準額</span></div>
+        <input type="number" id="addStaffRate" placeholder="例：8000" min="0" style="width:100%;padding:10px 12px;border:1.5px solid #ddd9d2;border-radius:4px;font-size:13px;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;background:#f2f1ee;box-sizing:border-box">
       </div>
       <div style="display:flex;gap:6px">
         <label style="flex:1;display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px">
@@ -1571,7 +1579,7 @@ let currentStaff=null;
 let departments=JSON.parse(localStorage.getItem('sc_departments')||'null')||['本部','仙豆','太田川','清翔会'];
 // 新しい部門は、既にlocalStorageを持っている端末にも入れる
 ['TC'].forEach(d=>{if(!departments.includes(d))departments.push(d)});
-let jobTypes=['歯科医療業務','歯科助手業務','SNS','TC教育'];
+let jobTypes=['ドクター','歯科医療業務','歯科助手業務','SNS','TC教育'];
 let _tt;
 
 function ls(k){return localStorage.getItem(k)}
@@ -1692,6 +1700,7 @@ function openAddStaffModal(){
   document.getElementById('addStaffName').value='';
   document.getElementById('addStaffEmail').value='';
   document.getElementById('addStaffPhone').value='';
+  document.getElementById('addStaffRate').value='';
   document.getElementById('addStaffSnsOnly').checked=false;
   document.getElementById('addStaffInvoice').checked=false;
   overlay.classList.add('open');
@@ -1713,11 +1722,13 @@ function createNewStaff(){
 
   if(!name){toast('氏名を入力してください');return}
   if(!dept){toast('部門を選択してください');return}
+  const inputRate=parseInt(document.getElementById('addStaffRate').value)||0;
+  if(jobType==='ドクター'&&!inputRate){toast('ドクターは時給を入力してください');return}
 
   const id='u_'+Date.now();
   // jobType に応じたデフォルト rate を設定
   let defaultRate = 2014; // デフォルト時給
-  defaultRate = jobUnit(jobType).defaultRate;
+  defaultRate = inputRate || jobUnit(jobType).defaultRate;
 
   const newStaff={
     id,name,email,phone,dept,jobType,
@@ -1983,11 +1994,25 @@ function saveStaffDept(){
   if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({department:currentStaff.department},{merge:true}).catch(e=>console.error(e));
   renderStaffList();refreshStatusBadges();toast('部門を変更しました');
 }
+// 職種の変更（契約書の「委託業務の内容」が変わる。時給はそのまま）
+function saveStaffJobType(){
+  if(!currentStaff)return;
+  const jobType=document.getElementById('mJobType').value||'';
+  currentStaff.jobType=jobType;
+  localStorage.setItem('sc_admin_staff',JSON.stringify(allStaff));
+  if(window.__db)window.__db.collection('staff').doc(currentStaff.id).set({jobType},{merge:true}).catch(e=>console.error(e));
+  renderStaffList();
+  toast(`職種を「${jobType||'指定なし'}」に変更しました。時給も確認してください`);
+}
 // 単価未設定のスタッフの既定値（SNSは1投稿¥2,000、それ以外は時給¥2,014）
 // ── 職種ごとの報酬単位・既定単価・契約書の文言 ─────────────
 // ※ 職種を追加するときはこの表に1行足すだけ。
 //    単価表示・契約書本文・保存値がすべてここを見るので、直し忘れでズレない。
 const JOB_UNITS = {
+  'ドクター': {
+    label:'1時間', defaultRate:5000, type:'hour', title:'歯科診療業務',
+    desc:r=>`甲が運営する各店舗における歯科医師としての歯科診療業務およびその付随業務。乙は歯科医師免許を有する者として、自らの専門的知見に基づき業務を遂行する。委託料は稼働時間に応じ、1時間あたり金${r}円（税込）とする。`
+  },
   'SNS': {
     label:'1投稿', defaultRate:2000, type:'post', title:'SNS業務',
     desc:r=>`甲の指定する媒体・内容に基づくSNS投稿業務。委託料は1投稿あたり金${r}円（税込）とする。`
@@ -2352,6 +2377,13 @@ function openStaff(i){
   const deptSel=document.getElementById('mDept');
   if(deptSel){
     deptSel.innerHTML=`<option value="">未分類</option>`+departments.map(d=>`<option value="${d}"${currentStaff.department===d?' selected':''}>${d}</option>`).join('');
+  }
+  // 職種（契約書の業務内容が変わる）
+  const jobSel=document.getElementById('mJobType');
+  if(jobSel){
+    const cur=currentStaff.jobType||'';
+    const opts=(jobTypes||[]).slice();if(cur&&!opts.includes(cur))opts.push(cur);
+    jobSel.innerHTML=`<option value="">指定なし</option>`+opts.map(j=>`<option value="${j}"${cur===j?' selected':''}>${j}</option>`).join('');
   }
   // Rate (時給)
   const rateSel=document.getElementById('mRate');
@@ -3284,6 +3316,10 @@ let sgStep=0;            // 0:基本情報 1:口座 2:契約書・署名
 // ※ 職種を追加するときはこの表に1行足すだけ。
 //    単価表示・契約書本文・保存値がすべてここを見るので、直し忘れでズレない。
 const JOB_UNITS = {
+  'ドクター': {
+    label:'1時間', defaultRate:5000, type:'hour', title:'歯科診療業務',
+    desc:r=>`甲が運営する各店舗における歯科医師としての歯科診療業務およびその付随業務。乙は歯科医師免許を有する者として、自らの専門的知見に基づき業務を遂行する。委託料は稼働時間に応じ、1時間あたり金${r}円（税込）とする。`
+  },
   'SNS': {
     label:'1投稿', defaultRate:2000, type:'post', title:'SNS業務',
     desc:r=>`甲の指定する媒体・内容に基づくSNS投稿業務。委託料は1投稿あたり金${r}円（税込）とする。`
