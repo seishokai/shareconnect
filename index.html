@@ -535,22 +535,49 @@ window.__auth = _auth;
 </script>
 </head>
 <body>
-<!-- ログイン画面 -->
-<div id="loginScreen" style="display:none;position:fixed;inset:0;z-index:999;background:#f1f0ec;display:flex;align-items:center;justify-content:center;padding:24px">
-  <div style="background:#fff;border:1px solid #d9d6cf;border-radius:6px;padding:38px 28px 32px;width:100%;max-width:380px;box-shadow:0 2px 24px rgba(0,0,0,.07)">
-    <div style="text-align:center;margin-bottom:24px">
-      <div style="width:54px;height:54px;margin:0 auto 16px;background:#111;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:21px;font-weight:700;font-family:'Shippori Mincho',serif">SC</div>
-      <h2 style="font-family:'Shippori Mincho',serif;font-size:26px;font-weight:700;color:#111;letter-spacing:.26em;text-indent:.26em;display:inline-block;border-bottom:2px solid #111;padding-bottom:10px;margin-bottom:10px">シェアコネクト</h2>
-      <p style="font-family:'Shippori Mincho',serif;font-size:10px;color:#9a968e;letter-spacing:.42em;text-indent:.42em;margin-bottom:12px">SHARE CONNECT</p>
-      <p style="font-size:12px;color:#8a8781">管理者ログイン</p>
+<!-- ログイン画面（人事ポータルと同じ、すっきりしたゴシック体・ブルー基調） -->
+<style>
+#loginScreen{--lg-navy:#1f2d4d;--lg-blue:#2f5fb3;--lg-blue-h:#264f99;--lg-line:#dfe5ef;--lg-muted:#6b7689;
+  font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic UI",system-ui,sans-serif;font-feature-settings:"palt" 1;-webkit-font-smoothing:antialiased;
+  background:linear-gradient(160deg,#eef3fb 0%,#f7f9fc 55%,#e8eef8 100%)}
+#loginScreen .lg-card{width:100%;max-width:400px;background:#fff;border:1px solid var(--lg-line);border-radius:14px;
+  box-shadow:0 12px 40px rgba(31,45,77,.10);overflow:hidden}
+#loginScreen .lg-band{height:5px;background:linear-gradient(90deg,var(--lg-navy),var(--lg-blue))}
+#loginScreen .lg-body{padding:34px 32px 30px}
+#loginScreen .lg-brand{display:flex;align-items:center;gap:13px;margin-bottom:26px}
+#loginScreen .lg-mark{width:44px;height:44px;flex:0 0 auto;border-radius:10px;background:var(--lg-navy);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;letter-spacing:.04em}
+#loginScreen .lg-brand strong{display:block;font-size:19px;font-weight:700;color:var(--lg-navy);letter-spacing:.05em}
+#loginScreen .lg-brand span{display:block;margin-top:3px;font-size:11px;color:var(--lg-muted);letter-spacing:.06em}
+#loginScreen h1{margin:0 0 4px;font-size:16px;font-weight:700;color:#1d2533}
+#loginScreen .lg-sub{margin:0 0 22px;font-size:12px;color:var(--lg-muted);line-height:1.7}
+#loginScreen label{display:block;margin-bottom:6px;font-size:12px;font-weight:700;color:#3a4558}
+#loginScreen input[type=password]{width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #cfd8e6;border-radius:8px;
+  font-size:15px;color:#1d2533;background:#f8fafd;-webkit-appearance:none;outline:none;transition:.15s;font-family:inherit}
+#loginScreen input[type=password]:focus{border-color:var(--lg-blue);background:#fff;box-shadow:0 0 0 3px rgba(47,95,179,.15)}
+#loginScreen .lg-btn{width:100%;margin-top:18px;padding:13px;border:none;border-radius:8px;background:var(--lg-blue);color:#fff;
+  font-size:15px;font-weight:700;letter-spacing:.08em;cursor:pointer;font-family:inherit;transition:.15s}
+#loginScreen .lg-btn:hover{background:var(--lg-blue-h)}
+#loginScreen #loginError{margin-top:12px;padding:9px 12px;border-radius:7px;background:#fbecec;color:#b33a3a;font-size:12px;text-align:center}
+#loginScreen .lg-foot{padding:13px 32px;border-top:1px solid #edf1f7;background:#f8fafd;font-size:11px;color:#8a94a6;text-align:center;letter-spacing:.04em}
+</style>
+<div id="loginScreen" style="display:none;position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;padding:24px">
+  <div class="lg-card">
+    <div class="lg-band"></div>
+    <div class="lg-body">
+      <div class="lg-brand">
+        <div class="lg-mark">SC</div>
+        <div><strong>シェアコネクト</strong><span>スタッフ管理・契約書・支払い通知書</span></div>
+      </div>
+      <h1>管理者ログイン</h1>
+      <p class="lg-sub">管理用のパスワードを入力してください。</p>
+      <input id="loginEmail" type="hidden" value="admin@shareconnect.jp">
+      <label for="loginPassword">パスワード</label>
+      <input id="loginPassword" type="password" placeholder="パスワードを入力" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="lg-btn" onclick="doLogin()">ログイン</button>
+      <div id="loginError" style="display:none"></div>
     </div>
-    <input id="loginEmail" type="hidden" value="admin@shareconnect.jp">
-    <div style="margin-bottom:20px">
-      <div style="font-size:11px;font-weight:700;color:#8a8781;margin-bottom:4px">パスワード</div>
-      <input id="loginPassword" type="password" placeholder="パスワードを入力" style="width:100%;padding:12px 14px;border:1.5px solid #ddd9d2;border-radius:5px;font-size:14px;color:#1b1a17;background:#f2f1ee;box-sizing:border-box;-webkit-appearance:none" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <button onclick="doLogin()" style="width:100%;padding:14px;background:#111;color:#fff;border:none;border-radius:6px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.25)">ログイン</button>
-    <div id="loginError" style="margin-top:12px;color:#e05050;font-size:12px;text-align:center;display:none"></div>
+    <div class="lg-foot">医療法人清翔会</div>
   </div>
 </div>
 
@@ -629,15 +656,21 @@ window.__auth = _auth;
     <div class="ch">スタッフ招待URL発行</div>
     <div class="cb">
       <div style="font-size:12px;color:#8a8781;line-height:1.7;background:#f2f1ee;border-radius:4px;padding:10px 12px;border:1px solid #ddd9d2">
-        ① 契約書を選ぶ　② 発行する　③ LINEで送る
+        新しく入る人向けのURLです。こちらは【職種と時給】だけ決めて発行し、<br>氏名・住所・口座などは本人に入力してもらいます。<br>
+        ① 職種・時給を決める　② 発行する　③ LINEで送る
       </div>
       <div class="field">
         <div class="lbl">部門を選択</div>
         <select class="inp" id="inviteDept" style="font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif"></select>
       </div>
       <div class="field">
-        <div class="lbl">契約書テンプレートを選択</div>
-        <select class="inp" id="inviteContract" style="font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif"></select>
+        <div class="lbl">職種</div>
+        <select class="inp" id="inviteJobType" style="font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif" onchange="onInviteJobChange()"></select>
+      </div>
+      <div class="field">
+        <div class="lbl" id="inviteRateLbl">時給（円/時）</div>
+        <input type="number" class="inp" id="inviteRate" min="0" placeholder="例：8000" style="font-family:'Inter','Zen Kaku Gothic New','Noto Sans JP',sans-serif;padding:8px 12px;border:1.5px solid #ddd9d2;border-radius:4px;font-size:14px;color:#1b1a17;background:#f2f1ee;width:100%;box-sizing:border-box">
+        <div style="font-size:11px;color:#8a8781;margin-top:4px">この金額が契約書の「委託料」に入ります。</div>
       </div>
       <div class="field" style="margin:8px 0">
         <div class="lbl" style="font-size:11px;font-weight:700;color:#8a8781;margin-bottom:4px">契約締結日</div>
@@ -2885,27 +2918,37 @@ function editTemplate(i){
 
 // ── Invite URL ─────────────────────────────────────
 function updateInviteDropdown(){
-  const sel=document.getElementById('inviteContract');
-  sel.innerHTML=templates.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+  const jsel=document.getElementById('inviteJobType');
+  if(jsel){
+    const keep=jsel.value;
+    jsel.innerHTML='<option value="">選択してください</option>'+(jobTypes||[]).map(j=>`<option value="${j}">${j}</option>`).join('');
+    if(keep)jsel.value=keep;
+  }
   const dsel=document.getElementById('inviteDept');
   if(dsel)dsel.innerHTML=departments.map(d=>`<option value="${d}">${d}</option>`).join('');
+}
+// 職種を選んだら、単位（時給・1回・1投稿）の表示と例の額を合わせる
+function onInviteJobChange(){
+  const jt=document.getElementById('inviteJobType').value;
+  const u=jobUnit(jt);
+  document.getElementById('inviteRateLbl').textContent=u.type==='hour'?'時給（円/時）':'報酬（円/'+u.label.replace(/^1/,'')+'）';
+  document.getElementById('inviteRate').placeholder='例：'+u.defaultRate;
 }
 function generateInvite(){
   const dept=document.getElementById('inviteDept').value;
   if(!dept){toast('部門を選んでください');return}
-  const tmplId=document.getElementById('inviteContract').value;
-  const tmpl=templates.find(t=>t.id===tmplId);
-  if(!tmpl){toast('テンプレートを選んでください');return}
+  const jobType=document.getElementById('inviteJobType').value;
+  if(!jobType){toast('職種を選んでください');return}
+  const rate=parseInt(document.getElementById('inviteRate').value)||0;
+  if(!rate){toast('時給（報酬）を入力してください');return}
   const signDate=document.getElementById('inviteSignDate').value;
   if(!signDate){toast('契約締結日を入力してください');return}
-    localStorage.setItem('sc_invite_'+tmplId, JSON.stringify({tmplId,tmplName:tmpl.name,body:tmpl.body}));
-  localStorage.setItem('sc_active_tmpl', tmplId);
-  const base = 'https://seishokai.github.io/shareconnect/';
-  const payload = btoa(unescape(encodeURIComponent(JSON.stringify({v:1,tmplId:tmplId,tmplName:tmpl.name,signDate:signDate,department:dept}))));
-  const url = base + '?staff&i=' + payload;
+  // 氏名は本人に入力してもらう。職種・単価はURLに入れて、契約書と登録データに使う
+  const payload = b64uEnc(JSON.stringify({v:2,signDate,department:dept,jobType,rate}));
+  const url = SC_BASE_URL + '?staff&i=' + payload;
   document.getElementById('inviteUrl').textContent = url;
   document.getElementById('inviteResult').style.display='block';
-  toast('URLを発行しました！');
+  toast(`${jobType}・${jobUnit(jobType).label} ¥${rate.toLocaleString()} の招待URLを発行しました`);
 }
 function copyInvite(){
   const url=document.getElementById('inviteUrl').textContent;
@@ -3279,14 +3322,21 @@ function boot(){
     localStorage.removeItem(SK);
     db={};
     let contractHTML = null;
+    localStorage.removeItem('sc_invite_job');
     try{
-      const decoded = JSON.parse(decodeURIComponent(escape(atob(inviteParam))));
-      const stored = JSON.parse(ls('sc_invite_'+decoded.tmplId)||'null');
-      if(stored && stored.body) contractHTML = stored.body;
+      // 新しいURLは base64url、古いURLは標準base64（'+' が空白に化けるので戻す）
+      const b64 = inviteParam.replace(/ /g,'+').replace(/-/g,'+').replace(/_/g,'/');
+      const decoded = JSON.parse(decodeURIComponent(escape(atob(b64 + '==='.slice((b64.length+3)%4)))));
+      if(decoded.jobType || decoded.rate){
+        localStorage.setItem('sc_invite_job', JSON.stringify({jobType:decoded.jobType||'', rate:Number(decoded.rate)||0}));
+      } else {
+        const stored = JSON.parse(ls('sc_invite_'+decoded.tmplId)||'null');
+        if(stored && stored.body) contractHTML = stored.body;
+      }
       if(decoded.signDate) localStorage.setItem('sc_signDate', decoded.signDate);
       if(decoded.department) localStorage.setItem('sc_department', decoded.department);
     }catch(e){}
-    document.getElementById('contractBox').innerHTML = contractHTML || buildContract('');
+    document.getElementById('contractBox').innerHTML = contractHTML || obContract('');
     show('screenOB');
     return;
   }
@@ -3639,12 +3689,16 @@ function show(id){
 }
 
 // ── Onboarding ─────────────────────────────────────
+// 招待URLで決めた職種・単価（なければ従来どおりの標準）
+function obJob(){try{return JSON.parse(ls('sc_invite_job')||'null')||{}}catch(e){return {}}}
+function obContract(name){const j=obJob();return buildContract(name, j.jobType, j.rate)}
+function obContracts(){return [jobUnit(obJob().jobType).title,'動画撮影業務']}
 function obNext(){
   if(obStep===0){
     const name=vv('obName'),addr=vv('obAddr'),pin=vv('obPin');
     tog('eN',!name);tog('eA',!addr);tog('eP',!pin||pin.length<4);
     if(!name||!addr||!pin||pin.length<4)return;
-    document.getElementById('contractBox').innerHTML=buildContract(name);
+    document.getElementById('contractBox').innerHTML=obContract(name);
   }
   if(obStep===1){
     const bank=vv('obBank'),acc=vv('obAccNum');
@@ -3690,7 +3744,7 @@ function buildSummary(){
     `<div>${a}</div>`+
     (st?`<div>${st}</div>`:'')+
     `<div>${bk} ${br} ${at} ${an}</div>`+
-    `<div>歯科医療・運営業務 ／ 動画撮影業務</div>`+
+    `<div>${obContracts().join(' ／ ')}</div>`+
     `<div style="font-size:11px;color:#8a8781;margin-top:4px">署名日：${new Date().toLocaleDateString('ja-JP')}</div>`;
 }
 function finishOB(){
@@ -3700,13 +3754,14 @@ function finishOB(){
     name:vv('obName'),birth:vv('obBirth'),phone:vv('obPhone'),email:vv('obEmail'),
     addr:vv('obAddr'),station:vv('obStation'),bank:vv('obBank'),branch:vv('obBranch'),
     accType:document.getElementById('obAccType').value,accNum:vv('obAccNum'),accName:vv('obAccName'),
-    signData,signedAt:ls('sc_signDate')?new Date(ls('sc_signDate')).toISOString():new Date().toISOString(),contracts:['歯科医療・運営業務','動画撮影業務'],
+    signData,signedAt:ls('sc_signDate')?new Date(ls('sc_signDate')).toISOString():new Date().toISOString(),contracts:obContracts(),
     pin:vv('obPin'),
     invoiceNum:vv('obInvoiceNum')||'',
     id:'u_'+Date.now()
   };
   u.approved=false;
   u.department=ls('sc_department')||'';
+  { const j=obJob(); if(j.jobType)u.jobType=j.jobType; if(j.rate)u.rate=j.rate; }
   save(UK,u);
   // Save to admin data store (shared)
   const allStaff=JSON.parse(ls('sc_admin_staff')||'[]');
@@ -3719,6 +3774,8 @@ function finishOB(){
       accNum:u.accNum,accName:u.accName,signedAt:u.signedAt,
       contracts:u.contracts,approved:false,registeredAt:Date.now(),
       department:u.department||'',pin:u.pin||'',invoiceNum:u.invoiceNum||''};
+    if(u.jobType)fData.jobType=u.jobType;
+    if(u.rate)fData.rate=u.rate;
     window.__db.collection('staff').doc(u.id).set(fData)
       .then(()=>console.log('Registered to Firestore'))
       .catch(e=>console.error('Firestore error:',e));
