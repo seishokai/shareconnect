@@ -1478,7 +1478,9 @@ async function fbBoot(){
     const staffSnap = await _db.collection('staff').get();
     staffList = [];
     staffSnap.forEach(doc => {
-      staffList.push({...doc.data(), id: doc.id});
+      const sd={...doc.data(), id: doc.id};
+      if(!sd.department && sd.dept) sd.department = sd.dept;
+      staffList.push(sd);
     });
     staffLoadOk = true;
     // localStorageにもバックアップ
@@ -1518,8 +1520,9 @@ async function fbBoot(){
           // 削除されたフィールドも反映
           Object.keys(existing).forEach(k=>{if(!(k in d)&&k!=='id')delete existing[k]});
           Object.assign(existing, d, {id});
+          if(!existing.department && existing.dept) existing.department = existing.dept;
         }
-        else staffList.push({...d, id});
+        else staffList.push({...d, id, ...(!d.department && d.dept ? {department:d.dept} : {})});
       }
     });
     // currentStaffも更新（参照保持済みなので不要だが、念のため）
@@ -1576,7 +1579,7 @@ async function ensureStaffExist(){
       else if(req.isFixedDaily) defaultRate = 0; // 日当制は rate を使わない
 
       const newStaff = {
-        id, name: req.name, dept: req.dept, jobType: req.jobType,
+        id, name: req.name, dept: req.dept, department: req.dept, jobType: req.jobType,
         email: '', phone: '', addr: '', station: '',
         bank: '', branch: '', accType: '普通', accNum: '', accName: '',
         contracts: [], signedAt: null, approved: false,
@@ -1821,7 +1824,7 @@ function createNewStaff(){
   defaultRate = inputRate || jobUnit(jobType).defaultRate;
 
   const newStaff={
-    id,name,email,phone,dept,jobType,
+    id,name,email,phone,dept,department:dept,jobType,
     snsOnly,invoice,
     addr:'',station:'',
     bank:'',branch:'',accType:'普通',accNum:'',accName:'',
@@ -3849,7 +3852,7 @@ function isSimpleDept(){return SIMPLE_DEPTS.includes(staffDept)}
 function startApp(u){
   currentStaff = u;   // 日当固定スタッフの判定などで参照される
   show('screenApp');
-  staffDept=u.department||ls('sc_department')||'';
+  staffDept=u.department||u.dept||ls('sc_department')||'';
   // SNSのみスタッフはカレンダー・サマリーを非表示
   if(u.snsOnly){
     const sb=document.querySelector('.summary-bar');if(sb)sb.style.display='none';
@@ -4825,8 +4828,10 @@ function deleteDayInline(d){
         [fieldPath]: firebase.firestore.FieldValue.delete()
       }).catch(e=>{
         console.error('delete error:',e);
-        // フォールバック：通常のset/merge
-        window.__db.collection('staff').doc(u.id).set({workData:db},{merge:false}).catch(e2=>console.error(e2));
+        // フォールバック：稼働データ（workData）だけを置き換える。氏名・口座などは残す
+        window.__db.collection('staff').doc(u.id).update({workData:db})
+          .catch(()=>window.__db.collection('staff').doc(u.id).set({workData:db},{merge:true}))
+          .catch(e2=>console.error(e2));
       });
     }
   }
