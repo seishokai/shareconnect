@@ -1888,7 +1888,9 @@ function lockMonth(){
   } else {
     workData[key].locked=true;
     toast('月締めを確定しました。メール送信中...');
-    setTimeout(()=>sendApprovalEmail(yr,mo,key),500);
+    // 0.5秒の間に別の人を開いても、締めた本人の内容で送る
+    const lockedStaff=currentStaff;
+    setTimeout(()=>{const prev=currentStaff;currentStaff=lockedStaff;try{sendApprovalEmail(yr,mo,key)}finally{currentStaff=prev}},500);
     // 太田川の場合、吉川先生インセンティブを計算
     if(currentStaff.department==='太田川') setTimeout(()=>calcYoshikawaIncentive(yr,mo),1000);
   }
@@ -2018,7 +2020,7 @@ function renderYearSummary(){
     const md=workData[key]||{};
     const mRate=rateFor(currentStaff,md);
     let tw=0,td=0,tf=0,twa=0,tta=0;
-    Object.entries(md).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0){td++;tw+=wm}tf+=calcFare(r);twa+=weekendAllowOf(currentStaff,r,ymOf(yr,m));tta+=(r.tripAllow||0)});
+    Object.entries(md).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0){td++;tw+=wm}tf+=calcFare(r);twa+=weekendAllowOf(currentStaff,r,ymOf(yr,m));tta+=(parseInt(r.tripAllow)||0)});
     const pay=monthPayOf(currentStaff,md,mRate,ymOf(yr,m));
     const snsPay=(md.snsCount||0)*(md.snsRate||2000);
     const adFee=parseInt(md.snsAdFee)||0;
@@ -2302,7 +2304,7 @@ function renderDashboard(){
     const md=wd[mk];
     const mRate=rateFor(s,md);
     let tw=0,tf=0,twa=0,tta=0;
-    Object.entries(md).forEach(([kk,r])=>{if(!kk.startsWith('d'))return;const wm=calcWork(r);if(wm)tw+=wm;tf+=calcFare(r);twa+=weekendAllowOf(s,r,ymOf(_listYear,_listMonth));tta+=(r.tripAllow||0)});
+    Object.entries(md).forEach(([kk,r])=>{if(!kk.startsWith('d'))return;const wm=calcWork(r);if(wm)tw+=wm;tf+=calcFare(r);twa+=weekendAllowOf(s,r,ymOf(_listYear,_listMonth));tta+=(parseInt(r.tripAllow)||0)});
     const pay=s.snsOnly?0:monthPayOf(s,md,mRate,ymOf(_listYear,_listMonth));
     const snsPay=(md.snsCount||0)*(md.snsRate||2000);
     const adFee=parseInt(md.snsAdFee)||0;
@@ -2355,7 +2357,7 @@ function exportPaymentCSV(y,m){
     if(!md.locked)return; // 月締め確定済みのみ
     const mRate=rateFor(s,md);
     let tw=0,tf=0,twa=0,tta=0;
-    Object.entries(md).forEach(([kk,r])=>{if(!kk.startsWith('d'))return;const wm=calcWork(r);if(wm)tw+=wm;tf+=calcFare(r);twa+=weekendAllowOf(s,r,ymOf(y,m));tta+=(r.tripAllow||0)});
+    Object.entries(md).forEach(([kk,r])=>{if(!kk.startsWith('d'))return;const wm=calcWork(r);if(wm)tw+=wm;tf+=calcFare(r);twa+=weekendAllowOf(s,r,ymOf(y,m));tta+=(parseInt(r.tripAllow)||0)});
     const pay=s.snsOnly?0:monthPayOf(s,md,mRate,ymOf(y,m));
     const snsPay=(md.snsCount||0)*(md.snsRate||2000);
     const adFee=parseInt(md.snsAdFee)||0;
@@ -2394,7 +2396,7 @@ function payInfoOf(s,y,m){
   const ym=ymOf(y,m);
   const mRate=rateFor(s,md);
   let days=0,tf=0,twa=0,tta=0;
-  Object.entries(md).forEach(([kk,r])=>{if(!kk.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)days++;tf+=calcFare(r);twa+=weekendAllowOf(s,r,ym);tta+=(r.tripAllow||0)});
+  Object.entries(md).forEach(([kk,r])=>{if(!kk.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)days++;tf+=calcFare(r);twa+=weekendAllowOf(s,r,ym);tta+=(parseInt(r.tripAllow)||0)});
   const pay=s.snsOnly?0:monthPayOf(s,md,mRate,ym);
   const snsPay=(md.snsCount||0)*(md.snsRate||2000);
   const adFee=parseInt(md.snsAdFee)||0;
@@ -2481,7 +2483,7 @@ function ensurePayListOverlay(){
       </div>
       <div style="display:flex;gap:6px;align-items:center;margin-left:auto">
         <button class="tb-btn dark" onclick="printPayList()">PDFで保存</button>
-        <button class="tb-btn" onclick="exportPaymentCSV(_payY,_payM)">CSV</button>
+        <button class="tb-btn" onclick="payListCSV()">CSV</button>
         <button class="m-close" onclick="closePayList()">×</button>
       </div>
     </div>
@@ -2500,6 +2502,7 @@ function openPayList(){
   renderPayList();
   ov.classList.add('open');document.body.style.overflow='hidden';
 }
+function payListCSV(){exportPaymentCSV(_payY,_payM)}
 function closePayList(){
   document.getElementById('payListOverlay')?.classList.remove('open');document.body.style.overflow='';
 }
@@ -2569,7 +2572,7 @@ function renderStaffList(){
     const mSnsCount=curMonth.snsCount||0;
     const mSnsRate=curMonth.snsRate||2000;
     let tw=0,td=0,tf=0,twa=0,tta=0;
-    Object.entries(curMonth).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0){td++;tw+=wm}tf+=calcFare(r);twa+=weekendAllowOf(s,r,ymOf(_listYear,_listMonth));tta+=(r.tripAllow||0)});
+    Object.entries(curMonth).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0){td++;tw+=wm}tf+=calcFare(r);twa+=weekendAllowOf(s,r,ymOf(_listYear,_listMonth));tta+=(parseInt(r.tripAllow)||0)});
     const pay=s.snsOnly?0:monthPayOf(s,curMonth,mRate,ymOf(_listYear,_listMonth));
     const snsPay=mSnsCount*mSnsRate;
     const adFee=parseInt(curMonth.snsAdFee)||0;
@@ -4291,7 +4294,7 @@ function buildCards(){
   const dayCount=_keys.length;
   const dayRate=md2.dayRate||parseInt(md2.rate)||settings.rate||2014;
   let ttw=0,ttf=0,ttwa=0,ttta=0,ttTrip=0;
-  Object.entries(md2).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)ttw+=wm;if(!simple){ttf+=calcFare(r);ttwa+=((isDailyStaff()||isMonthStaff())?0:(r.weekendAllow||0));ttta+=(r.tripAllow||0);if(r.r2a&&r.r2a.includes('出張'))ttTrip+=(parseInt(r.f2a)||0)}});
+  Object.entries(md2).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)ttw+=wm;if(!simple){ttf+=calcFare(r);ttwa+=((isDailyStaff()||isMonthStaff())?0:(r.weekendAllow||0));ttta+=(parseInt(r.tripAllow)||0);if(r.r2a&&r.r2a.includes('出張'))ttTrip+=(parseInt(r.f2a)||0)}});
   const ttPureFare=ttf-ttTrip;
   // 日当制（飯田先生など）は稼働日数×日額。simple（太田川）も同じ日数計算。
   const ttPay=simple?dayCount*dayRate:monthPayS(md2);
@@ -4323,7 +4326,7 @@ function buildCards(){
 
 function updateSum(){
   const md=getMD();let d=0,tw=0,tf=0,twa=0,tta=0;
-  Object.entries(md).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0){d++;tw+=wm}tf+=calcFare(r);twa+=weekendAllowS(r);tta+=(r.tripAllow||0)});
+  Object.entries(md).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0){d++;tw+=wm}tf+=calcFare(r);twa+=weekendAllowS(r);tta+=(parseInt(r.tripAllow)||0)});
   document.getElementById('sumD').textContent=d+'日';
   document.getElementById('sumH').textContent=isSessionStaff()
     ?(monthSessionsS(md)+'回'+(monthOtherDaysS(md)>0?'＋'+monthOtherDaysS(md):''))
@@ -4456,7 +4459,7 @@ function submitForApproval(){
   if(!confirm(`${yr}年${mo}月を申請しますか？\n申請後は編集できなくなります。`))return;
   // Calculate total
   let tw=0,tf=0,twa=0,tta=0;
-  Object.entries(md).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)tw+=wm;tf+=calcFare(r);twa+=weekendAllowS(r);tta+=(r.tripAllow||0)});
+  Object.entries(md).forEach(([k,r])=>{if(!k.startsWith('d'))return;const wm=calcWork(r);if(wm&&wm>0)tw+=wm;tf+=calcFare(r);twa+=weekendAllowS(r);tta+=(parseInt(r.tripAllow)||0)});
   const totalAll=monthPayS(md)+tf+twa+tta+((md.snsCount||0)*(md.snsRate||2000));
   // Send to Firebase Function
   fetch('https://us-central1-shareconnect-71706.cloudfunctions.net/requestApproval',{
@@ -4549,6 +4552,7 @@ function saveSnsSettings(){
 // ── Store / Time / Rest ────────────────────────────
 function copyDayToOthers(srcDay){
   const md=getMD();
+  if(md.locked){toast('月締め済みのためコピーできません');return}
   const src=md[`d${srcDay}`];
   if(!src||!src.in||!src.out){toast('コピー元のデータがありません');return}
   // コピー先選択ダイアログ
