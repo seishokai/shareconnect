@@ -227,6 +227,11 @@ input, select, textarea {
 .tbl-row{border-bottom:1px solid #f0f1f3;cursor:pointer;transition:background .12s}
 .tbl-row:hover{background:#f7f8fa}
 .tbl-row:last-child{border-bottom:none}
+.tbl-c .tbl-head,.tbl-c .tbl-row{grid-template-columns:minmax(190px,1.6fr) minmax(150px,1.3fr) minmax(130px,1fr) minmax(140px,1.1fr) minmax(120px,1fr) minmax(150px,1.1fr)}
+.tbl-c .sub{font-size:10.5px;color:#8a8f98;margin-top:2px;line-height:1.4}
+.roster-sum{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.roster-sum div{background:#fff;border:1px solid #e3e7ee;border-radius:10px;padding:8px 12px;font-size:12px;color:#1f2d4d}
+.roster-sum b{font-size:16px;margin-left:4px}
 .avatar{width:38px;height:38px;border-radius:50%;background:#23262b;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.05em}
 .pill{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap}
 .pill.blue{background:#e8f1fd;color:#2f6fc4}.pill.orange{background:#fdf0dd;color:#c07a1e}.pill.gray{background:#eceef0;color:#666}
@@ -238,6 +243,8 @@ input, select, textarea {
 @media(max-width:820px){
   .tbl-head{display:none}
   .tbl-row{grid-template-columns:1fr auto;row-gap:6px}
+  .tbl-c .tbl-row{grid-template-columns:1fr 1fr}
+  .tbl-c .tbl-row>div:first-child{grid-column:1/-1}
   .tbl-row>div:nth-child(4){text-align:left}
   .tbl-row>div:nth-child(5){grid-column:1/-1;justify-content:flex-start}
 }
@@ -687,6 +694,11 @@ window.__auth = _auth;
       <button onclick="resetListMonth()" class="tb-btn dark">今月に戻る</button>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
+      <div class="seg" id="viewSeg">
+        <button class="seg-btn on" data-v="pay" onclick="setListView('pay')">稼働・支払い</button>
+        <button class="seg-btn" data-v="contract" onclick="setListView('contract')">契約・条件</button>
+      </div>
+      <button onclick="exportRosterCSV()" class="tb-btn" id="rosterCsvBtn" style="display:none">名簿CSV</button>
       <div style="font-size:11px;color:#8a8f98" id="staffCount">0名</div>
       <button onclick="openAddStaffModal()" class="tb-btn dark">スタッフ追加</button>
     </div>
@@ -2384,6 +2396,79 @@ function exportPaymentCSV(y,m){
   a.click();
   toast('CSVをダウンロードしました');
 }
+// ── スタッフ一覧の見方：「稼働・支払い」／「契約・条件」 ─────────────
+let _listView=(()=>{try{return localStorage.getItem('sc_list_view')==='contract'?'contract':'pay'}catch(e){return 'pay'}})();
+function setListView(v){_listView=v;try{localStorage.setItem('sc_list_view',v)}catch(e){}renderStaffList()}
+function syncListViewUI(){
+  document.querySelectorAll('#viewSeg .seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.v===_listView));
+  const b=document.getElementById('rosterCsvBtn');if(b)b.style.display=_listView==='contract'?'':'none';
+}
+// 今の条件（契約書に入る業務・単価）
+function contractNow(s){
+  const monthly=Number(s.monthlyRate)>0, daily=!!(s.isFixedDaily&&s.dailyRate);
+  return {
+    title: monthly?JOB_UNITS['コンサル'].title:jobUnit(s.jobType).title,
+    type: monthly?'month':daily?'day':jobUnit(s.jobType).type,
+    rate: monthly?Number(s.monthlyRate):daily?Number(s.dailyRate):(Number(s.rate)||defaultRateFor(s))
+  };
+}
+const RATE_TYPE_LBL={month:'月額',day:'1日',hour:'1時間',post:'1投稿',session:'1回'};
+// 署名したときの条件と、今の条件が違うか（署名URLで署名した人だけ記録がある）
+function contractDiff(s){
+  if(!s.signedAt||s.contractRate==null)return null;
+  const c=contractNow(s);
+  if(Number(s.contractRate)===c.rate&&(!s.contractRateType||s.contractRateType===c.type))return null;
+  return `署名時は ${RATE_TYPE_LBL[s.contractRateType]||''} ¥${Number(s.contractRate).toLocaleString()}`;
+}
+function fmtDateJ(v){if(!v)return'';const d=new Date(v.seconds?v.seconds*1000:v);return isNaN(d)?'':`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`}
+function rosterHTML(list){
+  // 契約内容ごとの人数
+  const cnt={};list.forEach(s=>{const t=contractNow(s).title;cnt[t]=(cnt[t]||0)+1});
+  const unsigned=list.filter(s=>!s.signedAt).length, diff=list.filter(s=>contractDiff(s)).length;
+  const sum=`<div class="roster-sum" style="padding:12px 16px 2px">${Object.entries(cnt).sort((a,b)=>b[1]-a[1]).map(([t,n])=>`<div>${t}<b>${n}名</b></div>`).join('')}
+    ${unsigned?`<div style="border-color:#f2c9c2;color:#c0503a">契約書 未署名<b>${unsigned}名</b></div>`:''}
+    ${diff?`<div style="border-color:#f0d9b0;color:#b06a10">条件が契約書と違う<b>${diff}名</b></div>`:''}</div>`;
+  const head=`<div class="tbl-head"><div>スタッフ</div><div>契約内容</div><div>報酬の条件</div><div>契約書</div><div>登録・口座</div><div style="text-align:right">操作</div></div>`;
+  const rows=list.map(s=>{
+    const i=allStaff.indexOf(s);
+    const c=contractNow(s), d=contractDiff(s);
+    const from=Number(s.monthlyRate)>0&&s.monthlyFrom?`<div class="sub">${String(s.monthlyFrom).replace('-','年')}月分から</div>`:'';
+    const sign=s.signedAt
+      ?`<span class="pill green">署名済</span><div class="sub">${fmtDateJ(s.signedAt)}</div>${d?`<div class="sub" style="color:#b06a10;font-weight:700">⚠ ${d}<br>署名し直しが必要</div>`:''}`
+      :'<span class="pill red">未署名</span>';
+    const noBank=!s.bank||!s.accNum;
+    const reg=`${s.approved?'<span class="pill green">承認済</span>':'<span class="pill orange">登録待ち</span>'}
+      <div class="sub">${noBank?'<span style="color:#c0503a;font-weight:700">口座 未登録</span>':'口座 登録済'}${s.pin?'':'・<span style="color:#c0503a">暗証番号なし</span>'}</div>
+      ${(s.invoice||s.invoiceNum)?'<div class="sub">インボイス登録あり</div>':''}`;
+    return `<div class="tbl-row" onclick="openStaff(${i})">
+      <div style="min-width:0"><div style="font-size:13.5px;font-weight:700;color:#16181b">${s.name}</div>
+        <div class="sub">${s.department||s.dept||'部門なし'}${s.phone?'・'+s.phone:''}</div></div>
+      <div><div style="font-size:12.5px;font-weight:700;color:#1f2d4d">${c.title}</div><div class="sub">${s.jobType?'職種：'+s.jobType:'職種：指定なし'}${s.snsOnly?'・SNSのみ':''}</div></div>
+      <div><div style="font-size:13px;font-weight:800;color:#111">${staffRateLabel(s)}</div>${from}${s.isFixedDaily&&s.dailyRate?'<div class="sub">日当（固定）</div>':''}</div>
+      <div>${sign}</div>
+      <div>${reg}</div>
+      <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap" onclick="event.stopPropagation()">
+        ${s.signedAt?`<button class="mini" onclick="rosterViewContract(${i})">契約書を見る</button>`:''}
+        ${(!s.signedAt||d)?`<button class="mini green" onclick="quickSignURL(${i})">署名URL</button>`:''}
+        <button class="mini blue" onclick="quickCopyURL(${i})">打刻URL</button>
+      </div>
+    </div>`;
+  }).join('');
+  return sum+head+rows;
+}
+function rosterViewContract(i){currentStaff=allStaff[i];viewStaffContract()}
+function exportRosterCSV(){
+  const rows=[['氏名','部門','職種','契約内容','報酬の単位','単価','月額の開始月','契約書','署名日','署名時の条件','登録','口座','インボイス番号','電話','メール']];
+  allStaff.forEach(s=>{const c=contractNow(s);
+    rows.push([s.name,s.department||s.dept||'',s.jobType||'',c.title,RATE_TYPE_LBL[c.type]||'',c.rate,Number(s.monthlyRate)>0?(s.monthlyFrom||''):'',
+      s.signedAt?'署名済':'未署名',fmtDateJ(s.signedAt),contractDiff(s)||'',s.approved?'承認済':'登録待ち',(s.bank&&s.accNum)?'登録済':'未登録',s.invoiceNum||'',s.phone||'',s.email||'']);
+  });
+  const csv='﻿'+rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`スタッフ名簿_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+  toast('名簿CSVをダウンロードしました');
+}
+
 // ── 月の表示（「○月分」と、今月/先月などの目印） ─────────────
 function listMonthRel(y,m){
   const n=new Date();const diff=(y-n.getFullYear())*12+(m-(n.getMonth()+1));
@@ -2571,7 +2656,10 @@ function renderStaffList(){
       return true;
     });
   }
-  if(!filtered.length){el.innerHTML='<div class="empty">該当するスタッフがいません</div>';return}
+  syncListViewUI();
+  if(!filtered.length){el.className='tbl';el.innerHTML='<div class="empty">該当するスタッフがいません</div>';return}
+  if(_listView==='contract'){el.className='tbl tbl-c';el.innerHTML=rosterHTML(filtered);return}
+  el.className='tbl';
   const now=new Date();
   const lbl=document.getElementById('listMonthLabel');
   const tblHead=`<div class="tbl-head"><div>スタッフ情報</div><div>稼働（${_listMonth}月）</div><div>ステータス</div><div style="text-align:right">金額（${_listMonth}月分）</div><div style="text-align:right">操作</div></div>`;
